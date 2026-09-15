@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+:root {
+  --aqua-50: #f3fbff;
+  --aqua-100: #e4f5fc;
+  --aqua-200: #c5ebf8;
+  --aqua-300: #8fd8f2;
+  --aqua-400: #4fc3e8;
+  --aqua-500: #1aa7d4;
+  --aqua-600: #0d8bb6;
+  --aqua-700: #0c6f91;
+  --ink: #10232d;
+  --muted: #5d7380;
+  --line: #06c755;
+  --bg: #f4f9fc;
+}
+
+@theme inline {
+  --color-aqua-50: var(--aqua-50);
+  --color-aqua-100: var(--aqua-100);
+  --color-aqua-200: var(--aqua-200);
+  --color-aqua-300: var(--aqua-300);
+  --color-aqua-400: var(--aqua-400);
+  --color-aqua-500: var(--aqua-500);
+  --color-aqua-600: var(--aqua-600);
+  --color-aqua-700: var(--aqua-700);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-background: var(--bg);
+  --font-sans: var(--font-sans-jp), var(--font-outfit), ui-sans-serif, system-ui;
+  --font-display: var(--font-outfit), var(--font-sans-jp), ui-sans-serif, system-ui;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: #bae6f5;
+}
+
+.mesh-bg {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #c5ebf8 0%, transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, #d9f3fb 0%, transparent 50%),
+    linear-gradient(180deg, #f7fcff 0%, #eef6fa 100%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.phone-frame {
+  background: linear-gradient(180deg, #1c2b33 0%, #0f171c 100%);
+}
+
+.line-bubble {
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(16, 35, 45, 0.08);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise {
+  animation: rise 0.45s ease both;
+}
