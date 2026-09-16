@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useStore } from "@/lib/store";
 import type { Role } from "@/lib/types";
@@ -12,20 +12,20 @@ export function AuthGuard({
   role: Role;
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { ready, state } = useStore();
   const user = state.currentUser;
 
   useEffect(() => {
     if (!ready) return;
     if (!user) {
-      router.replace("/");
+      navigate("/", { replace: true });
       return;
     }
     if (user.role !== role) {
-      router.replace(user.role === "admin" ? "/admin" : "/company");
+      navigate(user.role === "admin" ? "/admin" : "/company", { replace: true });
     }
-  }, [ready, role, router, user]);
+  }, [navigate, ready, role, user]);
 
   if (!ready || !user || user.role !== role) {
     return (

@@ -1,5 +1,4 @@
-import Image from "next/image";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { MapPin, Train } from "lucide-react";
 import { formatPrice, statusLabel, statusTone, visibleAddress } from "@/lib/format";
 import type { Property } from "@/lib/types";
@@ -15,15 +14,14 @@ export function PropertyCard({
   extra?: React.ReactNode;
 }) {
   return (
-    <Link href={href} className="group block">
+    <Link to={href} className="group block">
       <Card className="overflow-hidden transition group-hover:-translate-y-0.5 group-hover:shadow-[0_16px_40px_rgba(16,35,45,0.08)]">
         <div className="relative aspect-[16/10] overflow-hidden bg-aqua-100">
           {property.images[0] ? (
-            <Image
+            <img
               src={property.images[0]}
               alt={property.name}
-              fill
-              className="object-cover transition duration-500 group-hover:scale-105"
+              className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-aqua-700">

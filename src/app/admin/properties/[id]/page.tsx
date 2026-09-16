@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { EyeOff, Send } from "lucide-react";
 import { LinePreview } from "@/components/LinePreview";
@@ -37,7 +37,7 @@ export default function AdminPropertyReviewPage() {
 }
 
 function ReviewEditor({ propertyId }: { propertyId: string }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { state, updateReview, sendBroadcast, rejectProperty, addReaction } = useStore();
   const property = state.properties.find((item) => item.id === propertyId);
   const [maskedFields, setMaskedFields] = useState<MaskableField[]>(property?.maskedFields ?? []);
@@ -185,7 +185,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
                 });
                 window.setTimeout(() => {
                   setSending(false);
-                  router.push(`/admin/broadcasts/${broadcastId}`);
+                  navigate(`/admin/broadcasts/${broadcastId}`);
                 }, 900);
               }}
             >
@@ -208,7 +208,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
               disabled={!rejectReason}
               onClick={() => {
                 rejectProperty(property.id, rejectReason);
-                router.push("/admin/inbox");
+                navigate("/admin/inbox");
               }}
             >
               管理会社へ差し戻す

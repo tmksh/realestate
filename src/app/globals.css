@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  --font-outfit: "Outfit", sans-serif;
+  --font-sans-jp: "Noto Sans JP", sans-serif;
   --aqua-50: #f3fbff;
   --aqua-100: #e4f5fc;
   --aqua-200: #c5ebf8;

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -33,7 +33,7 @@ export default function CompanyPropertiesPage() {
           <h1 className="font-display text-3xl font-semibold tracking-tight">物件一覧</h1>
           <p className="mt-2 text-sm text-muted">登録した未公開物件の状態を確認できます。</p>
         </div>
-        <Link href="/company/properties/new">
+        <Link to="/company/properties/new">
           <Button>
             <Plus className="h-4 w-4" />
             新規登録
@@ -60,7 +60,7 @@ export default function CompanyPropertiesPage() {
           title="該当する物件がありません"
           description="未公開マンションの情報を登録し、運営へ送信してください。"
           action={
-            <Link href="/company/properties/new">
+            <Link to="/company/properties/new">
               <Button>物件を登録</Button>
             </Link>
           }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { LinePreview } from "@/components/LinePreview";
 import { ReactionList } from "@/components/ReactionList";

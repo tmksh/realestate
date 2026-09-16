@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { ArrowRight, Building2, EyeOff, Radio, ShieldCheck } from "lucide-react";
 import { users } from "@/lib/seed";
 import { useStore } from "@/lib/store";
@@ -25,13 +25,13 @@ const features = [
 ];
 
 export default function HomePage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { login } = useStore();
 
   const enter = (userId: string, role: "admin" | "company") => {
     login(userId);
     const href = role === "admin" ? "/admin" : "/company";
-    window.setTimeout(() => router.push(href), 0);
+    window.setTimeout(() => navigate(href), 0);
   };
 
   return (

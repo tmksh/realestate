@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Bell,
   Building2,
@@ -32,8 +31,8 @@ const adminNav = [
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const navigate = useNavigate();
   const { state, logout, resetDemo } = useStore();
   const user = state.currentUser;
 
@@ -48,7 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
         <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-slate-200/80 bg-white px-5 py-6 lg:flex">
-          <Link href={user.role === "admin" ? "/admin" : "/company"} className="flex items-center gap-3 px-2">
+          <Link to={user.role === "admin" ? "/admin" : "/company"} className="flex items-center gap-3 px-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-aqua-500 text-white shadow-lg shadow-aqua-500/25">
               <Radio className="h-5 w-5" />
             </div>
@@ -69,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  to={item.href}
                   className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                     active
                       ? "bg-aqua-50 text-aqua-700"
@@ -100,7 +99,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="mt-3 w-full"
               onClick={() => {
                 resetDemo();
-                router.refresh();
               }}
             >
               <RotateCcw className="h-4 w-4" />
@@ -137,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 variant="ghost"
                 onClick={() => {
                   logout();
-                  router.push("/");
+                  navigate("/");
                 }}
               >
                 <LogOut className="h-4 w-4" />
@@ -153,7 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  to={item.href}
                   className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-[11px] font-semibold ${
                     active ? "bg-aqua-50 text-aqua-700" : "text-muted"
                   }`}

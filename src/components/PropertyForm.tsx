@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { nowIso } from "@/lib/format";
@@ -16,7 +16,7 @@ export function PropertyForm({
   initial: Property;
   mode: "create" | "edit";
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { saveProperty, submitProperty } = useStore();
   const [property, setProperty] = useState(initial);
   const [saved, setSaved] = useState(false);
@@ -54,7 +54,7 @@ export function PropertyForm({
         const next = persist();
         setSaved(true);
         if (mode === "create") {
-          router.push(`/company/properties/${next.id}`);
+          navigate(`/company/properties/${next.id}`);
         }
       }}
     >
@@ -290,7 +290,7 @@ export function PropertyForm({
             onClick={() => {
               const next = persist("submitted");
               submitProperty(next.id);
-              router.push("/company/properties");
+              navigate("/company/properties");
             }}
           >
             運営へ送信

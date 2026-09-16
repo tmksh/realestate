@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Inbox, Radio, ThumbsUp, Users } from "lucide-react";
 import { PropertyCard } from "@/components/PropertyCard";
 import { StatCard } from "@/components/ui";
@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-xl font-semibold">確認が必要な物件</h2>
-            <Link href="/admin/inbox" className="text-sm font-semibold text-aqua-700">
+            <Link to="/admin/inbox" className="text-sm font-semibold text-aqua-700">
               受信箱へ
             </Link>
           </div>
@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
               return (
                 <Link
                   key={broadcast.id}
-                  href={`/admin/broadcasts/${broadcast.id}`}
+                  to={`/admin/broadcasts/${broadcast.id}`}
                   className="block rounded-2xl bg-white p-4 shadow-[0_10px_40px_rgba(16,35,45,0.05)] transition hover:bg-aqua-50"
                 >
                   <p className="font-semibold">{property?.buildingName}</p>

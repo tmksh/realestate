@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Building2, Clock3, Plus, Radio, ThumbsUp } from "lucide-react";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Button, StatCard } from "@/components/ui";
@@ -29,7 +29,7 @@ export default function CompanyDashboardPage() {
             物件を登録して送信すると、運営の確認後に公式LINEへ配信されます。
           </p>
         </div>
-        <Link href="/company/properties/new">
+        <Link to="/company/properties/new">
           <Button>
             <Plus className="h-4 w-4" />
             物件を登録
@@ -52,7 +52,7 @@ export default function CompanyDashboardPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-xl font-semibold">最近の物件</h2>
-          <Link href="/company/properties" className="text-sm font-semibold text-aqua-700">
+          <Link to="/company/properties" className="text-sm font-semibold text-aqua-700">
             すべて見る
           </Link>
         </div>

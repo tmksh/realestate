@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams } from "react-router-dom";
 import { PropertyForm } from "@/components/PropertyForm";
 import { Badge, Card } from "@/components/ui";
 import { formatDateTime, statusLabel, statusTone } from "@/lib/format";

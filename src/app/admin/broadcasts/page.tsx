@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Badge, Card, EmptyState } from "@/components/ui";
 import { formatDateTime, formatLabel } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -22,7 +22,7 @@ export default function BroadcastsPage() {
             const property = state.properties.find((item) => item.id === broadcast.propertyId);
             const count = state.reactions.filter((item) => item.broadcastId === broadcast.id).length;
             return (
-              <Link key={broadcast.id} href={`/admin/broadcasts/${broadcast.id}`}>
+              <Link key={broadcast.id} to={`/admin/broadcasts/${broadcast.id}`}>
                 <Card className="flex flex-wrap items-center justify-between gap-4 p-5 transition hover:bg-aqua-50">
                   <div>
                     <p className="font-semibold text-ink">{property?.buildingName}</p>
