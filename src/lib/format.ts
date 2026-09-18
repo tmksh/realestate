@@ -71,7 +71,7 @@ export function statusTone(status: PropertyStatus) {
     case "ready":
       return "info";
     case "broadcasted":
-      return "success";
+      return "info";
   }
 }
 
