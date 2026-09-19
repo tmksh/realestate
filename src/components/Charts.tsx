@@ -1,9 +1,9 @@
 import type { Reaction, ReactionType } from "@/lib/types";
 
 const typeMeta: Record<ReactionType, { label: string; color: string }> = {
-  like: { label: "いいね", color: "#111111" },
-  stamp: { label: "スタンプ", color: "#6B7280" },
-  text: { label: "テキスト", color: "#D1D5DB" },
+  like: { label: "いいね", color: "#0c0a09" },
+  stamp: { label: "スタンプ", color: "#78716c" },
+  text: { label: "テキスト", color: "#d6d3d1" },
 };
 
 function dayKey(date: Date) {
@@ -44,8 +44,8 @@ export function ReactionBarChart({ reactions }: { reactions: Reaction[] }) {
           const y = padT + innerH - (tick / max) * innerH;
           return (
             <g key={tick}>
-              <line x1={padL} x2={width - padR} y1={y} y2={y} stroke="#E8E8EC" strokeWidth="1" />
-              <text x={padL - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#6D675F">
+              <line x1={padL} x2={width - padR} y1={y} y2={y} stroke="#e8e6e3" strokeWidth="1" />
+              <text x={padL - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#78716c">
                 {tick}
               </text>
             </g>
@@ -63,7 +63,7 @@ export function ReactionBarChart({ reactions }: { reactions: Reaction[] }) {
               width={barW}
               height={Math.max(barH, value > 0 ? 6 : 0)}
               rx={8}
-              fill="#111111"
+              fill="#0c0a09"
             />
           );
         })}
@@ -103,12 +103,12 @@ export function ReactionTrendChart({ reactions }: { reactions: Reaction[] }) {
       <svg viewBox={`0 0 ${width} ${height}`} className="h-24 w-full" aria-hidden>
         <defs>
           <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#111111" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#111111" stopOpacity="0.02" />
+            <stop offset="0%" stopColor="#0c0a09" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#0c0a09" stopOpacity="0.02" />
           </linearGradient>
         </defs>
         <polygon points={area} fill="url(#trendFill)" />
-        <polyline points={points.join(" ")} fill="none" stroke="#111111" strokeWidth="2.4" strokeLinejoin="round" />
+        <polyline points={points.join(" ")} fill="none" stroke="#0c0a09" strokeWidth="2.4" strokeLinejoin="round" />
         {counts.map((value, index) => (
           <circle
             key={days[index].toISOString()}
@@ -116,7 +116,7 @@ export function ReactionTrendChart({ reactions }: { reactions: Reaction[] }) {
             cy={height - padBottom - (value / max) * (height - padTop - padBottom)}
             r="3.2"
             fill="#fff"
-            stroke="#111111"
+            stroke="#0c0a09"
             strokeWidth="2"
           />
         ))}
@@ -147,7 +147,7 @@ export function ReactionBreakdownChart({ reactions }: { reactions: Reaction[] })
     <div className="flex items-center gap-5">
       <div className="relative h-[118px] w-[118px] shrink-0">
         <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden>
-          <circle cx="50" cy="50" r={radius} fill="none" stroke="#E8E8EC" strokeWidth="12" />
+          <circle cx="50" cy="50" r={radius} fill="none" stroke="#e8e6e3" strokeWidth="12" />
           {counts.map((item) => {
             const length = (item.value / total) * circ;
             const dash = `${length} ${circ - length}`;

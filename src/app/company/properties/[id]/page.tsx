@@ -36,8 +36,8 @@ export default function CompanyPropertyDetailPage() {
         </BackLink>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-aqua-700">物件詳細</p>
-            <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">
+            <p className="text-[11px] font-medium tracking-[0.08em] text-muted">物件詳細</p>
+            <h1 className="mt-1 font-display text-[1.75rem] font-bold tracking-[-0.04em] text-ink sm:text-[2rem]">
               {property.buildingName}
             </h1>
           </div>

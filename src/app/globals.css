@@ -1,25 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --font-outfit: "Outfit", sans-serif;
-  --font-sans-jp: "Noto Sans JP", sans-serif;
-  --aqua-50: #f3f4f6;
-  --aqua-100: #e5e7eb;
-  --aqua-200: #d1d5db;
-  --aqua-300: #9ca3af;
-  --aqua-400: #6b7280;
-  --aqua-500: #111111;
-  --aqua-600: #111111;
-  --aqua-700: #111111;
-  --aqua-800: #111111;
-  --ink: #111111;
-  --muted: #6b7280;
-  --line: #06c755;
-  --bg: #f5f6f8;
+  --font-display: "Inter Tight", "Noto Sans JP", sans-serif;
+  --font-sans-jp: "Noto Sans JP", "Inter Tight", sans-serif;
+  --ink: #0c0a09;
+  --ink-soft: #1c1917;
+  --muted: #78716c;
+  --faint: #a8a29e;
+  --bg: #f7f6f3;
   --surface: #ffffff;
-  --hairline: #e8e8ec;
-  --canvas: #f3f4f6;
-  --ring: rgba(17, 17, 17, 0.12);
+  --canvas: #f3f2ee;
+  --hairline: #e8e6e3;
+  --line: #06c755;
+  --line-edge: #05b34c;
+  --line-wash: #d9f5e4;
+  --ring: rgba(12, 10, 9, 0.1);
+  --shadow-card: 0 1px 0 rgba(12, 10, 9, 0.04), 0 1px 2px rgba(12, 10, 9, 0.03);
+  --shadow-lift: 0 1px 0 rgba(12, 10, 9, 0.04), 0 16px 32px rgba(12, 10, 9, 0.06);
+  --aqua-50: #f3f2ee;
+  --aqua-100: #e8e6e3;
+  --aqua-200: #d6d3d1;
+  --aqua-300: #a8a29e;
+  --aqua-400: #78716c;
+  --aqua-500: #1c1917;
+  --aqua-600: #0c0a09;
+  --aqua-700: #0c0a09;
+  --aqua-800: #0c0a09;
 }
 
 @theme inline {
@@ -33,14 +39,18 @@
   --color-aqua-700: var(--aqua-700);
   --color-aqua-800: var(--aqua-800);
   --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-line: var(--line);
+  --color-line-edge: var(--line-edge);
+  --color-line-wash: var(--line-wash);
   --color-background: var(--bg);
   --color-surface: var(--surface);
   --color-hairline: var(--hairline);
   --color-canvas: var(--canvas);
-  --font-sans: var(--font-sans-jp), var(--font-outfit), ui-sans-serif, system-ui;
-  --font-display: var(--font-outfit), var(--font-sans-jp), ui-sans-serif, system-ui;
+  --font-sans: var(--font-sans-jp), ui-sans-serif, system-ui;
+  --font-display: var(--font-display), ui-sans-serif, system-ui;
 }
 
 * {
@@ -56,6 +66,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
+  font-feature-settings: "ss01" on, "cv11" on;
 }
 
 button,
@@ -66,11 +77,19 @@ textarea {
 }
 
 ::selection {
-  background: #e5e7eb;
+  background: var(--line-wash);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .mesh-bg {
-  background: var(--bg);
+  background:
+    radial-gradient(1200px 480px at 12% -10%, rgba(6, 199, 85, 0.06), transparent 52%),
+    var(--bg);
 }
 
 .glass {
@@ -105,7 +124,7 @@ textarea {
 }
 
 .rise {
-  animation: rise 0.4s ease both;
+  animation: rise 0.45s ease both;
 }
 
 .property-photo {

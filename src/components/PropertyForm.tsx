@@ -72,8 +72,8 @@ export function PropertyForm({
         }
       }}
     >
-      <div className="rounded-2xl border border-aqua-100 bg-aqua-50/70 px-4 py-3.5 sm:px-5">
-        <p className="text-[13px] font-semibold text-aqua-700">送信に必要な項目</p>
+      <div className="rounded-[24px] border border-hairline bg-canvas px-4 py-3.5 sm:px-5">
+        <p className="text-[13px] font-semibold text-ink">送信に必要な項目</p>
         <p className="mt-1 text-sm font-medium text-ink">
           マンション名 / 市区町村 / 町名 / 最寄駅 / 価格
         </p>
@@ -124,7 +124,7 @@ export function PropertyForm({
             required
           />
         </Field>
-        <div className="grid gap-5 rounded-2xl bg-aqua-50/70 p-4 md:col-span-2 md:grid-cols-2">
+        <div className="grid gap-5 rounded-[20px] bg-canvas p-4 md:col-span-2 md:grid-cols-2">
           <Field label="番地" hint="運営側で配信時に目隠しできます">
             <Input
               value={property.addressDetail}
@@ -140,7 +140,7 @@ export function PropertyForm({
             />
           </Field>
           <p className="flex items-start gap-1.5 text-[13px] leading-5 text-muted md:col-span-2">
-            <EyeOff className="mt-0.5 h-3.5 w-3.5 shrink-0 text-aqua-600" />
+            <EyeOff className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" />
             入力できます。配信前に運営が必要に応じて非表示にします。
           </p>
         </div>
@@ -335,12 +335,12 @@ export function PropertyForm({
                   )
                 }
                 className={`relative overflow-hidden rounded-[20px] border ${
-                  selected ? "border-ink ring-4 ring-aqua-50" : "border-hairline"
+                  selected ? "border-ink ring-4 ring-canvas" : "border-hairline"
                 }`}
               >
                 <div className="aspect-[16/10] bg-cover bg-center" style={{ backgroundImage: `url(${src})` }} />
                 {selected ? (
-                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-aqua-500 px-2 py-1 text-[11px] font-semibold text-white">
+                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-ink px-2 py-1 text-[11px] font-medium text-white">
                     <Check className="h-3 w-3" />
                     選択中
                   </span>
@@ -403,7 +403,7 @@ function CardHeading({
 }) {
   return (
     <div className={className}>
-      <h2 className="font-display text-lg font-medium tracking-[-0.03em] text-ink sm:text-xl">{title}</h2>
+      <h2 className="font-display text-lg font-bold tracking-[-0.03em] text-ink sm:text-xl">{title}</h2>
       <p className="mt-1 text-[13px] leading-6 text-muted sm:text-sm">{description}</p>
     </div>
   );

@@ -1,10 +1,9 @@
 "use client";
 
 import { useNavigate } from "react-router-dom";
-import { Radio } from "lucide-react";
 import { users } from "@/lib/seed";
 import { useStore } from "@/lib/store";
-import { Button, Card } from "@/components/ui";
+import { Avatar, BrandMark, Button, Card } from "@/components/ui";
 
 const steps = [
   { n: "01", title: "物件を登録", text: "管理会社から運営へ送信" },
@@ -26,51 +25,47 @@ export default function HomePage() {
 
   return (
     <div className="mesh-bg min-h-screen">
-      <div className="mx-auto flex min-h-screen max-w-[1080px] flex-col px-5 py-3 sm:px-6 lg:justify-center lg:py-4">
+      <div className="mx-auto flex min-h-screen max-w-[1080px] flex-col px-5 py-5 sm:px-8 lg:justify-center lg:py-10">
         <header className="flex shrink-0 items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-ink text-white">
-              <Radio className="h-3.5 w-3.5" />
-            </div>
-            <p className="font-display text-[15px] font-medium tracking-[-0.03em]">AQUALINE</p>
-          </div>
-          <p className="text-[11px] tracking-[0.04em] text-muted">デモ環境・実データ未接続</p>
+          <BrandMark />
+          <p className="text-[11px] tracking-[0.06em] text-muted">デモ環境・実データ未接続</p>
         </header>
 
-        <section className="mt-3 grid items-start gap-4 lg:mt-3 lg:grid-cols-2 lg:items-center lg:gap-6">
+        <section className="mt-10 grid items-start gap-8 lg:mt-14 lg:grid-cols-2 lg:items-center lg:gap-12">
           <div className="min-w-0">
-            <p className="inline-flex rounded-full bg-aqua-50 px-2.5 py-0.5 text-[10px] font-medium tracking-[0.06em] text-aqua-700">
+            <p className="inline-flex rounded-full bg-canvas px-3 py-1 text-[11px] font-medium tracking-[0.06em] text-muted">
               ポータル掲載前の未公開期間を活用
             </p>
-            <h1 className="mt-2 font-display text-[1.55rem] font-bold leading-[1.2] tracking-[-0.04em] text-ink sm:text-[1.85rem]">
+            <h1 className="mt-4 font-display text-[2rem] font-bold leading-[1.15] tracking-[-0.045em] text-ink sm:text-[2.55rem]">
               未公開物件を、
               <br />
-              <span className="text-aqua-700">公式LINE</span>で先に届ける。
+              <span className="rounded-full bg-line-wash px-2 text-line-edge">公式LINE</span>
+              で先に届ける。
             </h1>
-            <p className="mt-2 max-w-md text-[13px] leading-5 text-muted">
+            <p className="mt-4 max-w-md text-[15px] leading-[1.7] text-muted">
               管理会社が登録し、運営が確認・目隠ししたうえで公式LINEへ配信。反応した会員をリスト化します。
             </p>
-            <div className="mt-3 hidden grid-cols-3 gap-2 lg:grid">
+            <div className="mt-8 hidden grid-cols-3 gap-3 lg:grid">
               {steps.map((step) => (
-                <Card key={step.n} className="px-2.5 py-2">
-                  <p className="font-display text-[10px] font-medium tracking-[0.06em] text-aqua-700">{step.n}</p>
-                  <p className="mt-0.5 text-[12px] font-medium text-ink">{step.title}</p>
-                  <p className="mt-0.5 text-[10px] leading-4 text-muted">{step.text}</p>
+                <Card key={step.n} className="px-3.5 py-3">
+                  <p className="font-display text-[11px] font-medium tracking-[0.08em] text-faint">{step.n}</p>
+                  <p className="mt-1 text-[13px] font-semibold text-ink">{step.title}</p>
+                  <p className="mt-1 text-[11px] leading-4 text-muted">{step.text}</p>
                 </Card>
               ))}
             </div>
           </div>
 
-          <Card className="p-3 sm:p-3.5">
+          <Card className="p-4 sm:p-5">
             <div className="flex items-baseline justify-between gap-3">
-              <h2 className="font-display text-[15px] font-medium tracking-[-0.03em] text-ink">デモを開始</h2>
-              <p className="text-[11px] text-muted">ログイン不要</p>
+              <h2 className="font-display text-[17px] font-semibold tracking-[-0.03em] text-ink">デモを開始</h2>
+              <p className="text-[12px] text-muted">ログイン不要</p>
             </div>
 
-            <div className="mt-2.5 space-y-2">
-              <div className="rounded-[16px] bg-canvas px-2.5 py-2">
-                <p className="text-[12px] font-medium text-ink">管理会社として操作</p>
-                <div className="mt-1.5 space-y-1.5">
+            <div className="mt-4 space-y-3">
+              <div className="rounded-[20px] bg-canvas px-3 py-3">
+                <p className="text-[12px] font-medium text-muted">管理会社として操作</p>
+                <div className="mt-2 space-y-2">
                   {companyUsers.map((user) => (
                     <PersonRow
                       key={user.id}
@@ -83,9 +78,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-[16px] bg-aqua-50 px-2.5 py-2">
-                <p className="text-[12px] font-medium text-ink">AQUALINE運営として操作</p>
-                <div className="mt-1.5 space-y-1.5">
+              <div className="rounded-[20px] border border-hairline bg-white px-3 py-3">
+                <p className="text-[12px] font-medium text-muted">AQUALINE運営として操作</p>
+                <div className="mt-2 space-y-2">
                   {adminUsers.map((user) => (
                     <PersonRow
                       key={user.id}
@@ -101,11 +96,11 @@ export default function HomePage() {
           </Card>
         </section>
 
-        <div className="mt-3 grid gap-1.5 lg:hidden">
+        <div className="mt-6 grid gap-2 lg:hidden">
           {steps.map((step) => (
-            <Card key={step.n} className="px-3 py-2">
-              <p className="text-[12px] font-medium text-ink">
-                <span className="mr-2 text-aqua-700">{step.n}</span>
+            <Card key={step.n} className="px-4 py-3">
+              <p className="text-[13px] font-medium text-ink">
+                <span className="mr-2 text-faint">{step.n}</span>
                 {step.title}
                 <span className="ml-2 font-normal text-muted">{step.text}</span>
               </p>
@@ -129,15 +124,13 @@ function PersonRow({
   onClick: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-[14px] border border-hairline bg-white px-2.5 py-1.5">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-[11px] font-medium text-aqua-700">
-        {name.slice(0, 1)}
-      </div>
+    <div className="flex items-center gap-2.5 rounded-[16px] border border-hairline bg-white px-3 py-2">
+      <Avatar name={name} className="h-8 w-8 text-[11px]" />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[12px] font-medium leading-4 text-ink">{name}</p>
-        <p className="truncate text-[10px] leading-4 text-muted">{company}</p>
+        <p className="truncate text-[13px] font-medium leading-4 text-ink">{name}</p>
+        <p className="truncate text-[11px] leading-4 text-muted">{company}</p>
       </div>
-      <Button className="min-h-8 px-2.5 text-[11px]" onClick={onClick}>
+      <Button className="min-h-8 px-3 text-[12px]" onClick={onClick}>
         {cta}
       </Button>
     </div>

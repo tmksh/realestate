@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { ReactionBarChart, ReactionBreakdownChart } from "@/components/Charts";
 import { PropertyPhoto } from "@/components/PropertyCard";
 import { BroadcastIcon, FileIcon, HeartIcon, InboxIcon } from "@/components/stat-icons";
-import { Badge, Button, Card, PageHeader, StatCard } from "@/components/ui";
+import { Badge, Button, Card, PageHeader, SectionTitle, StatCard } from "@/components/ui";
 import { formatPrice, statusLabel, statusTone } from "@/lib/format";
 import { useStore, visibleProperties } from "@/lib/store";
 
@@ -21,7 +21,7 @@ export default function CompanyDashboardPage() {
   const canRegister = user?.role === "company";
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-6">
       <PageHeader
         kicker={user?.role === "owner" ? "オーナー" : "管理会社"}
         title={user?.companyName ?? "管理会社"}
@@ -42,7 +42,7 @@ export default function CompanyDashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-2 items-stretch gap-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-4">
         <StatCard label="下書き / 差戻し" value={drafts.length} icon={<FileIcon />} />
         <StatCard label="確認待ち" value={waiting.length} icon={<InboxIcon />} />
         <StatCard label="配信済み" value={sent.length} icon={<BroadcastIcon />} />
@@ -50,26 +50,28 @@ export default function CompanyDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(280px,1fr)]">
-        <Card className="p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-[16px] font-medium tracking-[-0.02em] text-ink">自社物件の反応推移</h2>
-            <span className="text-[12px] text-muted">直近7日</span>
-          </div>
+        <Card className="p-5 sm:p-6">
+          <SectionTitle action={<span className="text-[12px] text-muted">直近7日</span>}>
+            自社物件の反応推移
+          </SectionTitle>
           <ReactionBarChart reactions={reactions} />
         </Card>
 
         <div className="grid gap-4">
-          <Card className="p-5">
-            <h2 className="mb-4 font-display text-[16px] font-medium tracking-[-0.02em] text-ink">種類別の内訳</h2>
+          <Card className="p-5 sm:p-6">
+            <SectionTitle>種類別の内訳</SectionTitle>
             <ReactionBreakdownChart reactions={reactions} />
           </Card>
-          <Card className="p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-[16px] font-medium tracking-[-0.02em] text-ink">確認待ち</h2>
-              <Link to="/company/properties" className="text-[13px] font-medium text-aqua-700">
-                物件一覧へ
-              </Link>
-            </div>
+          <Card className="p-5 sm:p-6">
+            <SectionTitle
+              action={
+                <Link to="/company/properties" className="text-[13px] font-medium text-ink underline-offset-4 hover:underline">
+                  物件一覧へ
+                </Link>
+              }
+            >
+              確認待ち
+            </SectionTitle>
             {waiting.length === 0 ? (
               <p className="text-[13px] text-muted">確認待ちの物件はありません。</p>
             ) : (
@@ -89,13 +91,13 @@ export default function CompanyDashboardPage() {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="font-display text-[16px] font-medium tracking-[-0.02em] text-ink">最近の物件</h2>
-          <Link to="/company/properties" className="text-[13px] font-medium text-aqua-700">
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6">
+          <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">最近の物件</h2>
+          <Link to="/company/properties" className="text-[13px] font-medium text-ink underline-offset-4 hover:underline">
             すべて見る
           </Link>
         </div>
-        <div className="hidden grid-cols-[1.5fr_1.2fr_0.8fr_0.7fr] border-y border-hairline bg-canvas px-5 py-2.5 text-[12px] font-medium text-muted md:grid">
+        <div className="hidden grid-cols-[1.5fr_1.2fr_0.8fr_0.7fr] border-y border-hairline bg-canvas px-5 py-2.5 text-[12px] font-medium text-muted md:grid md:px-6">
           <span>物件</span>
           <span>所在地</span>
           <span>価格</span>
@@ -108,7 +110,7 @@ export default function CompanyDashboardPage() {
             <Link
               key={property.id}
               to={`/company/properties/${property.id}`}
-              className="grid items-center gap-3 border-b border-hairline px-5 py-3.5 last:border-b-0 md:grid-cols-[1.5fr_1.2fr_0.8fr_0.7fr]"
+              className="grid items-center gap-3 border-b border-hairline px-5 py-3.5 last:border-b-0 hover:bg-canvas/60 md:grid-cols-[1.5fr_1.2fr_0.8fr_0.7fr] md:px-6"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <PropertyPhoto
@@ -123,7 +125,7 @@ export default function CompanyDashboardPage() {
                 {property.city}
                 {property.town}
               </p>
-              <p className="font-display text-[14px] font-medium text-ink">{formatPrice(property.price)}</p>
+              <p className="font-display text-[14px] font-semibold tabular-nums text-ink">{formatPrice(property.price)}</p>
               <div>
                 <Badge tone={statusTone(property.status)}>{statusLabel(property.status)}</Badge>
               </div>

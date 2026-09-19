@@ -45,7 +45,7 @@ export default function OwnersPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[1200px]">
+    <div className="w-full">
       <PageHeader
         kicker="運営"
         title="オーナーアカウント管理"
@@ -54,7 +54,7 @@ export default function OwnersPage() {
       />
 
       <Card className="mt-5 space-y-4 p-5">
-        <h2 className="text-[16px] font-bold text-ink">新規発行</h2>
+        <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">新規発行</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Field label="氏名" required>
             <Input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} />
@@ -74,8 +74,8 @@ export default function OwnersPage() {
           </Field>
         </div>
         <div className="space-y-1.5">
-          <p className="text-[13px] font-medium text-slate-600">
-            管理できる物件<span className="ml-1 text-aqua-700">*</span>
+          <p className="text-[13px] font-medium text-muted">
+            管理できる物件<span className="ml-1 text-ink">*</span>
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {state.properties.map((property) => {
@@ -85,10 +85,10 @@ export default function OwnersPage() {
                   key={property.id}
                   type="button"
                   onClick={() => toggleProperty(property.id)}
-                  className={`rounded-xl border px-3 py-2.5 text-left text-sm transition ${
+                  className={`rounded-[18px] border px-3 py-2.5 text-left text-sm transition ${
                     checked
-                      ? "border-aqua-300 bg-aqua-50 text-aqua-800"
-                      : "border-slate-200 bg-white text-ink hover:bg-slate-50"
+                      ? "border-ink bg-canvas text-ink"
+                      : "border-hairline bg-white text-ink hover:bg-canvas"
                   }`}
                 >
                   <p className="font-semibold">{property.buildingName}</p>
@@ -108,15 +108,15 @@ export default function OwnersPage() {
       </Card>
 
       <Card className="mt-5 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
-          <h2 className="text-[16px] font-bold text-ink">利用者一覧</h2>
+        <div className="flex items-center justify-between border-b border-hairline px-5 py-3">
+          <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">利用者一覧</h2>
           <p className="text-[13px] text-muted">
             利用中{" "}
             <span className="font-display font-semibold text-ink">{activeOwnerCount(state.owners)}</span>
             名
           </p>
         </div>
-        <div className="hidden grid-cols-[1.1fr_1.2fr_1fr_0.6fr_0.9fr] items-center border-b border-slate-100 bg-slate-50/80 px-5 py-3 text-[12px] font-semibold text-slate-500 md:grid">
+        <div className="hidden grid-cols-[1.1fr_1.2fr_1fr_0.6fr_0.9fr] items-center border-b border-hairline bg-canvas px-5 py-3 text-[12px] font-medium text-muted md:grid">
           <span>氏名</span>
           <span>メールアドレス</span>
           <span>所属</span>
@@ -126,7 +126,7 @@ export default function OwnersPage() {
         {state.owners.map((owner) => (
           <div
             key={owner.id}
-            className="border-b border-slate-100 px-5 py-4 last:border-b-0 md:grid md:grid-cols-[1.1fr_1.2fr_1fr_0.6fr_0.9fr] md:items-center"
+            className="border-b border-hairline px-5 py-4 last:border-b-0 md:grid md:grid-cols-[1.1fr_1.2fr_1fr_0.6fr_0.9fr] md:items-center"
           >
             <div>
               <p className="font-semibold text-ink">{owner.name}</p>
@@ -137,8 +137,8 @@ export default function OwnersPage() {
                   .join("、") || "物件未設定"}
               </p>
             </div>
-            <p className="mt-1 text-sm text-slate-600 md:mt-0">{owner.email}</p>
-            <p className="mt-1 text-sm text-slate-600 md:mt-0">{owner.affiliation}</p>
+            <p className="mt-1 text-sm text-muted md:mt-0">{owner.email}</p>
+            <p className="mt-1 text-sm text-muted md:mt-0">{owner.affiliation}</p>
             <div className="mt-2 md:mt-0">
               <Badge tone={ownerStatusTone(owner.status)}>{ownerStatusLabel(owner.status)}</Badge>
             </div>

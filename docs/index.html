@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>仕様書 — AQUALINE</title>
+    <meta name="description" content="未公開マンションを公式LINEで先出し配信するAQUALINEのシステム仕様書です。" />
+    <link rel="stylesheet" href="./styles.css?v=8" />
+    <style>
+      nav { width: 112px !important; padding-left: 6px !important; padding-right: 6px !important; }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#overview">本文へ移動</a>
+    <div class="backdrop" data-nav-close></div>
+    <header class="topbar">
+      <button class="menu-btn" type="button" data-nav-toggle aria-label="目次を開く" aria-expanded="false">
+        <span></span>
+      </button>
+      <p class="topbar-kicker">AQUALINE / 仕様書</p>
+    </header>
+    <div class="wrap">
+      <nav aria-label="仕様書の目次">
+        <div class="brand">AQUALINE / 仕様書</div>
+        <strong>仕様書</strong>
+        <a href="#overview">システム概要</a>
+        <a href="#flow">業務フロー</a>
+        <a href="#roles">権限・ユーザー</a>
+        <a href="#screens">画面一覧</a>
+        <a href="#details">画面の詳細</a>
+        <a href="#features">主要機能</a>
+        <a href="#status">ステータス</a>
+        <a href="#data">データ仕様</a>
+        <a href="#integrations">外部連携</a>
+        <a href="#stack">技術構成</a>
+        <a href="#mock">モック／未実装</a>
+        <a href="#notes">制約・注意</a>
+      </nav>
+
+      <main>
+        <span class="tag">仕様書 / 2026-09-20</span>
+        <h1>AQUALINE システム仕様書</h1>
+        <p class="lead">未公開マンションを公式LINEで先出し配信するモックです。目的、役割、画面、流れ、実装済みとモックの切り分けをまとめます。APIキーやパスワードは書かない。</p>
+
+        <div class="cards">
+          <div class="card">
+            <div class="k">実行</div>
+            <div class="v">Vite 8 / React 19 / React Router 7</div>
+          </div>
+          <div class="card">
+            <div class="k">保存</div>
+            <div class="v"><code>aqualine-store-v2</code></div>
+          </div>
+          <div class="card">
+            <div class="k">公開</div>
+            <div class="v">Netlify（<code>dist</code>）</div>
+          </div>
+          <div class="card">
+            <div class="k">状態</div>
+            <div class="v wait">モック / 実データ未接続</div>
+          </div>
+        </div>
+
+        <h2 id="overview">1. システム概要</h2>
+        <p class="lead">SUUMOなどへ一般公開する前の短い期間を使い、既存のLINE会員へ先に物件を届けます。</p>
+        <p>
+          AQUALINEは、ポータル掲載前の未公開マンションを管理会社が登録し、運営が確認・目隠ししたうえで公式LINEへ配信し、反応した会員をリスト化するツールです。この文書は、初めて見る人が全体像を把握するための仕様書です。
+        </p>
+        <div class="note">
+          <strong>いま見ているのはモック環境です</strong>
+          <span>ログインは担当者をクリックするだけです。公式LINEへの実送信、会員の実データ、サーバー側の保存はありません。</span>
+        </div>
+        <div class="grid-3">
+          <article class="card">
+            <p class="kicker">ROLE</p>
+            <h3>管理会社</h3>
+            <p>未公開物件を登録し、運営へ送ります。自社物件だけが見えます。</p>
+          </article>
+          <article class="card">
+            <p class="kicker">ROLE</p>
+            <h3>運営</h3>
+            <p>内容確認、番地などの目隠し、配信形式の指定、LINE配信、反応と会員の確認、オーナー発行を行います。</p>
+          </article>
+          <article class="card">
+            <p class="kicker">ROLE</p>
+            <h3>オーナー</h3>
+            <p>運営が割り当てた物件だけを、管理会社と同じ画面で確認します。新規登録はできません。</p>
+          </article>
+        </div>
+
+        <h2 id="flow">2. システム全体の業務フロー</h2>
+        <p class="lead">物件は管理会社から始まり、運営の確認を経て配信されます。修正が必要なら差戻します。</p>
+        <div class="flow">
+          <div class="flow-row">
+            <div class="step"><b>1. 物件登録</b><span>管理会社が未公開マンションを入力</span></div>
+            <div class="arrow" aria-hidden="true">→</div>
+            <div class="step"><b>2. 下書き保存</b><span>必須以外は後から補える</span></div>
+            <div class="arrow" aria-hidden="true">→</div>
+            <div class="step"><b>3. 運営へ送信</b><span>確認待ちになり、以降は編集ロック</span></div>
+          </div>
+          <div class="flow-row">
+            <div class="step"><b>4. 確認・目隠し</b><span>番地などを配信文から隠す</span></div>
+            <div class="arrow" aria-hidden="true">→</div>
+            <div class="step"><b>5. LINE配信</b><span>実送信せず、反応を自動で足す</span></div>
+            <div class="arrow" aria-hidden="true">→</div>
+            <div class="step"><b>6. 反応確認</b><span>いいね／スタンプ／テキストを一覧化</span></div>
+          </div>
+          <div class="branch">
+            <b>分岐：差戻し</b>
+            <span>情報が不足している場合、運営は確認待ちから差戻します。管理会社が直して再送信すると、再び確認待ちになります。差戻しではLINE配信は行われません。</span>
+          </div>
+        </div>
+
+        <h2 id="roles">3. 権限・ユーザー種別</h2>
+        <p class="lead">トップから入れるのは管理会社と運営だけです。オーナーは運営画面の「表示を確認」から入ります。</p>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>役割</th>
+              <th>入り方</th>
+              <th>見られるもの</th>
+              <th>できること</th>
+              <th>できないこと</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>管理会社</td>
+              <td>トップで田中／鈴木を選ぶ</td>
+              <td>自社物件だけ</td>
+              <td>登録、下書き保存、運営へ送信、自社の反応確認</td>
+              <td>他社物件、配信操作、会員・オーナー管理</td>
+            </tr>
+            <tr>
+              <td>運営</td>
+              <td>トップで泉担当を選ぶ</td>
+              <td>全物件、配信、反応、会員、オーナー</td>
+              <td>確認、目隠し、配信、差戻し、オーナー発行</td>
+              <td>管理会社としての物件新規登録画面は使わない</td>
+            </tr>
+            <tr>
+              <td>オーナー</td>
+              <td>オーナー管理の「表示を確認」</td>
+              <td>割り当て物件だけ</td>
+              <td>割り当て物件の閲覧（ロック中は編集不可）</td>
+              <td>物件の新規登録、配信、会員管理。招待中・停止中は入れない</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h2 id="screens">4. 画面一覧</h2>
+        <p class="lead">不明なURLはトップへ戻ります。権限が違うと、運営は <code>/admin</code>、それ以外は <code>/company</code> へ移されます。</p>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>画面名</th>
+              <th>URL</th>
+              <th>利用者</th>
+              <th>目的</th>
+              <th>主な機能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>デモ開始</td>
+              <td><code>/</code></td>
+              <td>全員</td>
+              <td>役割を選んでデモを始める</td>
+              <td>管理会社／運営の選択。ログイン不要</td>
+            </tr>
+            <tr>
+              <td>ダッシュボード</td>
+              <td><code>/company</code></td>
+              <td>管理会社・オーナー</td>
+              <td>自社（または割当）物件の状況を見る</td>
+              <td>件数、反応推移、確認待ち、最近の物件</td>
+            </tr>
+            <tr>
+              <td>物件一覧</td>
+              <td><code>/company/properties</code></td>
+              <td>管理会社・オーナー</td>
+              <td>物件を状態で探す</td>
+              <td>絞り込み、カード表示、登録へ進む（管理会社のみ）</td>
+            </tr>
+            <tr>
+              <td>物件を登録</td>
+              <td><code>/company/properties/new</code></td>
+              <td>管理会社</td>
+              <td>新しい未公開物件を入れる</td>
+              <td>入力、下書き保存、運営へ送信</td>
+            </tr>
+            <tr>
+              <td>物件詳細</td>
+              <td><code>/company/properties/:id</code></td>
+              <td>管理会社・オーナー</td>
+              <td>内容の確認と修正</td>
+              <td>編集、保存、送信。ロック時は閲覧のみ</td>
+            </tr>
+            <tr>
+              <td>ダッシュボード</td>
+              <td><code>/admin</code></td>
+              <td>運営</td>
+              <td>確認と配信の全体を見る</td>
+              <td>KPI、反応グラフ、確認待ち、最近の配信</td>
+            </tr>
+            <tr>
+              <td>確認待ち</td>
+              <td><code>/admin/inbox</code></td>
+              <td>運営</td>
+              <td>届いた物件を開く</td>
+              <td>カード／一覧切替、確認画面へ</td>
+            </tr>
+            <tr>
+              <td>物件確認</td>
+              <td><code>/admin/properties/:id</code></td>
+              <td>運営</td>
+              <td>目隠しと配信の最終確認</td>
+              <td>目隠し、形式、プレビュー、配信、差戻し</td>
+            </tr>
+            <tr>
+              <td>配信履歴</td>
+              <td><code>/admin/broadcasts</code></td>
+              <td>運営</td>
+              <td>配信済み物件をたどる</td>
+              <td>カード／一覧切替、詳細へ</td>
+            </tr>
+            <tr>
+              <td>配信詳細</td>
+              <td><code>/admin/broadcasts/:id</code></td>
+              <td>運営</td>
+              <td>送った内容と反応を見る</td>
+              <td>プレビュー、反応の種類絞り込み</td>
+            </tr>
+            <tr>
+              <td>反応リスト</td>
+              <td><code>/admin/reactions</code></td>
+              <td>運営</td>
+              <td>反応した会員を探す</td>
+              <td>物件・種類の絞り込み、表、CSVコピー</td>
+            </tr>
+            <tr>
+              <td>LINE会員</td>
+              <td><code>/admin/members</code></td>
+              <td>運営</td>
+              <td>配信対象の会員を見る</td>
+              <td>代表12名の一覧。件数は248名と表示</td>
+            </tr>
+            <tr>
+              <td>オーナーアカウント管理</td>
+              <td><code>/admin/owners</code></td>
+              <td>運営</td>
+              <td>オーナーを発行し、見える物件を決める</td>
+              <td>発行、利用開始／停止、表示確認</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h2 id="details">5. 各画面の詳細仕様</h2>
+        <p class="lead">主要画面の表示、操作、状態による違いです。</p>
+
+        <article class="card screen">
+          <h3>デモ開始 <code>/</code></h3>
+          <dl class="dl">
+            <div><dt>表示</dt><dd>AQUALINEの説明、3ステップ、管理会社2名・運営1名の開始ボタン。「デモ環境・実データ未接続」。</dd></div>
+            <div><dt>操作</dt><dd>担当者の「開始／開く」でその役割になり、管理会社は <code>/company</code>、運営は <code>/admin</code> へ進みます。</dd></div>
+            <div><dt>権限</dt><dd>パスワードはありません。オーナーはこの画面からは入れません。</dd></div>
+          </dl>
+        </article>
+
+        <article class="card screen">
+          <h3>管理会社ダッシュボード <code>/company</code></h3>
+          <dl class="dl">
+            <div><dt>表示</dt><dd>下書き / 差戻し、確認待ち、配信済み、反応数。反応推移、種類別内訳、確認待ちリスト、最近の物件。</dd></div>
+            <div><dt>操作</dt><dd>管理会社だけ「物件を登録」が出ます。各カード・リストから物件へ進めます。</dd></div>
+            <div><dt>権限</dt><dd>オーナーは同じ画面を見ますが、割り当て物件だけが集計されます。登録ボタンは出ません。</dd></div>
+          </dl>
+        </article>
+
+        <article class="card screen">
+          <h3>物件登録・詳細 <code>/company/properties/...</code></h3>
+          <dl class="dl">
+            <div><dt>表示</dt><dd>基本情報、スペック、アピール、写真（用意された画像から選択）。差戻し時は理由を表示。</dd></div>
+            <div><dt>必須</dt><dd>マンション名／市区町村／町名／最寄駅／価格。これ以外は任意です。</dd></div>
+            <div><dt>ボタン</dt><dd>下書き保存は状態を変えずに残します。運営へ送信は確認待ちにし、以降は編集できません。未保存のとき「物件一覧へ戻る」を押すと確認が出ます。</dd></div>
+            <div><dt>ロック</dt><dd>確認待ち・配信準備・配信済みは閲覧のみ。直すには運営の差戻しが必要です。</dd></div>
+          </dl>
+        </article>
+
+        <article class="card screen">
+          <h3>運営ダッシュボード <code>/admin</code></h3>
+          <dl class="dl">
+            <div><dt>表示</dt><dd>確認待ち、配信済み、反応、LINE会員（12+236）、オーナー管理者数（利用中のみ）。反応グラフと最近の配信表。</dd></div>
+            <div><dt>操作</dt><dd>各KPIとリストから、確認待ち・配信詳細へ移動できます。</dd></div>
+          </dl>
+        </article>
+
+        <article class="card screen">
+          <h3>確認待ち <code>/admin/inbox</code></h3>
+          <dl class="dl">
+            <div><dt>表示</dt><dd>確認待ち・配信準備・差戻しの物件。カードまたは一覧。</dd></div>
+            <div><dt>操作</dt><dd>「カード／一覧」で見た目を切り替えます。行やカードを開くと物件確認へ進みます。</dd></div>
+          </dl>
+        </article>
+
+        <article class="card screen">
+          <h3>物件確認・配信 <code>/admin/properties/:id</code></h3>
+          <dl class="dl">
+            <div><dt>表示</dt><dd>元データ、目隠しトグル、配信形式、添えるメッセージ、LINE風プレビュー。</dd></div>
+            <div><dt>確認内容を保存</dt><dd>目隠しと形式を保存します。確認待ちなら配信準備になります。</dd></div>
+            <div><dt>公式LINEで配信</dt><dd>保存したうえで配信履歴を作り、数件の反応を自動追加し、配信詳細へ移動します。実LINEには送りません。配信済みは押せません。</dd></div>
+            <div><dt>差し戻す</dt><dd>理由必須。LINEには出しません。管理会社側で理由が見えます。</dd></div>
+          </dl>
+        </article>
+
+        <article class="card screen">
+          <h3>配信履歴・詳細、反応、会員、オーナー</h3>
+          <dl class="dl">
+            <div><dt>配信履歴</dt><dd>カード／一覧。詳細ではプレビューと反応の種類絞り込み。</dd></div>
+            <div><dt>反応リスト</dt><dd>表示名／物件／種類／内容／日時。物件と種類で絞り込み。CSVはクリップボードへコピー。</dd></div>
+            <div><dt>LINE会員</dt><dd>代表12名。流入と登録日。配信対象は常に248名と表示。</dd></div>
+            <div><dt>オーナー</dt><dd>氏名・メール・所属・担当物件で発行（招待中）。利用開始／停止。「表示を確認」でオーナー画面へ。</dd></div>
+          </dl>
+        </article>
+
+        <h2 id="features">6. 主要機能</h2>
+        <div class="grid-2">
+          <article class="card">
+            <h3>物件登録／下書き保存</h3>
+            <p>管理会社が未公開物件を入力します。必須が揃っていなくても下書きとして残せます。写真は用意済みURLから選びます。</p>
+          </article>
+          <article class="card">
+            <h3>運営への送信</h3>
+            <p>必須が揃うと送信できます。状態は確認待ちになり、管理会社側は編集できなくなります。</p>
+          </article>
+          <article class="card">
+            <h3>目隠し</h3>
+            <p>番地、部屋番号、マンション名、価格、管理費・積立、申し送りを配信文から隠せます。運営の確認画面では元データが見えます。</p>
+          </article>
+          <article class="card">
+            <h3>配信形式とプレビュー</h3>
+            <p>箇条書き／カード／PDFから選びます。右（または下）にLINE風の見本が出ます。実トーク画面ではありません。PDFはファイル名の表示だけです。</p>
+          </article>
+          <article class="card">
+            <h3>差戻し</h3>
+            <p>理由を書いて管理会社へ返します。LINE配信はしません。管理会社は理由を見て直し、再送信します。</p>
+          </article>
+          <article class="card">
+            <h3>配信履歴と反応</h3>
+            <p>配信済み物件、人数、反応件数を残します。反応はいいね／スタンプ／テキストです。配信直後はデモ用に数件入ります。</p>
+          </article>
+          <article class="card">
+            <h3>LINE会員</h3>
+            <p>公式LINE登録者の見本12名を出します。KPIと画面上の配信対象は248名です（12＋236の仮加算）。</p>
+          </article>
+          <article class="card">
+            <h3>オーナーと表示切替</h3>
+            <p>オーナーを発行し、見える物件を指定します。確認待ちと配信履歴はカード／一覧を切り替えられ、選択は両画面で共有されます。</p>
+          </article>
+        </div>
+
+        <h2 id="status">7. ステータス</h2>
+        <p class="lead">通常は左から右へ進みます。確認待ちからは差戻しも選べます。</p>
+        <div class="status" aria-label="通常の進行">
+          <span class="pill draft">下書き</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="pill wait">確認待ち</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="pill ready">配信準備</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="pill sent">配信済み</span>
+        </div>
+        <div class="status" aria-label="差戻し">
+          <span class="pill wait">確認待ち</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="pill back">差戻し</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="pill wait">再送信で確認待ち</span>
+        </div>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>状態</th>
+              <th>いつなるか</th>
+              <th>管理会社</th>
+              <th>運営</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>下書き</td>
+              <td>新規作成、または保存のみ</td>
+              <td>編集・送信できる</td>
+              <td>確認待ち一覧には出ない</td>
+            </tr>
+            <tr>
+              <td>確認待ち</td>
+              <td>運営へ送信した直後</td>
+              <td>ロック。編集不可</td>
+              <td>確認、保存、配信、差戻し</td>
+            </tr>
+            <tr>
+              <td>配信準備</td>
+              <td>運営が確認内容を保存</td>
+              <td>ロック</td>
+              <td>配信できる。確認待ち一覧にも残る</td>
+            </tr>
+            <tr>
+              <td>配信済み</td>
+              <td>「公式LINEで配信」後</td>
+              <td>ロック</td>
+              <td>再配信不可。履歴と反応を見る</td>
+            </tr>
+            <tr>
+              <td>差戻し</td>
+              <td>運営が理由付きで返す</td>
+              <td>再編集・再送信できる</td>
+              <td>確認待ち一覧に残る</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h2 id="data">8. データ仕様</h2>
+        <p class="lead">サーバーは使わず、操作したブラウザの localStorage にだけ残ります。</p>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>キー</th>
+              <th>内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aqualine-store-v2</code></td>
+              <td>物件、配信、反応、オーナー、いまのユーザー。会員一覧は起動のたびに初期12名へ戻します。</td>
+            </tr>
+            <tr>
+              <td><code>aqualine-sidebar</code></td>
+              <td>左メニューの開閉。</td>
+            </tr>
+            <tr>
+              <td><code>aqualine.catalogView</code></td>
+              <td>確認待ちと配信履歴のカード／一覧。両画面で共有。</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <h3>保持される範囲</h3>
+        <p>同じPC・同じブラウザだけです。シークレットモード、別端末、データの削除で初期状態に戻ります。JSONが壊れているとキーを消して初期化します。</p>
+        <h3>初期データ（seed）</h3>
+        <ul>
+          <li>管理会社：田中（サンライズ）、鈴木（港区アセット）</li>
+          <li>運営：泉担当</li>
+          <li>物件4件：白金台（確認待ち）、桜新町（配信済み）、浜松町（下書き）、品川（確認待ち）</li>
+          <li>配信1件（桜新町）、反応9件、会員12名</li>
+          <li>オーナー：斎藤（利用中・桜新町と浜松町）、近藤（招待中）、森（停止中）</li>
+        </ul>
+        <p>以前の操作がブラウザに残っていると、画面の件数は初期と違うことがあります。</p>
+
+        <h2 id="integrations">9. 外部サービス・連携</h2>
+        <p class="lead">見た目のために使っているものと、つながっているように見せているだけのものを分けます。</p>
+        <div class="grid-2">
+          <article class="card">
+            <p class="kicker">実際に使っている</p>
+            <h3>Netlify ／ Unsplash</h3>
+            <ul>
+              <li>Netlifyは静的ファイルの公開先です。APIはありません。</li>
+              <li>物件写真は Unsplash の画像URLです。自社ストレージではありません。</li>
+            </ul>
+          </article>
+          <article class="card">
+            <p class="kicker">モックのみ</p>
+            <h3>公式LINE ／ 会員 ／ メール</h3>
+            <ul>
+              <li>LINE Messaging APIはありません。配信ボタンは画面内の状態を変えるだけです。</li>
+              <li>会員・反応の受信（Webhook）はありません。</li>
+              <li>オーナーのメールは保存するだけで、招待メールは送りません。</li>
+              <li>自前のREST API・データベースはありません。</li>
+            </ul>
+          </article>
+        </div>
+
+        <h2 id="stack">10. 技術構成</h2>
+        <p class="lead">画面の動きは Vite のシングルページアプリです。リポジトリに Next.js の名残はありますが、起動には使いません。</p>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>分類</th>
+              <th>採用</th>
+              <th>備考</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>実行</td>
+              <td>Vite 8、React 19、React Router 7</td>
+              <td><code>npm run dev</code> で 127.0.0.1:3000</td>
+            </tr>
+            <tr>
+              <td>言語</td>
+              <td>TypeScript</td>
+              <td>Node 20以上24未満</td>
+            </tr>
+            <tr>
+              <td>UI</td>
+              <td>Tailwind CSS 4、Lucide</td>
+              <td>色は白・黒・グレー。LINE緑は配信まわりのみ</td>
+            </tr>
+            <tr>
+              <td>状態</td>
+              <td>React Context + localStorage</td>
+              <td>キーは <code>aqualine-store-v2</code></td>
+            </tr>
+            <tr>
+              <td>公開</td>
+              <td>Netlify（<code>dist</code>）</td>
+              <td>深いURLはすべて <code>index.html</code> に返します</td>
+            </tr>
+            <tr>
+              <td>使っていない残ファイル</td>
+              <td>Next.js 16、<code>next.config.ts</code>、一部 layout</td>
+              <td>仕様上の実行基盤は Vite です</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h2 id="mock">11. モック／未実装機能</h2>
+        <div class="grid-2">
+          <article class="card">
+            <h3>未実装</h3>
+            <ul>
+              <li>パスワードログイン、サーバー側の権限、監査ログ</li>
+              <li>LINEの実配信とWebhookでの反応受信</li>
+              <li>会員の実データ（12名表示、248名は仮）</li>
+              <li>PDF実ファイル、画像のアップロード</li>
+              <li>メール招待</li>
+              <li>複数人・複数端末での同時編集</li>
+              <li>本格的な検索・ページング</li>
+              <li>READMEにあるリセットボタン（関数はあるが画面にない）</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>デモとしての演出</h3>
+            <ul>
+              <li>配信後、いいね2件と🏠スタンプ1件が時間差で入ります</li>
+              <li>配信人数は会員12名＋236の248名です</li>
+              <li>LINEプレビューはトークの見本であり、実画面ではありません</li>
+              <li>トップに「ログイン不要」「実データ未接続」と出します</li>
+            </ul>
+          </article>
+        </div>
+        <div class="warn">
+          <strong>本番接続はしていません</strong>
+          <span>「公式LINEで配信」を押しても実際のLINEには届きません。データは操作したブラウザの localStorage にだけ残ります。</span>
+        </div>
+
+        <h2 id="notes">12. 制約・注意事項</h2>
+        <div class="card">
+          <ol>
+            <li>本番システムではなく、操作確認用のモックです。</li>
+            <li>「公式LINEで配信」を押しても、実際のLINEには届きません。</li>
+            <li>データは操作したブラウザにしか残りません。消す・別の端末では初期状態です。</li>
+            <li>会員一覧は再読み込みのたびに初期12名へ戻ります。248名は仮の加算です。</li>
+            <li>目隠しは配信文とプレビューに効きます。運営の確認画面では元データが見えます。</li>
+            <li>管理会社は送信後に編集できません。修正は運営の差戻しが必要です。</li>
+            <li>オーナーはトップから入れません。運営の「表示を確認」経由です。招待中・停止中は入れません。</li>
+            <li>確認待ち一覧には、差戻し済みの物件も含まれます。</li>
+            <li>カード／一覧の選択は、確認待ちと配信履歴で共有されます。</li>
+            <li>実行基盤は Vite のSPAです。Next.jsのファイルが残っていても、起動には使いません。</li>
+            <li>深いURLを直接開くには、静的ホスト側で全パスを <code>index.html</code> に返す設定が必要です。</li>
+            <li>写真は Unsplash に依存します。オフラインやリンク切れでは画像が出ないことがあります。</li>
+          </ol>
+        </div>
+
+        <footer>
+          更新 2026-09-20　AQUALINE　社内用。本体アプリの画面やデータを変更するものではありません。
+        </footer>
+      </main>
+    </div>
+    <script src="./nav.js"></script>
+  </body>
+</html>

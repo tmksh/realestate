@@ -1,6 +1,6 @@
 import { formatDateTime, reactionLabel } from "@/lib/format";
 import type { Member, Property, Reaction } from "@/lib/types";
-import { Card } from "./ui";
+import { Avatar, Card, tableHeadClass, tableRowClass } from "./ui";
 
 function reactionContent(reaction: Reaction) {
   if (reaction.type === "text") return reaction.message || "—";
@@ -27,9 +27,7 @@ export function ReactionList({
 
   return (
     <Card className="overflow-hidden">
-      <div
-        className={`hidden h-11 items-center border-b border-slate-100 bg-slate-50/70 px-5 text-[12px] font-semibold text-slate-500 md:grid md:px-6 ${cols}`}
-      >
+      <div className={`${tableHeadClass} ${cols}`}>
         <span>表示名</span>
         {mutePropertyName ? null : <span>物件</span>}
         <span>種類</span>
@@ -40,34 +38,26 @@ export function ReactionList({
         const member = memberMap[reaction.memberId];
         const property = propertyMap[reaction.propertyId];
         return (
-          <div
-            key={reaction.id}
-            className={`border-b border-slate-100 px-5 py-3.5 last:border-b-0 md:grid md:min-h-16 md:items-center md:px-6 ${cols}`}
-          >
+          <div key={reaction.id} className={`${tableRowClass} ${cols}`}>
             <div className="flex items-center gap-3">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold text-white"
-                style={{ background: `hsl(${member?.hue ?? 190} 38% 52%)` }}
-              >
-                {member?.initial ?? "?"}
-              </div>
+              <Avatar name={member?.displayName ?? "?"} hue={member?.hue} />
               <div className="min-w-0">
                 <p className="text-[15px] font-semibold text-ink">{member?.displayName ?? "不明な会員"}</p>
-                <p className="mt-0.5 font-display text-[12px] text-slate-400">{member?.lineId ?? "—"}</p>
+                <p className="mt-0.5 font-display text-[12px] text-faint">{member?.lineId ?? "—"}</p>
               </div>
             </div>
             {mutePropertyName ? null : (
-              <p className="mt-2 truncate pl-[52px] text-[13px] text-slate-600 md:mt-0 md:pl-0">
+              <p className="mt-2 truncate pl-[52px] text-[13px] text-muted md:mt-0 md:pl-0">
                 {property?.buildingName ?? "物件"}
               </p>
             )}
-            <p className="mt-2 pl-[52px] text-[13px] text-slate-600 md:mt-0 md:pl-0">
+            <p className="mt-2 pl-[52px] text-[13px] text-muted md:mt-0 md:pl-0">
               {reactionLabel(reaction.type)}
             </p>
             <p className="mt-2 truncate pl-[52px] text-[13px] text-ink md:mt-0 md:pl-0">
               {reactionContent(reaction)}
             </p>
-            <p className="mt-2 pl-[52px] font-display text-[13px] text-slate-500 md:mt-0 md:pl-0">
+            <p className="mt-2 pl-[52px] font-display text-[13px] text-faint md:mt-0 md:pl-0">
               {formatDateTime(reaction.createdAt)}
             </p>
           </div>

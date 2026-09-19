@@ -75,10 +75,10 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-[13px] font-medium text-slate-600">{property.companyName}</p>
+              <p className="text-[13px] font-medium text-muted">{property.companyName}</p>
               <Badge tone={statusTone(property.status)}>{statusLabel(property.status)}</Badge>
             </div>
-            <h1 className="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight text-ink sm:text-[1.875rem]">
+            <h1 className="mt-1 font-display text-[1.75rem] font-bold leading-tight tracking-[-0.04em] text-ink sm:text-[2rem]">
               {property.buildingName}
             </h1>
             <p className="mt-1.5 text-[13px] text-muted">
@@ -88,7 +88,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
         </div>
 
         <Card className="overflow-hidden">
-          <div className="relative h-[300px] overflow-hidden bg-slate-100 md:h-[340px]">
+          <div className="relative h-[300px] overflow-hidden bg-canvas md:h-[340px]">
             {property.images[0] ? (
               <img
                 src={property.images[0]}
@@ -96,7 +96,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
                 className="property-photo absolute inset-0 h-full w-full"
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
+              <div className="flex h-full flex-col items-center justify-center gap-2 bg-canvas text-faint">
                 <ImageOff className="h-5 w-5" />
                 <p className="text-[13px] font-medium">画像未設定</p>
               </div>
@@ -118,7 +118,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
             <Info label="最寄" value={`${property.station} 徒歩${property.walkMinutes}分`} />
             <Info label="築年" value={`${property.builtYear}年${property.builtMonth}月`} />
             <div className="sm:col-span-2">
-              <p className="text-[13px] font-medium text-slate-500">アピールポイント</p>
+              <p className="text-[13px] font-medium text-muted">アピールポイント</p>
               <ul className="mt-1.5 list-disc space-y-1 pl-5 text-[14.5px] leading-[1.65] text-ink">
                 {property.highlights.map((item) => (
                   <li key={item}>{item}</li>
@@ -126,8 +126,8 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
               </ul>
             </div>
             {property.notes ? (
-              <div className="sm:col-span-2 rounded-[8px] bg-slate-50 px-4 py-2.5">
-                <p className="text-[13px] font-medium text-slate-500">管理会社からの申し送り</p>
+              <div className="sm:col-span-2 rounded-[16px] bg-canvas px-4 py-2.5">
+                <p className="text-[13px] font-medium text-muted">管理会社からの申し送り</p>
                 <p className="mt-1 text-sm leading-6 text-ink">{property.notes}</p>
               </div>
             ) : null}
@@ -137,11 +137,11 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
         <Card className="space-y-5 p-6">
           <div>
             <div className="flex items-center gap-2">
-              <EyeOff className="h-4 w-4 text-aqua-600" />
-              <h2 className="text-[18px] font-bold text-ink">詳細の目隠し</h2>
+              <EyeOff className="h-4 w-4 text-muted" />
+              <h2 className="font-display text-[18px] font-bold tracking-[-0.03em] text-ink">詳細の目隠し</h2>
             </div>
             <p className="mt-2 text-sm leading-6 text-muted">配信時に隠す項目を選んでください。</p>
-            <p className="mt-1 text-[13px] leading-5 text-slate-500">
+            <p className="mt-1 text-[13px] leading-5 text-faint">
               変更内容は右のプレビューにすぐ反映されます。
             </p>
           </div>
@@ -153,16 +153,16 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
                   key={option.id}
                   type="button"
                   onClick={() => toggleMask(option.id)}
-                  className={`flex min-h-11 items-center justify-between gap-2 rounded-[8px] px-3 text-left text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-400 focus-visible:ring-offset-1 ${
+                  className={`flex min-h-11 items-center justify-between gap-2 rounded-[18px] px-3 text-left text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-1 ${
                     active
-                      ? "bg-aqua-50 text-aqua-700 hover:bg-aqua-100"
-                      : "border border-slate-200 bg-white text-ink hover:border-slate-300 hover:bg-slate-50"
+                      ? "bg-ink text-white hover:bg-ink-soft"
+                      : "border border-hairline bg-white text-ink hover:bg-canvas"
                   }`}
                 >
                   <span className="min-w-0 truncate font-medium">{option.label}</span>
                   <span
-                    className={`flex shrink-0 items-center gap-1 text-[12px] font-semibold ${
-                      active ? "text-aqua-700" : "text-slate-500"
+                    className={`flex shrink-0 items-center gap-1 text-[12px] font-medium ${
+                      active ? "text-white" : "text-muted"
                     }`}
                   >
                     {active ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -181,7 +181,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
           <p className="mt-1 text-[13px] leading-5 text-muted">
             実際のトーク画面ではなく、送る内容から作った見本です。
           </p>
-          <p className="mt-1 text-[13px] leading-5 text-slate-500">
+          <p className="mt-1 text-[13px] leading-5 text-faint">
             目隠し・配信形式・メッセージの変更がすぐに反映されます。
           </p>
         </div>
@@ -214,10 +214,10 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
       <div className="order-4 space-y-6 lg:col-span-2">
         <Card className="space-y-4 p-6">
           {alreadySent ? (
-            <p className="text-[13px] font-medium text-aqua-700">この物件は配信済みです。</p>
+            <p className="text-[13px] font-medium text-ink">この物件は配信済みです。</p>
           ) : null}
           <p className="text-sm leading-6 text-ink">プレビューを確認してから配信してください。</p>
-          <p className="text-[13px] leading-5 text-slate-500">
+          <p className="text-[13px] leading-5 text-faint">
             デモ環境のため、実際の公式LINEには送信されません。
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -260,7 +260,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
 
         {!alreadySent ? (
           <Card className="space-y-3 p-6">
-            <h2 className="text-[18px] font-bold text-ink">差戻し</h2>
+            <h2 className="font-display text-[18px] font-bold tracking-[-0.03em] text-ink">差戻し</h2>
             <p className="text-[13px] leading-5 text-muted">
               物件情報の修正が必要なときに使います。LINEには配信されません。
             </p>
@@ -298,7 +298,7 @@ function Info({
 }) {
   return (
     <div>
-      <p className="text-[13px] font-medium text-slate-500">{label}</p>
+      <p className="text-[13px] font-medium text-muted">{label}</p>
       <p
         className={
           emphasize

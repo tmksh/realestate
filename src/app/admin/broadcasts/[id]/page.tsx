@@ -41,12 +41,12 @@ export default function BroadcastDetailPage() {
 
       <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-6">
         <div className="flex items-center gap-2 text-[13px]">
-          <Calendar className="h-3.5 w-3.5 text-slate-400" />
+          <Calendar className="h-3.5 w-3.5 text-faint" />
           <span className="text-muted">配信日時</span>
           <span className="font-medium text-ink">{formatDateTime(broadcast.sentAt)}</span>
         </div>
         <div className="flex items-center gap-2 text-[13px]">
-          <Users className="h-3.5 w-3.5 text-slate-400" />
+          <Users className="h-3.5 w-3.5 text-faint" />
           <span className="text-muted">配信人数</span>
           <span className="font-medium text-ink">{broadcast.recipientCount}名</span>
         </div>
@@ -67,7 +67,7 @@ export default function BroadcastDetailPage() {
               <h2 className="text-[16px] font-bold text-ink">反応した会員</h2>
               <p className="mt-1 text-[13px] text-muted">種類で絞り込むと表示件数も変わります。</p>
             </div>
-            <p className="text-[15px] font-semibold text-slate-600">{reactions.length}件</p>
+            <p className="font-display text-[15px] font-semibold tabular-nums text-ink">{reactions.length}件</p>
           </div>
           <SegmentedControl
             value={type}

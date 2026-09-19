@@ -24,7 +24,7 @@ export default function CompanyPropertiesPage() {
   const canRegister = state.currentUser?.role === "company";
 
   return (
-    <div className="mx-auto max-w-[1200px] space-y-5">
+    <div className="w-full space-y-6">
       <PageHeader
         title="物件一覧"
         description={

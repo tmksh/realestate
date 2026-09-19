@@ -94,7 +94,7 @@ export default function ReactionsPage() {
             />
           </div>
         </div>
-        <p className="font-display text-[15px] font-semibold text-slate-600">{reactions.length}件</p>
+        <p className="font-display text-[15px] font-semibold tabular-nums text-ink">{reactions.length}件</p>
       </div>
 
       <div className="mt-5">

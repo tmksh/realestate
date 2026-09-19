@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, LayoutGrid, List } from "lucide-react";
+import { ArrowLeft, LayoutGrid, List, Radio } from "lucide-react";
 import type { ViewMode } from "@/lib/view-mode";
 
 type Tone = "neutral" | "warn" | "danger" | "info" | "success";
@@ -9,9 +9,47 @@ const toneClass: Record<Tone, string> = {
   neutral: "bg-canvas text-muted",
   warn: "bg-amber-50 text-amber-800",
   danger: "bg-rose-50 text-rose-700",
-  info: "bg-aqua-50 text-aqua-700",
-  success: "bg-emerald-50 text-emerald-800",
+  info: "bg-ink text-white",
+  success: "bg-line-wash text-[#047857]",
 };
+
+export const tableHeadClass =
+  "hidden h-11 items-center border-b border-hairline bg-canvas px-5 text-[12px] font-medium tracking-[0.02em] text-muted md:grid md:px-6";
+
+export const tableRowClass =
+  "block border-b border-hairline px-5 py-3.5 last:border-b-0 md:grid md:min-h-16 md:items-center md:px-6";
+
+export function BrandMark({ collapsed = false }: { collapsed?: boolean }) {
+  return (
+    <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"}`}>
+      <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-ink text-white">
+        <Radio className="h-3.5 w-3.5" />
+      </div>
+      {collapsed ? null : (
+        <p className="font-display text-[15px] font-semibold tracking-[-0.04em] text-ink">AQUALINE</p>
+      )}
+    </div>
+  );
+}
+
+export function Avatar({
+  name,
+  hue,
+  className = "h-10 w-10 text-[12px]",
+}: {
+  name: string;
+  hue?: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center rounded-full font-medium text-white ${className}`}
+      style={{ background: hue == null ? "var(--ink)" : `hsl(${hue} 22% 38%)` }}
+    >
+      {name.slice(0, 1)}
+    </div>
+  );
+}
 
 export function Badge({
   children,
@@ -22,7 +60,7 @@ export function Badge({
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium tracking-[0.04em] ${toneClass[tone]}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium tracking-[0.02em] ${toneClass[tone]}`}
     >
       {children}
     </span>
@@ -38,19 +76,17 @@ export function Button({
   variant?: "primary" | "secondary" | "ghost" | "danger" | "line";
 }) {
   const variants = {
-    primary:
-      "bg-ink text-white hover:bg-[#2a2a2a] disabled:bg-[#d1d5db] disabled:text-white",
+    primary: "bg-ink text-white hover:bg-ink-soft disabled:bg-[#d6d3d1] disabled:text-white",
     secondary:
-      "bg-white text-ink border border-hairline hover:bg-canvas disabled:bg-canvas disabled:text-[#b4aea6]",
+      "bg-white text-ink border border-hairline hover:bg-canvas disabled:bg-canvas disabled:text-faint",
     ghost: "bg-transparent text-muted hover:bg-white hover:text-ink",
-    danger:
-      "bg-[#b42318] text-white hover:bg-[#912018] disabled:bg-[#e7e4de] disabled:text-[#a39d95]",
-    line: "bg-line text-white hover:brightness-95 disabled:opacity-55",
+    danger: "bg-[#b42318] text-white hover:bg-[#912018] disabled:bg-canvas disabled:text-faint",
+    line: "bg-line text-white hover:bg-line-edge disabled:opacity-55",
   };
 
   return (
     <button
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-[18px] px-4 py-2 text-[13px] font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-400/70 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
       {...props}
     >
       {children}
@@ -73,16 +109,16 @@ export function Field({
     <label className="block space-y-1.5">
       <span className="block text-[13px] font-medium text-muted">
         {label}
-        {required ? <span className="ml-1 text-aqua-600">*</span> : null}
+        {required ? <span className="ml-1 text-ink">*</span> : null}
       </span>
       {children}
-      {hint ? <span className="block text-[12px] leading-5 text-muted">{hint}</span> : null}
+      {hint ? <span className="block text-[12px] leading-5 text-faint">{hint}</span> : null}
     </label>
   );
 }
 
 const inputClass =
-  "w-full min-h-11 rounded-[18px] border border-hairline bg-white px-3.5 py-2.5 text-[15px] text-ink outline-none transition placeholder:text-[#9ca3af] focus:border-aqua-400 focus:ring-4 focus:ring-[var(--ring)]";
+  "w-full min-h-11 rounded-[18px] border border-hairline bg-white px-3.5 py-2.5 text-[15px] text-ink outline-none transition placeholder:text-faint focus:border-ink/30 focus:ring-4 focus:ring-[var(--ring)]";
 
 export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${inputClass} ${className}`} {...props} />;
@@ -112,7 +148,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-[24px] border border-hairline bg-white shadow-[0_1px_0_rgba(17,17,17,0.03),0_8px_24px_rgba(17,17,17,0.04)] ${className}`}>
+    <div className={`rounded-[24px] border border-hairline bg-white shadow-[var(--shadow-card)] ${className}`}>
       {children}
     </div>
   );
@@ -130,18 +166,18 @@ export function StatCard({
   icon: ReactNode;
 }) {
   return (
-    <Card className="flex h-full min-h-[84px] min-w-0 flex-col justify-center px-4 py-3">
-      <div className="flex h-9 items-center gap-3">
+    <Card className="flex h-full min-h-[108px] min-w-0 flex-col justify-between px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <p className="font-display text-[1.7rem] font-semibold leading-none tabular-nums tracking-[-0.05em] text-ink">
+          {value}
+        </p>
         <span className="flex h-9 w-9 shrink-0 items-center justify-center [&>svg]:h-9 [&>svg]:w-9">
           {icon}
         </span>
-        <p className="font-display text-[1.35rem] font-medium leading-none tabular-nums tracking-[-0.04em] text-ink">
-          {value}
-        </p>
       </div>
-      <div className="mt-1 min-w-0 pl-12">
-        <p className="h-4 truncate text-[12px] font-medium leading-4 text-muted">{label}</p>
-        <p className="mt-0.5 h-[14px] truncate text-[10px] leading-[14px] text-muted" title={hint}>
+      <div className="mt-3 min-w-0">
+        <p className="truncate text-[13px] font-medium leading-4 text-ink">{label}</p>
+        <p className="mt-0.5 h-[14px] truncate text-[11px] leading-[14px] text-faint" title={hint}>
           {hint ?? "\u00a0"}
         </p>
       </div>
@@ -161,10 +197,8 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div
-      className={`rounded-[24px] border border-dashed border-hairline bg-white px-6 py-12 text-center ${className}`}
-    >
-      <p className="font-display text-lg font-medium tracking-tight text-ink">{title}</p>
+    <div className={`rounded-[24px] border border-dashed border-hairline bg-white px-6 py-14 text-center ${className}`}>
+      <p className="font-display text-lg font-semibold tracking-[-0.03em] text-ink">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-sm leading-[1.65] text-muted">{description}</p>
       {action ? <div className="mt-6">{action}</div> : null}
     </div>
@@ -187,12 +221,14 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        {kicker ? <p className="text-[11px] font-medium tracking-[0.08em] text-aqua-700">{kicker}</p> : null}
-        <h1 className="mt-1 font-display text-[1.7rem] font-bold leading-[1.15] tracking-[-0.035em] text-ink sm:text-[1.9rem]">
+        {kicker ? (
+          <p className="text-[11px] font-medium tracking-[0.08em] text-muted">{kicker}</p>
+        ) : null}
+        <h1 className="mt-1 font-display text-[1.75rem] font-bold leading-[1.12] tracking-[-0.04em] text-ink sm:text-[2rem]">
           {title}
         </h1>
         {description ? (
-          <p className={`mt-1.5 text-sm leading-6 text-muted ${descriptionClassName}`}>{description}</p>
+          <p className={`mt-2 text-sm leading-[1.65] text-muted ${descriptionClassName}`}>{description}</p>
         ) : null}
       </div>
       {action}
@@ -220,17 +256,17 @@ export function ConfirmDialog({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(22,20,18,0.35)] p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(12,10,9,0.32)] p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-title"
     >
-      <div className="w-full max-w-md rounded-[24px] border border-hairline bg-white p-5 shadow-[0_16px_40px_rgba(22,20,18,0.12)]">
-        <p id="confirm-title" className="font-display text-[17px] font-medium text-ink">
+      <div className="w-full max-w-md rounded-[24px] border border-hairline bg-white p-6 shadow-[var(--shadow-lift)]">
+        <p id="confirm-title" className="font-display text-[18px] font-semibold tracking-[-0.03em] text-ink">
           {title}
         </p>
         {description ? <p className="mt-2 text-sm leading-6 text-muted">{description}</p> : null}
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="secondary" onClick={onConfirm}>
             {confirmLabel}
           </Button>
@@ -256,7 +292,7 @@ export function BackLink({
     <Link
       to={to}
       onClick={onClick}
-      className="mb-4 inline-flex min-h-9 items-center gap-1.5 rounded-[18px] border border-hairline bg-white px-3.5 text-[13px] font-medium text-ink shadow-[0_1px_0_rgba(22,20,18,0.03)] transition hover:bg-canvas"
+      className="mb-4 inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline bg-white px-3.5 text-[13px] font-medium text-ink shadow-[var(--shadow-card)] transition hover:bg-canvas"
     >
       <ArrowLeft className="h-3.5 w-3.5" />
       {children}
@@ -274,7 +310,7 @@ export function SegmentedControl<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-1 rounded-[18px] bg-canvas p-1">
+    <div className="flex flex-wrap gap-1 rounded-full bg-canvas p-1">
       {options.map((option) => {
         const active = value === option.id;
         return (
@@ -283,12 +319,12 @@ export function SegmentedControl<T extends string>({
             type="button"
             onClick={() => onChange(option.id)}
             className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition ${
-              active ? "bg-white text-ink shadow-[0_1px_2px_rgba(22,20,18,0.06)]" : "text-muted hover:text-ink"
+              active ? "bg-white text-ink shadow-[var(--shadow-card)]" : "text-muted hover:text-ink"
             }`}
           >
             {option.label}
             {option.count != null ? (
-              <span className={active ? "text-ink" : "text-[#9ca3af]"}>{option.count}</span>
+              <span className={active ? "text-ink" : "text-faint"}>{option.count}</span>
             ) : null}
           </button>
         );
@@ -309,7 +345,7 @@ export function ViewToggle({
     { id: "list", label: "一覧", icon: List },
   ];
   return (
-    <div className="flex shrink-0 rounded-[18px] bg-canvas p-1" role="group" aria-label="表示切替">
+    <div className="flex shrink-0 rounded-full bg-canvas p-1" role="group" aria-label="表示切替">
       {options.map((option) => {
         const active = value === option.id;
         const Icon = option.icon;
@@ -319,7 +355,7 @@ export function ViewToggle({
             type="button"
             onClick={() => onChange(option.id)}
             className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition ${
-              active ? "bg-white text-ink shadow-[0_1px_2px_rgba(22,20,18,0.06)]" : "text-muted hover:text-ink"
+              active ? "bg-white text-ink shadow-[var(--shadow-card)]" : "text-muted hover:text-ink"
             }`}
             aria-pressed={active}
           >
@@ -329,5 +365,29 @@ export function ViewToggle({
         );
       })}
     </div>
+  );
+}
+
+export function SectionTitle({
+  children,
+  action,
+}: {
+  children: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="mb-4 flex items-center justify-between gap-3">
+      <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">{children}</h2>
+      {action}
+    </div>
+  );
+}
+
+export function MetaCount({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <p className="text-sm">
+      <span className="text-muted">{label}</span>
+      <span className="ml-2 font-display text-sm font-semibold tabular-nums text-ink">{value}</span>
+    </p>
   );
 }

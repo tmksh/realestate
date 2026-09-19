@@ -2,7 +2,7 @@
 
 import { Link } from "react-router-dom";
 import { PropertyCard, PropertyPhoto } from "@/components/PropertyCard";
-import { Badge, Card, EmptyState, PageHeader, ViewToggle } from "@/components/ui";
+import { Badge, Card, EmptyState, MetaCount, PageHeader, ViewToggle, tableHeadClass, tableRowClass } from "@/components/ui";
 import { formatPrice, statusLabel, statusTone } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useViewMode } from "@/lib/view-mode";
@@ -30,11 +30,8 @@ export default function AdminInboxPage() {
         />
       ) : (
         <>
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm">
-              <span className="text-muted">表示中</span>
-              <span className="ml-2 font-display text-sm font-semibold text-ink">{pending.length}件</span>
-            </p>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <MetaCount label="表示中" value={`${pending.length}件`} />
             <ViewToggle value={view} onChange={setView} />
           </div>
           {view === "card" ? (
@@ -44,13 +41,13 @@ export default function AdminInboxPage() {
                   key={property.id}
                   property={property}
                   href={`/admin/properties/${property.id}`}
-                  extra={<span className="text-[13px] font-medium text-slate-600">{property.companyName}</span>}
+                  extra={<span className="text-[13px] font-medium text-muted">{property.companyName}</span>}
                 />
               ))}
             </div>
           ) : (
             <Card className="mt-4 overflow-hidden">
-              <div className="hidden h-11 grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_120px_110px] items-center border-b border-slate-100 bg-slate-50/70 px-5 text-[12px] font-semibold text-slate-500 md:grid md:px-6">
+              <div className={`${tableHeadClass} md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_120px_110px]`}>
                 <span>物件</span>
                 <span>管理会社</span>
                 <span>価格</span>
@@ -60,7 +57,7 @@ export default function AdminInboxPage() {
                 <Link
                   key={property.id}
                   to={`/admin/properties/${property.id}`}
-                  className="block border-b border-slate-100 px-5 py-3.5 last:border-b-0 md:grid md:min-h-16 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_120px_110px] md:items-center md:px-6"
+                  className={`${tableRowClass} hover:bg-canvas/60 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_120px_110px]`}
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <PropertyPhoto
@@ -70,12 +67,12 @@ export default function AdminInboxPage() {
                     />
                     <div className="min-w-0">
                       <p className="truncate text-[15px] font-semibold text-ink">{property.buildingName}</p>
-                      <p className="mt-0.5 truncate text-[12px] text-slate-400">
+                      <p className="mt-0.5 truncate text-[12px] text-faint">
                         {property.layout} ｜ {property.area}㎡
                       </p>
                     </div>
                   </div>
-                  <p className="mt-2 truncate pl-[52px] text-[13px] text-slate-600 md:mt-0 md:pl-0">
+                  <p className="mt-2 truncate pl-[52px] text-[13px] text-muted md:mt-0 md:pl-0">
                     {property.companyName}
                   </p>
                   <p className="mt-2 pl-[52px] font-display text-[13px] text-ink md:mt-0 md:pl-0">

@@ -4,12 +4,11 @@ import { Link } from "react-router-dom";
 import { PropertyPhoto } from "@/components/PropertyCard";
 import { ReactionBarChart, ReactionBreakdownChart } from "@/components/Charts";
 import { BroadcastIcon, HeartIcon, InboxIcon, KeyIcon, UsersIcon } from "@/components/stat-icons";
-import { Badge, Card, PageHeader, StatCard } from "@/components/ui";
+import { Badge, Card, PageHeader, SectionTitle, StatCard } from "@/components/ui";
 import { formatDateTime, statusLabel, statusTone } from "@/lib/format";
 import { activeOwnerCount, useStore } from "@/lib/store";
 
-const sectionLinkClass =
-  "text-[13px] font-medium text-aqua-700 transition hover:text-aqua-800";
+const sectionLinkClass = "text-[13px] font-medium text-ink underline-offset-4 hover:underline";
 
 export default function AdminDashboardPage() {
   const { state } = useStore();
@@ -20,14 +19,14 @@ export default function AdminDashboardPage() {
   );
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-6">
       <PageHeader
         kicker="運営"
         title="ダッシュボード"
         description="確認待ちの物件から、配信と反応の動きまでをまとめて見られます。"
       />
 
-      <div className="grid grid-cols-2 items-stretch gap-2 lg:grid-cols-5">
+      <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-5">
         <StatCard label="確認待ち" value={pending.length} hint="送信済み・配信準備" icon={<InboxIcon />} />
         <StatCard label="配信済み" value={sent.length} icon={<BroadcastIcon />} />
         <StatCard label="反応" value={state.reactions.length} hint="いいね / スタンプ / テキスト" icon={<HeartIcon />} />
@@ -41,26 +40,20 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(280px,1fr)]">
-        <Card className="p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-[16px] font-medium tracking-[-0.02em] text-ink">反応数の推移</h2>
-            <span className="text-[12px] text-muted">直近7日</span>
-          </div>
+        <Card className="p-5 sm:p-6">
+          <SectionTitle action={<span className="text-[12px] text-muted">直近7日</span>}>反応数の推移</SectionTitle>
           <ReactionBarChart reactions={state.reactions} />
         </Card>
 
         <div className="grid gap-4">
-          <Card className="p-5">
-            <h2 className="mb-4 font-display text-[16px] font-medium tracking-[-0.02em] text-ink">種類別の内訳</h2>
+          <Card className="p-5 sm:p-6">
+            <SectionTitle>種類別の内訳</SectionTitle>
             <ReactionBreakdownChart reactions={state.reactions} />
           </Card>
-          <Card className="p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-[16px] font-medium tracking-[-0.02em] text-ink">確認待ち</h2>
-              <Link to="/admin/inbox" className={sectionLinkClass}>
-                受信箱へ
-              </Link>
-            </div>
+          <Card className="p-5 sm:p-6">
+            <SectionTitle action={<Link to="/admin/inbox" className={sectionLinkClass}>受信箱へ</Link>}>
+              確認待ち
+            </SectionTitle>
             {pending.length === 0 ? (
               <p className="text-[13px] text-muted">確認待ちの物件はありません。</p>
             ) : (
@@ -83,13 +76,13 @@ export default function AdminDashboardPage() {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="font-display text-[16px] font-medium tracking-[-0.02em] text-ink">最近の配信</h2>
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6">
+          <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">最近の配信</h2>
           <Link to="/admin/broadcasts" className={sectionLinkClass}>
             配信履歴へ
           </Link>
         </div>
-        <div className="hidden grid-cols-[1.4fr_1fr_1fr_0.6fr_0.7fr] border-y border-hairline bg-canvas px-5 py-2.5 text-[12px] font-medium text-muted md:grid">
+        <div className="hidden grid-cols-[1.4fr_1fr_1fr_0.6fr_0.7fr] border-y border-hairline bg-canvas px-5 py-2.5 text-[12px] font-medium text-muted md:grid md:px-6">
           <span>物件</span>
           <span>管理会社</span>
           <span>配信日時</span>
@@ -107,7 +100,7 @@ export default function AdminDashboardPage() {
               <Link
                 key={broadcast.id}
                 to={`/admin/broadcasts/${broadcast.id}`}
-                className="grid items-center gap-3 border-b border-hairline px-5 py-3.5 last:border-b-0 md:grid-cols-[1.4fr_1fr_1fr_0.6fr_0.7fr]"
+                className="grid items-center gap-3 border-b border-hairline px-5 py-3.5 last:border-b-0 hover:bg-canvas/60 md:grid-cols-[1.4fr_1fr_1fr_0.6fr_0.7fr] md:px-6"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <PropertyPhoto
@@ -119,7 +112,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <p className="truncate text-[13px] text-muted">{property.companyName}</p>
                 <p className="text-[13px] text-muted">{formatDateTime(broadcast.sentAt)}</p>
-                <p className="font-display text-[14px] font-semibold text-ink">{count}</p>
+                <p className="font-display text-[14px] font-semibold tabular-nums text-ink">{count}</p>
                 <div>
                   <Badge tone={statusTone(property.status)}>{statusLabel(property.status)}</Badge>
                 </div>
