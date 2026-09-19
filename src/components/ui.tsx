@@ -187,7 +187,7 @@ export function PageHeader({
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
         {kicker ? <p className="text-[11px] font-medium tracking-[0.08em] text-aqua-700">{kicker}</p> : null}
-        <h1 className="mt-1 font-display text-[1.7rem] font-medium leading-[1.15] tracking-[-0.035em] text-ink sm:text-[1.9rem]">
+        <h1 className="mt-1 font-display text-[1.7rem] font-bold leading-[1.15] tracking-[-0.035em] text-ink sm:text-[1.9rem]">
           {title}
         </h1>
         {description ? (

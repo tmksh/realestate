@@ -8,7 +8,7 @@ export default function MembersPage() {
   const { state } = useStore();
 
   return (
-    <div className="mx-auto max-w-[1200px]">
+    <div className="w-full">
       <PageHeader
         kicker="配信対象"
         title="LINE会員"
@@ -26,8 +26,8 @@ export default function MembersPage() {
         </p>
       </div>
 
-      <Card className="mt-5 max-w-[1100px] overflow-hidden">
-        <div className="hidden h-11 grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.7fr)] items-center border-b border-slate-100 bg-slate-50/70 px-5 text-[12px] font-semibold text-slate-500 md:grid md:px-6">
+      <Card className="mt-5 overflow-hidden">
+        <div className="hidden h-11 grid-cols-[minmax(0,1fr)_160px_120px] items-center border-b border-slate-100 bg-slate-50/70 px-5 text-[12px] font-semibold text-slate-500 md:grid md:px-6">
           <span>表示名</span>
           <span>流入</span>
           <span>登録日</span>
@@ -35,7 +35,7 @@ export default function MembersPage() {
         {state.members.map((member) => (
           <div
             key={member.id}
-            className="border-b border-slate-100 px-5 py-3.5 last:border-b-0 md:grid md:min-h-16 md:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.7fr)] md:items-center md:px-6"
+            className="border-b border-slate-100 px-5 py-3.5 last:border-b-0 md:grid md:min-h-16 md:grid-cols-[minmax(0,1fr)_160px_120px] md:items-center md:px-6"
           >
             <div className="flex items-center gap-3">
               <div

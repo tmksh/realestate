@@ -42,7 +42,7 @@ export default function HomePage() {
             <p className="inline-flex rounded-full bg-aqua-50 px-2.5 py-0.5 text-[10px] font-medium tracking-[0.06em] text-aqua-700">
               ポータル掲載前の未公開期間を活用
             </p>
-            <h1 className="mt-2 font-display text-[1.55rem] font-medium leading-[1.2] tracking-[-0.04em] text-ink sm:text-[1.85rem]">
+            <h1 className="mt-2 font-display text-[1.55rem] font-bold leading-[1.2] tracking-[-0.04em] text-ink sm:text-[1.85rem]">
               未公開物件を、
               <br />
               <span className="text-aqua-700">公式LINE</span>で先に届ける。

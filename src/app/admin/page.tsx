@@ -23,7 +23,7 @@ export default function AdminDashboardPage() {
     <div className="w-full space-y-4">
       <PageHeader
         kicker="運営"
-        title="確認と配信の状況"
+        title="ダッシュボード"
         description="確認待ちの物件から、配信と反応の動きまでをまとめて見られます。"
       />
 

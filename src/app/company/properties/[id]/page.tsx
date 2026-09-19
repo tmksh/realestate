@@ -37,7 +37,7 @@ export default function CompanyPropertyDetailPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-aqua-700">物件詳細</p>
-            <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight">
+            <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">
               {property.buildingName}
             </h1>
           </div>
