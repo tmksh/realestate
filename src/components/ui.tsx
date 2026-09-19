@@ -38,7 +38,7 @@ export function Button({
 }) {
   const variants = {
     primary:
-      "bg-ink text-white hover:bg-[#2a2622] disabled:bg-[#c8c3bb] disabled:text-white",
+      "bg-ink text-white hover:bg-[#2a2a2a] disabled:bg-[#d1d5db] disabled:text-white",
     secondary:
       "bg-white text-ink border border-hairline hover:bg-canvas disabled:bg-canvas disabled:text-[#b4aea6]",
     ghost: "bg-transparent text-muted hover:bg-white hover:text-ink",
@@ -81,7 +81,7 @@ export function Field({
 }
 
 const inputClass =
-  "w-full min-h-11 rounded-[18px] border border-hairline bg-white px-3.5 py-2.5 text-[15px] text-ink outline-none transition placeholder:text-[#a39d95] focus:border-aqua-400 focus:ring-4 focus:ring-[var(--ring)]";
+  "w-full min-h-11 rounded-[18px] border border-hairline bg-white px-3.5 py-2.5 text-[15px] text-ink outline-none transition placeholder:text-[#9ca3af] focus:border-aqua-400 focus:ring-4 focus:ring-[var(--ring)]";
 
 export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${inputClass} ${className}`} {...props} />;
@@ -111,7 +111,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-[24px] border border-hairline bg-white shadow-[0_1px_0_rgba(22,20,18,0.03),0_8px_24px_rgba(22,20,18,0.035)] ${className}`}>
+    <div className={`rounded-[24px] border border-hairline bg-white shadow-[0_1px_0_rgba(17,17,17,0.03),0_8px_24px_rgba(17,17,17,0.04)] ${className}`}>
       {children}
     </div>
   );
@@ -129,19 +129,21 @@ export function StatCard({
   icon: ReactNode;
 }) {
   return (
-    <Card className="min-w-0 px-3 py-2">
-      <p className="truncate text-[11px] font-medium leading-4 text-muted">{label}</p>
-      <div className="mt-1 flex items-center justify-between gap-2">
-        <p className="font-display text-[1.25rem] font-medium leading-none tabular-nums tracking-[-0.04em] text-ink">
-          {value}
-        </p>
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center [&>svg]:h-8 [&>svg]:w-8">
+    <Card className="flex h-full min-h-[84px] min-w-0 flex-col justify-center px-4 py-3">
+      <div className="flex h-9 items-center gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center [&>svg]:h-9 [&>svg]:w-9">
           {icon}
         </span>
+        <p className="font-display text-[1.35rem] font-medium leading-none tabular-nums tracking-[-0.04em] text-ink">
+          {value}
+        </p>
       </div>
-      <p className="mt-1 min-h-3.5 truncate text-[10px] leading-[1.35] text-muted" title={hint}>
-        {hint ?? "\u00a0"}
-      </p>
+      <div className="mt-1 min-w-0 pl-12">
+        <p className="h-4 truncate text-[12px] font-medium leading-4 text-muted">{label}</p>
+        <p className="mt-0.5 h-[14px] truncate text-[10px] leading-[14px] text-muted" title={hint}>
+          {hint ?? "\u00a0"}
+        </p>
+      </div>
     </Card>
   );
 }
@@ -173,11 +175,13 @@ export function PageHeader({
   title,
   description,
   action,
+  descriptionClassName = "max-w-2xl",
 }: {
   kicker?: string;
   title: string;
   description?: string;
   action?: ReactNode;
+  descriptionClassName?: string;
 }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
@@ -186,7 +190,9 @@ export function PageHeader({
         <h1 className="mt-1 font-display text-[1.7rem] font-medium leading-[1.15] tracking-[-0.035em] text-ink sm:text-[1.9rem]">
           {title}
         </h1>
-        {description ? <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted">{description}</p> : null}
+        {description ? (
+          <p className={`mt-1.5 text-sm leading-6 text-muted ${descriptionClassName}`}>{description}</p>
+        ) : null}
       </div>
       {action}
     </div>
@@ -281,7 +287,7 @@ export function SegmentedControl<T extends string>({
           >
             {option.label}
             {option.count != null ? (
-              <span className={active ? "text-aqua-700" : "text-[#b4aea6]"}>{option.count}</span>
+              <span className={active ? "text-ink" : "text-[#9ca3af]"}>{option.count}</span>
             ) : null}
           </button>
         );

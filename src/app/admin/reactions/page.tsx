@@ -29,7 +29,7 @@ export default function ReactionsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[1200px]">
+    <div className="w-full">
       <PageHeader
         title="反応リスト"
         description="配信に反応した会員です。物件と反応の種類で同時に絞り込めます。"
@@ -97,7 +97,7 @@ export default function ReactionsPage() {
         <p className="font-display text-[15px] font-semibold text-slate-600">{reactions.length}件</p>
       </div>
 
-      <div className="mt-5 max-w-[1000px]">
+      <div className="mt-5">
         {reactions.length === 0 ? (
           <EmptyState
             title="該当する反応がありません"

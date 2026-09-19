@@ -1,9 +1,9 @@
 import type { Reaction, ReactionType } from "@/lib/types";
 
 const typeMeta: Record<ReactionType, { label: string; color: string }> = {
-  like: { label: "いいね", color: "#1F6B66" },
-  stamp: { label: "スタンプ", color: "#C4A574" },
-  text: { label: "テキスト", color: "#3F4A46" },
+  like: { label: "いいね", color: "#111111" },
+  stamp: { label: "スタンプ", color: "#6B7280" },
+  text: { label: "テキスト", color: "#D1D5DB" },
 };
 
 function dayKey(date: Date) {
@@ -17,6 +17,66 @@ function lastDays(count: number) {
     date.setDate(date.getDate() - (count - 1 - index));
     return date;
   });
+}
+
+export function ReactionBarChart({ reactions }: { reactions: Reaction[] }) {
+  const days = lastDays(7);
+  const counts = days.map(
+    (day) => reactions.filter((item) => dayKey(new Date(item.createdAt)) === dayKey(day)).length,
+  );
+  const max = Math.max(1, ...counts);
+  const width = 640;
+  const height = 220;
+  const padL = 32;
+  const padR = 12;
+  const padT = 16;
+  const padB = 32;
+  const innerW = width - padL - padR;
+  const innerH = height - padT - padB;
+  const gap = 18;
+  const barW = (innerW - gap * (counts.length - 1)) / counts.length;
+  const ticks = [0, Math.ceil(max / 2), max];
+
+  return (
+    <div>
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-[220px] w-full" aria-hidden>
+        {ticks.map((tick) => {
+          const y = padT + innerH - (tick / max) * innerH;
+          return (
+            <g key={tick}>
+              <line x1={padL} x2={width - padR} y1={y} y2={y} stroke="#E8E8EC" strokeWidth="1" />
+              <text x={padL - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#6D675F">
+                {tick}
+              </text>
+            </g>
+          );
+        })}
+        {counts.map((value, index) => {
+          const barH = (value / max) * innerH;
+          const x = padL + index * (barW + gap);
+          const y = padT + innerH - barH;
+          return (
+            <rect
+              key={days[index].toISOString()}
+              x={x}
+              y={y}
+              width={barW}
+              height={Math.max(barH, value > 0 ? 6 : 0)}
+              rx={8}
+              fill="#111111"
+            />
+          );
+        })}
+      </svg>
+      <div className="mt-1 flex justify-between px-8 text-[12px] text-muted">
+        {days.map((day) => (
+          <span key={day.toISOString()} className="w-10 text-center">
+            {day.getMonth() + 1}/{day.getDate()}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function ReactionTrendChart({ reactions }: { reactions: Reaction[] }) {
@@ -43,12 +103,12 @@ export function ReactionTrendChart({ reactions }: { reactions: Reaction[] }) {
       <svg viewBox={`0 0 ${width} ${height}`} className="h-24 w-full" aria-hidden>
         <defs>
           <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1F6B66" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#1F6B66" stopOpacity="0.02" />
+            <stop offset="0%" stopColor="#111111" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#111111" stopOpacity="0.02" />
           </linearGradient>
         </defs>
         <polygon points={area} fill="url(#trendFill)" />
-        <polyline points={points.join(" ")} fill="none" stroke="#1F6B66" strokeWidth="2.4" strokeLinejoin="round" />
+        <polyline points={points.join(" ")} fill="none" stroke="#111111" strokeWidth="2.4" strokeLinejoin="round" />
         {counts.map((value, index) => (
           <circle
             key={days[index].toISOString()}
@@ -56,7 +116,7 @@ export function ReactionTrendChart({ reactions }: { reactions: Reaction[] }) {
             cy={height - padBottom - (value / max) * (height - padTop - padBottom)}
             r="3.2"
             fill="#fff"
-            stroke="#1F6B66"
+            stroke="#111111"
             strokeWidth="2"
           />
         ))}
@@ -75,37 +135,46 @@ export function ReactionBreakdownChart({ reactions }: { reactions: Reaction[] })
     type,
     value: reactions.filter((item) => item.type === type).length,
   }));
-  const total = counts.reduce((sum, item) => sum + item.value, 0) || 1;
-  const radius = 28;
+  const rawTotal = counts.reduce((sum, item) => sum + item.value, 0);
+  const total = rawTotal || 1;
+  const top = counts.reduce((best, item) => (item.value > best.value ? item : best), counts[0]);
+  const percent = rawTotal === 0 ? 0 : Math.round((top.value / total) * 100);
+  const radius = 38;
   const circ = 2 * Math.PI * radius;
   let offset = 0;
 
   return (
-    <div className="flex items-center gap-4">
-      <svg viewBox="0 0 80 80" className="h-20 w-20 shrink-0" aria-hidden>
-        <circle cx="40" cy="40" r={radius} fill="none" stroke="#E4E0D8" strokeWidth="10" />
-        {counts.map((item) => {
-          const length = (item.value / total) * circ;
-          const dash = `${length} ${circ - length}`;
-          const current = offset;
-          offset += length;
-          return (
-            <circle
-              key={item.type}
-              cx="40"
-              cy="40"
-              r={radius}
-              fill="none"
-              stroke={typeMeta[item.type].color}
-              strokeWidth="10"
-              strokeDasharray={dash}
-              strokeDashoffset={-current}
-              transform="rotate(-90 40 40)"
-            />
-          );
-        })}
-      </svg>
-      <ul className="space-y-1.5 text-[13px]">
+    <div className="flex items-center gap-5">
+      <div className="relative h-[118px] w-[118px] shrink-0">
+        <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden>
+          <circle cx="50" cy="50" r={radius} fill="none" stroke="#E8E8EC" strokeWidth="12" />
+          {counts.map((item) => {
+            const length = (item.value / total) * circ;
+            const dash = `${length} ${circ - length}`;
+            const current = offset;
+            offset += length;
+            return (
+              <circle
+                key={item.type}
+                cx="50"
+                cy="50"
+                r={radius}
+                fill="none"
+                stroke={typeMeta[item.type].color}
+                strokeWidth="12"
+                strokeDasharray={dash}
+                strokeDashoffset={-current}
+                transform="rotate(-90 50 50)"
+              />
+            );
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="font-display text-[22px] font-semibold leading-none text-ink">{percent}%</p>
+          <p className="mt-1 text-[10px] text-muted">{typeMeta[top.type].label}</p>
+        </div>
+      </div>
+      <ul className="space-y-2 text-[13px]">
         {counts.map((item) => (
           <li key={item.type} className="flex items-center gap-2 text-muted">
             <span className="h-2 w-2 rounded-full" style={{ background: typeMeta[item.type].color }} />

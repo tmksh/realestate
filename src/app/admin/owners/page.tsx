@@ -50,6 +50,7 @@ export default function OwnersPage() {
         kicker="運営"
         title="オーナーアカウント管理"
         description="運営からオーナー用アカウントを発行し、管理できる物件を指定します。利用中の人数はダッシュボードと一致します。"
+        descriptionClassName="whitespace-nowrap"
       />
 
       <Card className="mt-5 space-y-4 p-5">

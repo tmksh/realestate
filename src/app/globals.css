@@ -3,22 +3,23 @@
 :root {
   --font-outfit: "Outfit", sans-serif;
   --font-sans-jp: "Noto Sans JP", sans-serif;
-  --aqua-50: #eef3f1;
-  --aqua-100: #dce8e5;
-  --aqua-200: #b7d0cb;
-  --aqua-300: #82b0a8;
-  --aqua-400: #4d8b83;
-  --aqua-500: #1f6b66;
-  --aqua-600: #185651;
-  --aqua-700: #12423e;
-  --ink: #161412;
-  --muted: #6d675f;
+  --aqua-50: #f3f4f6;
+  --aqua-100: #e5e7eb;
+  --aqua-200: #d1d5db;
+  --aqua-300: #9ca3af;
+  --aqua-400: #6b7280;
+  --aqua-500: #111111;
+  --aqua-600: #111111;
+  --aqua-700: #111111;
+  --aqua-800: #111111;
+  --ink: #111111;
+  --muted: #6b7280;
   --line: #06c755;
-  --bg: #f3f0ea;
+  --bg: #f5f6f8;
   --surface: #ffffff;
-  --hairline: #e4e0d8;
-  --canvas: #faf8f4;
-  --ring: rgba(31, 107, 102, 0.16);
+  --hairline: #e8e8ec;
+  --canvas: #f3f4f6;
+  --ring: rgba(17, 17, 17, 0.12);
 }
 
 @theme inline {
@@ -30,6 +31,7 @@
   --color-aqua-500: var(--aqua-500);
   --color-aqua-600: var(--aqua-600);
   --color-aqua-700: var(--aqua-700);
+  --color-aqua-800: var(--aqua-800);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
@@ -64,14 +66,11 @@ textarea {
 }
 
 ::selection {
-  background: #d5e6e2;
+  background: #e5e7eb;
 }
 
 .mesh-bg {
-  background:
-    radial-gradient(900px 420px at 8% -8%, rgba(31, 107, 102, 0.07), transparent 55%),
-    radial-gradient(720px 380px at 100% 0%, rgba(228, 224, 216, 0.7), transparent 50%),
-    var(--bg);
+  background: var(--bg);
 }
 
 .glass {

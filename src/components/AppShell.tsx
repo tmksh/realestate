@@ -69,7 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
         <aside
-          className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-hairline bg-canvas py-4 transition-[width] duration-200 lg:flex ${
+          className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-hairline bg-white py-4 transition-[width] duration-200 lg:flex ${
             collapsed ? "w-[68px] px-2" : "w-[188px] px-2.5"
           }`}
         >
@@ -77,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             type="button"
             onClick={toggleSidebar}
             title={collapsed ? "メニューを開く" : "メニューを閉じる"}
-            className={`flex cursor-pointer items-center rounded-[14px] text-left transition hover:bg-white ${
+            className={`flex cursor-pointer items-center rounded-[14px] text-left transition hover:bg-canvas ${
               collapsed ? "justify-center px-0 py-1.5" : "gap-2 px-1.5 py-1.5"
             }`}
             aria-expanded={!collapsed}
@@ -104,8 +104,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     collapsed ? "justify-center px-0 py-2" : "justify-between gap-1 px-2 py-1.5"
                   } ${
                     active
-                      ? "bg-white text-ink shadow-[0_1px_2px_rgba(22,20,18,0.04)]"
-                      : "text-muted hover:bg-white/70 hover:text-ink"
+                      ? "bg-canvas text-ink"
+                      : "text-muted hover:bg-canvas hover:text-ink"
                   }`}
                 >
                   <span className={`flex items-center ${collapsed ? "" : "gap-1.5"}`}>
@@ -124,7 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-20 flex min-h-14 items-center justify-between gap-2 border-b border-hairline bg-[rgba(243,240,234,0.82)] px-4 backdrop-blur-xl sm:gap-4 sm:px-6">
+          <header className="sticky top-0 z-20 flex min-h-14 items-center justify-between gap-2 border-b border-hairline bg-white/90 px-4 backdrop-blur-xl sm:gap-4 sm:px-6">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-ink">
                 {user.companyName ?? "AQUALINE 運営"}
@@ -156,7 +156,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </header>
           <main className="flex-1 px-4 py-5 pb-24 sm:px-6 sm:py-6 lg:pb-8">{children}</main>
           <nav
-            className={`fixed inset-x-0 bottom-0 z-30 grid gap-1 border-t border-hairline bg-[rgba(250,248,244,0.94)] px-1.5 py-1.5 backdrop-blur lg:hidden ${
+            className={`fixed inset-x-0 bottom-0 z-30 grid gap-1 border-t border-hairline bg-white/94 px-1.5 py-1.5 backdrop-blur lg:hidden ${
               nav.length > 4 ? "grid-cols-6" : "grid-cols-2"
             }`}
           >
