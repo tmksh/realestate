@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LayoutGrid, List } from "lucide-react";
+import type { ViewMode } from "@/lib/view-mode";
 
 type Tone = "neutral" | "warn" | "danger" | "info" | "success";
 
@@ -289,6 +290,41 @@ export function SegmentedControl<T extends string>({
             {option.count != null ? (
               <span className={active ? "text-ink" : "text-[#9ca3af]"}>{option.count}</span>
             ) : null}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ViewToggle({
+  value,
+  onChange,
+}: {
+  value: ViewMode;
+  onChange: (value: ViewMode) => void;
+}) {
+  const options: Array<{ id: ViewMode; label: string; icon: typeof LayoutGrid }> = [
+    { id: "card", label: "カード", icon: LayoutGrid },
+    { id: "list", label: "一覧", icon: List },
+  ];
+  return (
+    <div className="flex shrink-0 rounded-[18px] bg-canvas p-1" role="group" aria-label="表示切替">
+      {options.map((option) => {
+        const active = value === option.id;
+        const Icon = option.icon;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition ${
+              active ? "bg-white text-ink shadow-[0_1px_2px_rgba(22,20,18,0.06)]" : "text-muted hover:text-ink"
+            }`}
+            aria-pressed={active}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {option.label}
           </button>
         );
       })}
