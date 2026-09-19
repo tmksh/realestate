@@ -24,13 +24,6 @@ const maskOptions: Array<{ id: MaskableField; label: string }> = [
   { id: "ownerNote", label: "申し送り" },
 ];
 
-const reviewSteps = [
-  { n: "01", label: "内容を確認" },
-  { n: "02", label: "目隠し" },
-  { n: "03", label: "プレビュー" },
-  { n: "04", label: "配信" },
-];
-
 export default function AdminPropertyReviewPage() {
   const params = useParams<{ id: string }>();
   const { state } = useStore();
@@ -88,42 +81,19 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
             <h1 className="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight text-ink sm:text-[1.875rem]">
               {property.buildingName}
             </h1>
-            <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted">
-              管理会社から届いた未公開物件です。内容を確認し、目隠ししたうえで公式LINEへ配信します。
-            </p>
             <p className="mt-1.5 text-[13px] text-muted">
               管理会社からの送信日時：{formatDateTime(property.submittedAt)}
             </p>
           </div>
         </div>
 
-        <div className="rounded-[10px] border border-aqua-100 bg-aqua-50 px-5 py-3.5">
-          <p className="text-[15px] font-semibold text-ink">ここで確認し、公式LINEへ配信します</p>
-          <p className="mt-1.5 text-sm leading-6 text-slate-600">
-            左で目隠しと配信形式を選ぶと、右のプレビューに反映されます。
-          </p>
-          <p className="mt-2 text-[13px] leading-5 text-slate-500">
-            デモ環境のため、実際の公式LINEには送信されません。
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] font-medium text-slate-500">
-            {reviewSteps.map((step, index) => (
-              <span key={step.n} className="flex items-center gap-2">
-                {index > 0 ? <span className="text-slate-300">→</span> : null}
-                <span>
-                  <span className="font-display text-aqua-700">{step.n}</span> {step.label}
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
-
         <Card className="overflow-hidden">
-          <div className="relative h-[170px] overflow-hidden bg-slate-100">
+          <div className="relative h-[300px] overflow-hidden bg-slate-100 md:h-[340px]">
             {property.images[0] ? (
               <img
                 src={property.images[0]}
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover"
+                className="property-photo absolute inset-0 h-full w-full"
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
@@ -203,8 +173,23 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
             })}
           </div>
         </Card>
+      </div>
 
-        <Card className="grid gap-5 p-6 md:grid-cols-2">
+      <div className="order-2">
+        <div className="mb-4 text-center lg:text-left">
+          <p className="text-sm font-semibold text-ink">配信イメージ</p>
+          <p className="mt-1 text-[13px] leading-5 text-muted">
+            実際のトーク画面ではなく、送る内容から作った見本です。
+          </p>
+          <p className="mt-1 text-[13px] leading-5 text-slate-500">
+            目隠し・配信形式・メッセージの変更がすぐに反映されます。
+          </p>
+        </div>
+        <LinePreview property={preview} />
+      </div>
+
+      <div className="order-3 lg:col-span-2">
+        <Card className="space-y-5 p-5 sm:p-6">
           <Field label="配信形式" hint="会員に届く見せ方を選びます。">
             <Select
               value={broadcastFormat}
@@ -215,36 +200,23 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
               <option value="pdf">PDF添付</option>
             </Select>
           </Field>
-          <Field label="添えるメッセージ" hint="プレビュー末尾に追加されます。">
+          <Field label="添えるメッセージ" hint="プレビュー末尾に追加されます。文章を読みやすい幅で入力できます。">
             <Textarea
               value={customMessage}
               onChange={(event) => setCustomMessage(event.target.value)}
               placeholder="気になる方はいいねを送ってください"
-              className="min-h-[112px]"
+              className="min-h-[220px] px-4 py-3 leading-7"
             />
           </Field>
         </Card>
       </div>
 
-      <div className="order-2 lg:row-span-2 lg:sticky lg:top-24">
-        <div className="mb-4 text-center lg:text-left">
-          <p className="text-sm font-semibold text-ink">会員に届く公式LINEイメージ</p>
-          <p className="mt-1 text-[13px] leading-5 text-muted">
-            実際の送信結果ではなく、配信イメージです。
-          </p>
-          <p className="mt-1 text-[13px] leading-5 text-slate-500">
-            目隠し・配信形式・メッセージの変更がリアルタイムで反映されます。
-          </p>
-        </div>
-        <LinePreview property={preview} />
-      </div>
-
-      <div className="order-3 space-y-6 lg:col-start-1">
+      <div className="order-4 space-y-6 lg:col-span-2">
         <Card className="space-y-4 p-6">
           {alreadySent ? (
             <p className="text-[13px] font-medium text-aqua-700">この物件は配信済みです。</p>
           ) : null}
-          <p className="text-sm leading-6 text-ink">右のプレビューを確認してから配信してください。</p>
+          <p className="text-sm leading-6 text-ink">プレビューを確認してから配信してください。</p>
           <p className="text-[13px] leading-5 text-slate-500">
             デモ環境のため、実際の公式LINEには送信されません。
           </p>

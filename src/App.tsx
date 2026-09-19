@@ -13,6 +13,7 @@ import BroadcastsPage from "@/app/admin/broadcasts/page";
 import BroadcastDetailPage from "@/app/admin/broadcasts/[id]/page";
 import ReactionsPage from "@/app/admin/reactions/page";
 import MembersPage from "@/app/admin/members/page";
+import OwnersPage from "@/app/admin/owners/page";
 
 function Guard({ role }: { role: "company" | "admin" }) {
   return (
@@ -41,6 +42,7 @@ export function App() {
           <Route path="/admin/broadcasts/:id" element={<BroadcastDetailPage />} />
           <Route path="/admin/reactions" element={<ReactionsPage />} />
           <Route path="/admin/members" element={<MembersPage />} />
+          <Route path="/admin/owners" element={<OwnersPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,31 +1,50 @@
 "use client";
 
+import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { PropertyForm } from "@/components/PropertyForm";
+import { BackLink, ConfirmDialog, PageHeader } from "@/components/ui";
 import { emptyProperty, useRequiredUser } from "@/lib/store";
 
 export default function NewPropertyPage() {
   const user = useRequiredUser();
+  const navigate = useNavigate();
+  const [dirty, setDirty] = useState(false);
+  const [askLeave, setAskLeave] = useState(false);
+
+  if (user.role === "owner") {
+    return <Navigate to="/company/properties" replace />;
+  }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 pb-8">
+    <div className="mx-auto max-w-4xl space-y-6 pb-8">
       <div>
-        <p className="text-sm font-semibold text-aqua-700">新規物件登録</p>
-        <h1 className="mt-1 font-display text-[1.75rem] font-bold tracking-tight text-ink sm:text-[2rem]">
-          物件を登録
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-muted">
-          必須項目を入力して『運営へ送信』してください。送信後は運営の確認待ちになり、すぐにはLINE配信されません。
-        </p>
+        <BackLink
+          to="/company/properties"
+          onClick={(event) => {
+            if (!dirty) return;
+            event.preventDefault();
+            setAskLeave(true);
+          }}
+        >
+          物件一覧へ戻る
+        </BackLink>
+        <PageHeader
+          kicker="新規物件登録"
+          title="物件を登録"
+          description="必須項目を入力して『運営へ送信』してください。送信後は運営の確認待ちになり、すぐにはLINE配信されません。"
+        />
       </div>
-
-      <div className="rounded-2xl bg-aqua-50 px-4 py-3.5 sm:px-5">
-        <p className="text-sm font-semibold text-ink">運営へ確認依頼を送信します</p>
-        <p className="mt-1 text-[13px] leading-6 text-muted">
-          この画面から公式LINEへ直接配信されることはありません。
-        </p>
-      </div>
-
-      <PropertyForm initial={emptyProperty(user)} mode="create" />
+      <PropertyForm initial={emptyProperty(user)} mode="create" onDirtyChange={setDirty} />
+      <ConfirmDialog
+        open={askLeave}
+        title="入力内容はまだ保存されていません"
+        description="物件一覧へ戻ると、いまの変更は破棄されます。"
+        confirmLabel="変更を破棄する"
+        cancelLabel="編集を続ける"
+        onConfirm={() => navigate("/company/properties")}
+        onCancel={() => setAskLeave(false)}
+      />
     </div>
   );
 }

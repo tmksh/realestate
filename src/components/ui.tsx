@@ -1,13 +1,15 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 type Tone = "neutral" | "warn" | "danger" | "info" | "success";
 
 const toneClass: Record<Tone, string> = {
-  neutral: "bg-slate-100 text-slate-600",
-  warn: "bg-amber-50 text-amber-700",
+  neutral: "bg-canvas text-muted",
+  warn: "bg-amber-50 text-amber-800",
   danger: "bg-rose-50 text-rose-700",
-  info: "bg-aqua-100 text-aqua-700",
-  success: "bg-emerald-50 text-emerald-700",
+  info: "bg-aqua-50 text-aqua-700",
+  success: "bg-emerald-50 text-emerald-800",
 };
 
 export function Badge({
@@ -19,7 +21,7 @@ export function Badge({
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-semibold tracking-wide ${toneClass[tone]}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium tracking-[0.04em] ${toneClass[tone]}`}
     >
       {children}
     </span>
@@ -36,18 +38,18 @@ export function Button({
 }) {
   const variants = {
     primary:
-      "bg-aqua-500 text-white hover:bg-aqua-600 disabled:bg-aqua-400 disabled:text-white",
+      "bg-ink text-white hover:bg-[#2a2622] disabled:bg-[#c8c3bb] disabled:text-white",
     secondary:
-      "bg-white text-ink border border-slate-200 hover:border-aqua-300 hover:bg-aqua-50 disabled:bg-slate-50 disabled:text-slate-400 disabled:hover:border-slate-200 disabled:hover:bg-slate-50",
+      "bg-white text-ink border border-hairline hover:bg-canvas disabled:bg-canvas disabled:text-[#b4aea6]",
     ghost: "bg-transparent text-muted hover:bg-white hover:text-ink",
     danger:
-      "bg-rose-700 text-white hover:bg-rose-800 disabled:bg-slate-200 disabled:text-slate-500 disabled:hover:bg-slate-200",
-    line: "bg-line text-white hover:brightness-95 disabled:opacity-55 disabled:hover:brightness-100",
+      "bg-[#b42318] text-white hover:bg-[#912018] disabled:bg-[#e7e4de] disabled:text-[#a39d95]",
+    line: "bg-line text-white hover:brightness-95 disabled:opacity-55",
   };
 
   return (
     <button
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-400 focus-visible:ring-offset-1 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-[18px] px-4 py-2 text-[13px] font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-400/70 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
       {...props}
     >
       {children}
@@ -68,18 +70,18 @@ export function Field({
 }) {
   return (
     <label className="block space-y-1.5">
-      <span className="block text-sm font-medium text-slate-600">
+      <span className="block text-[13px] font-medium text-muted">
         {label}
-        {required ? <span className="ml-1 text-aqua-700">*</span> : null}
+        {required ? <span className="ml-1 text-aqua-600">*</span> : null}
       </span>
       {children}
-      {hint ? <span className="block text-[13px] leading-5 text-muted">{hint}</span> : null}
+      {hint ? <span className="block text-[12px] leading-5 text-muted">{hint}</span> : null}
     </label>
   );
 }
 
 const inputClass =
-  "w-full min-h-11 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-base text-ink outline-none transition placeholder:text-[#94A3B8] focus:border-aqua-400 focus:ring-4 focus:ring-aqua-100";
+  "w-full min-h-11 rounded-[18px] border border-hairline bg-white px-3.5 py-2.5 text-[15px] text-ink outline-none transition placeholder:text-[#a39d95] focus:border-aqua-400 focus:ring-4 focus:ring-[var(--ring)]";
 
 export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${inputClass} ${className}`} {...props} />;
@@ -109,7 +111,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-[10px] border border-slate-200 bg-white shadow-none ${className}`}>
+    <div className={`rounded-[24px] border border-hairline bg-white shadow-[0_1px_0_rgba(22,20,18,0.03),0_8px_24px_rgba(22,20,18,0.035)] ${className}`}>
       {children}
     </div>
   );
@@ -127,19 +129,19 @@ export function StatCard({
   icon: ReactNode;
 }) {
   return (
-    <Card className="px-5 py-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[14px] font-medium leading-none text-slate-500">{label}</p>
-          <p className="mt-2 font-display text-[1.75rem] font-bold tabular-nums tracking-tight text-ink">
-            {value}
-          </p>
-          {hint ? <p className="mt-1.5 text-[13px] leading-[1.5] text-muted">{hint}</p> : null}
-        </div>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-aqua-50 text-aqua-600">
+    <Card className="min-w-0 px-3 py-2">
+      <p className="truncate text-[11px] font-medium leading-4 text-muted">{label}</p>
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <p className="font-display text-[1.25rem] font-medium leading-none tabular-nums tracking-[-0.04em] text-ink">
+          {value}
+        </p>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center [&>svg]:h-8 [&>svg]:w-8">
           {icon}
-        </div>
+        </span>
       </div>
+      <p className="mt-1 min-h-3.5 truncate text-[10px] leading-[1.35] text-muted" title={hint}>
+        {hint ?? "\u00a0"}
+      </p>
     </Card>
   );
 }
@@ -157,11 +159,133 @@ export function EmptyState({
 }) {
   return (
     <div
-      className={`rounded-[10px] border border-dashed border-slate-200 bg-white px-6 py-12 text-center ${className}`}
+      className={`rounded-[24px] border border-dashed border-hairline bg-white px-6 py-12 text-center ${className}`}
     >
-      <p className="text-lg font-semibold text-ink">{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-[1.6] text-muted">{description}</p>
+      <p className="font-display text-lg font-medium tracking-tight text-ink">{title}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-[1.65] text-muted">{description}</p>
       {action ? <div className="mt-6">{action}</div> : null}
+    </div>
+  );
+}
+
+export function PageHeader({
+  kicker,
+  title,
+  description,
+  action,
+}: {
+  kicker?: string;
+  title: string;
+  description?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="min-w-0">
+        {kicker ? <p className="text-[11px] font-medium tracking-[0.08em] text-aqua-700">{kicker}</p> : null}
+        <h1 className="mt-1 font-display text-[1.7rem] font-medium leading-[1.15] tracking-[-0.035em] text-ink sm:text-[1.9rem]">
+          {title}
+        </h1>
+        {description ? <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted">{description}</p> : null}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+export function ConfirmDialog({
+  open,
+  title,
+  description,
+  confirmLabel,
+  cancelLabel,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  title: string;
+  description?: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(22,20,18,0.35)] p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+    >
+      <div className="w-full max-w-md rounded-[24px] border border-hairline bg-white p-5 shadow-[0_16px_40px_rgba(22,20,18,0.12)]">
+        <p id="confirm-title" className="font-display text-[17px] font-medium text-ink">
+          {title}
+        </p>
+        {description ? <p className="mt-2 text-sm leading-6 text-muted">{description}</p> : null}
+        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="secondary" onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+          <Button type="button" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BackLink({
+  to,
+  children,
+  onClick,
+}: {
+  to: string;
+  children: ReactNode;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="mb-4 inline-flex min-h-9 items-center gap-1.5 rounded-[18px] border border-hairline bg-white px-3.5 text-[13px] font-medium text-ink shadow-[0_1px_0_rgba(22,20,18,0.03)] transition hover:bg-canvas"
+    >
+      <ArrowLeft className="h-3.5 w-3.5" />
+      {children}
+    </Link>
+  );
+}
+
+export function SegmentedControl<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: Array<{ id: T; label: string; count?: number }>;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-1 rounded-[18px] bg-canvas p-1">
+      {options.map((option) => {
+        const active = value === option.id;
+        return (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition ${
+              active ? "bg-white text-ink shadow-[0_1px_2px_rgba(22,20,18,0.06)]" : "text-muted hover:text-ink"
+            }`}
+          >
+            {option.label}
+            {option.count != null ? (
+              <span className={active ? "text-aqua-700" : "text-[#b4aea6]"}>{option.count}</span>
+            ) : null}
+          </button>
+        );
+      })}
     </div>
   );
 }

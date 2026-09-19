@@ -1,4 +1,11 @@
-import type { BroadcastFormat, MaskableField, Property, PropertyStatus } from "./types";
+import type {
+  BroadcastFormat,
+  MaskableField,
+  OwnerStatus,
+  Property,
+  PropertyStatus,
+  ReactionType,
+} from "./types";
 
 export function formatPrice(manYen: number) {
   if (manYen >= 10000) {
@@ -148,4 +155,37 @@ export function newId(prefix: string) {
 
 export function nowIso() {
   return new Date().toISOString();
+}
+
+export function reactionLabel(type: ReactionType) {
+  switch (type) {
+    case "like":
+      return "いいね";
+    case "stamp":
+      return "スタンプ";
+    case "text":
+      return "テキスト";
+  }
+}
+
+export function ownerStatusLabel(status: OwnerStatus) {
+  switch (status) {
+    case "active":
+      return "利用中";
+    case "invited":
+      return "招待中";
+    case "suspended":
+      return "停止中";
+  }
+}
+
+export function ownerStatusTone(status: OwnerStatus) {
+  switch (status) {
+    case "active":
+      return "success" as const;
+    case "invited":
+      return "warn" as const;
+    case "suspended":
+      return "neutral" as const;
+  }
 }

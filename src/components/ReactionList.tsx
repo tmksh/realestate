@@ -1,4 +1,4 @@
-import { relativeTime } from "@/lib/format";
+import { reactionLabel, relativeTime } from "@/lib/format";
 import type { Member, Property, Reaction } from "@/lib/types";
 import { Card } from "./ui";
 
@@ -22,11 +22,9 @@ export function ReactionList({
         const member = memberMap[reaction.memberId];
         const property = propertyMap[reaction.propertyId];
         const kind =
-          reaction.type === "like"
-            ? "いいね"
-            : reaction.type === "stamp"
-              ? `スタンプ ${reaction.stamp ?? ""}`
-              : "テキスト";
+          reaction.type === "stamp"
+            ? `スタンプ ${reaction.stamp ?? ""}`.trim()
+            : reactionLabel(reaction.type);
         return (
           <div key={reaction.id} className="flex items-start gap-3.5 px-5 py-3.5 sm:px-6">
             <div

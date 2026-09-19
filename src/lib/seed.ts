@@ -1,4 +1,4 @@
-import type { AppState, Member, Property, User } from "./types";
+import type { AppState, Member, OwnerAccount, Property, User } from "./types";
 
 export const users: User[] = [
   {
@@ -225,10 +225,41 @@ export const properties: Property[] = [
   },
 ];
 
+export const owners: OwnerAccount[] = [
+  {
+    id: "o_saito",
+    name: "斎藤 真理",
+    email: "saito@sunrise-kanri.example",
+    affiliation: "サンライズ管理株式会社",
+    status: "active",
+    propertyIds: ["p_sakura", "p_hamamatsu"],
+    createdAt: hoursAgo(240),
+  },
+  {
+    id: "o_kondo",
+    name: "近藤 隼",
+    email: "kondo@minato-am.example",
+    affiliation: "港区アセットマネジメント",
+    status: "invited",
+    propertyIds: ["p_shinagawa"],
+    createdAt: hoursAgo(36),
+  },
+  {
+    id: "o_mori",
+    name: "森 恵",
+    email: "mori@sunrise-kanri.example",
+    affiliation: "サンライズ管理株式会社",
+    status: "suspended",
+    propertyIds: ["p_shirokane"],
+    createdAt: hoursAgo(400),
+  },
+];
+
 export const initialState: AppState = {
   currentUser: null,
   properties,
   members,
+  owners,
   broadcasts: [
     {
       id: "b_sakura",
@@ -246,6 +277,10 @@ export const initialState: AppState = {
     { id: "r3", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m7", type: "like", createdAt: hoursAgo(17) },
     { id: "r4", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m9", type: "text", message: "内見できますか？", createdAt: hoursAgo(12) },
     { id: "r5", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m11", type: "stamp", stamp: "👍", createdAt: hoursAgo(8) },
+    { id: "r6", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m1", type: "like", createdAt: hoursAgo(72) },
+    { id: "r7", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m3", type: "text", message: "資料をください", createdAt: hoursAgo(96) },
+    { id: "r8", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m5", type: "stamp", stamp: "🏠", createdAt: hoursAgo(120) },
+    { id: "r9", broadcastId: "b_sakura", propertyId: "p_sakura", memberId: "m6", type: "like", createdAt: hoursAgo(144) },
   ],
 };
 

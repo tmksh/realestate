@@ -15,12 +15,14 @@ import type {
   AppState,
   BroadcastFormat,
   MaskableField,
+  OwnerAccount,
+  OwnerStatus,
   Property,
   ReactionType,
   User,
 } from "./types";
 
-const STORAGE_KEY = "aqualine-store-v1";
+const STORAGE_KEY = "aqualine-store-v2";
 
 type Action =
   | { type: "hydrate"; payload: AppState }
@@ -46,7 +48,10 @@ type Action =
       reactionType: ReactionType;
       stamp?: string;
       message?: string;
-    };
+    }
+  | { type: "upsertOwner"; owner: OwnerAccount }
+  | { type: "setOwnerStatus"; id: string; status: OwnerStatus }
+  | { type: "loginOwner"; ownerId: string };
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -57,6 +62,13 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         currentUser: users.find((user) => user.id === action.userId) ?? null,
       };
+    case "loginOwner": {
+      const owner = state.owners.find((item) => item.id === action.ownerId);
+      return {
+        ...state,
+        currentUser: owner ? ownerToUser(owner) : null,
+      };
+    }
     case "logout":
       return { ...state, currentUser: null };
     case "reset":
@@ -176,9 +188,54 @@ function reducer(state: AppState, action: Action): AppState {
         ],
       };
     }
+    case "upsertOwner":
+      return {
+        ...state,
+        owners: state.owners.some((item) => item.id === action.owner.id)
+          ? state.owners.map((item) => (item.id === action.owner.id ? action.owner : item))
+          : [action.owner, ...state.owners],
+      };
+    case "setOwnerStatus":
+      return {
+        ...state,
+        owners: state.owners.map((item) =>
+          item.id === action.id ? { ...item, status: action.status } : item,
+        ),
+        currentUser:
+          state.currentUser?.ownerAccountId === action.id && action.status !== "active"
+            ? null
+            : state.currentUser,
+      };
     default:
       return state;
   }
+}
+
+export function ownerToUser(owner: OwnerAccount): User {
+  return {
+    id: `owner_${owner.id}`,
+    name: owner.name,
+    role: "owner",
+    companyName: owner.affiliation,
+    title: "オーナー管理者",
+    assignedPropertyIds: owner.propertyIds,
+    ownerAccountId: owner.id,
+  };
+}
+
+export function visibleProperties(state: AppState): Property[] {
+  const user = state.currentUser;
+  if (!user) return [];
+  if (user.role === "admin") return state.properties;
+  if (user.role === "owner") {
+    const ids = new Set(user.assignedPropertyIds ?? []);
+    return state.properties.filter((item) => ids.has(item.id));
+  }
+  return state.properties.filter((item) => item.companyId === user.companyId);
+}
+
+export function activeOwnerCount(owners: OwnerAccount[]) {
+  return owners.filter((item) => item.status === "active").length;
 }
 
 type StoreContextValue = {
@@ -207,6 +264,9 @@ type StoreContextValue = {
     stamp?: string;
     message?: string;
   }) => void;
+  saveOwner: (owner: OwnerAccount) => void;
+  setOwnerStatus: (id: string, status: OwnerStatus) => void;
+  loginOwner: (ownerId: string) => void;
 };
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -221,12 +281,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as AppState;
+        const owners = parsed.owners ?? initialState.owners;
+        const ownerAccount = owners.find((item) => item.id === parsed.currentUser?.ownerAccountId);
+        const currentUser = ownerAccount ? ownerToUser(ownerAccount) : parsed.currentUser ?? null;
         dispatch({
           type: "hydrate",
           payload: {
             ...initialState,
             ...parsed,
+            currentUser,
             members: initialState.members,
+            owners,
           },
         });
       } catch {
@@ -283,6 +348,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           stamp,
           message,
         });
+      },
+      saveOwner: (owner) => dispatch({ type: "upsertOwner", owner }),
+      setOwnerStatus: (id, status) => dispatch({ type: "setOwnerStatus", id, status }),
+      loginOwner: (ownerId) => {
+        const owner = state.owners.find((item) => item.id === ownerId);
+        if (!owner) return;
+        const next = { ...state, currentUser: ownerToUser(owner) };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        dispatch({ type: "loginOwner", ownerId });
       },
     }),
     [ready, state],

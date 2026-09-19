@@ -5,12 +5,35 @@ import type { Property, PropertyStatus } from "@/lib/types";
 import { Card } from "./ui";
 
 const statusClass: Record<PropertyStatus, string> = {
-  draft: "bg-slate-100 text-slate-600",
-  submitted: "bg-amber-50 text-amber-800",
-  rejected: "bg-rose-50 text-rose-700",
-  ready: "bg-aqua-50 text-aqua-800",
-  broadcasted: "bg-aqua-100 text-aqua-800",
+  draft: "bg-white/92 text-slate-700",
+  submitted: "bg-amber-50/95 text-amber-800",
+  rejected: "bg-rose-50/95 text-rose-700",
+  ready: "bg-aqua-50/95 text-aqua-800",
+  broadcasted: "bg-aqua-100/95 text-aqua-800",
 };
+
+export function PropertyPhoto({
+  src,
+  alt,
+  className = "",
+}: {
+  src?: string;
+  alt: string;
+  className?: string;
+}) {
+  return (
+    <div className={`relative overflow-hidden bg-slate-100 ${className}`}>
+      {src ? (
+        <img src={src} alt={alt} className="property-photo absolute inset-0 h-full w-full" />
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500">
+          <ImageOff className="h-5 w-5" />
+          <p className="text-[13px] font-medium">画像未設定</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function PropertyCard({
   property,
@@ -28,32 +51,21 @@ export function PropertyCard({
   return (
     <Link
       to={href}
-      className="group block h-full rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-400 focus-visible:ring-offset-2"
+      className="group block h-full rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aqua-400/70 focus-visible:ring-offset-2"
     >
-      <Card className="h-full overflow-hidden rounded-[10px] border border-slate-200 shadow-none transition duration-150 group-hover:border-slate-300 group-hover:shadow-[0_1px_8px_rgba(16,35,45,0.06)] group-active:border-slate-300">
-        <div className="relative h-[132px] overflow-hidden bg-slate-100 md:h-[148px]">
-          {property.images[0] ? (
-            <img
-              src={property.images[0]}
-              alt={property.name}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
-              <ImageOff className="h-5 w-5" />
-              <p className="text-[13px] font-medium">画像未設定</p>
-            </div>
-          )}
+      <Card className="h-full overflow-hidden transition duration-200 group-hover:shadow-[0_1px_0_rgba(22,20,18,0.04),0_16px_32px_rgba(22,20,18,0.06)]">
+        <div className="relative h-[268px] md:h-[300px]">
+          <PropertyPhoto src={property.images[0]} alt={property.name} className="absolute inset-0 h-full" />
           <div className="absolute left-3 top-3">
             <span
-              className={`inline-flex h-6 items-center rounded-md px-2 text-[12px] font-semibold leading-none ${statusClass[property.status]}`}
+              className={`inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-semibold leading-none shadow-sm ${statusClass[property.status]}`}
             >
               {statusLabel(property.status)}
             </span>
           </div>
         </div>
         <div className="px-5 pb-4 pt-3.5">
-          <p className="line-clamp-2 min-h-[2.5rem] text-[18px] font-bold leading-snug text-ink">
+          <p className="line-clamp-2 min-h-[2.5rem] font-display text-[17px] font-medium leading-snug tracking-[-0.02em] text-ink">
             {property.buildingName || "名称未設定"}
           </p>
           <p className="mt-1.5 flex flex-wrap items-center gap-2 text-[13px] leading-[1.5] text-muted">
@@ -72,7 +84,7 @@ export function PropertyCard({
               `${property.station || "駅未設定"} 徒歩${property.walkMinutes}分`,
             ].join(" ｜ ")}
           </p>
-          <p className="mt-3 font-display text-[18px] font-bold leading-none text-ink">
+          <p className="mt-3 font-display text-[18px] font-medium leading-none tracking-[-0.03em] text-ink">
             {formatPrice(property.price)}
           </p>
           {extra ? <div className="mt-2.5">{extra}</div> : null}

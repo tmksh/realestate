@@ -1,4 +1,4 @@
-export type Role = "company" | "admin";
+export type Role = "company" | "admin" | "owner";
 
 export type User = {
   id: string;
@@ -7,6 +7,8 @@ export type User = {
   companyId?: string;
   companyName?: string;
   title: string;
+  assignedPropertyIds?: string[];
+  ownerAccountId?: string;
 };
 
 export type PropertyStatus =
@@ -27,6 +29,18 @@ export type MaskableField =
 export type BroadcastFormat = "bullets" | "card" | "pdf";
 
 export type ReactionType = "like" | "stamp" | "text";
+
+export type OwnerStatus = "active" | "invited" | "suspended";
+
+export type OwnerAccount = {
+  id: string;
+  name: string;
+  email: string;
+  affiliation: string;
+  status: OwnerStatus;
+  propertyIds: string[];
+  createdAt: string;
+};
 
 export type Property = {
   id: string;
@@ -105,4 +119,5 @@ export type AppState = {
   broadcasts: Broadcast[];
   reactions: Reaction[];
   members: Member[];
+  owners: OwnerAccount[];
 };

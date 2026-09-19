@@ -1,15 +1,20 @@
 "use client";
 
-import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { PropertyForm } from "@/components/PropertyForm";
-import { Badge, Card } from "@/components/ui";
+import { BackLink, Badge, Card, ConfirmDialog } from "@/components/ui";
 import { formatDateTime, statusLabel, statusTone } from "@/lib/format";
-import { useStore } from "@/lib/store";
+import { useStore, visibleProperties } from "@/lib/store";
 
 export default function CompanyPropertyDetailPage() {
   const params = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { state } = useStore();
-  const property = state.properties.find((item) => item.id === params.id);
+  const allowed = visibleProperties(state);
+  const property = allowed.find((item) => item.id === params.id);
+  const [dirty, setDirty] = useState(false);
+  const [askLeave, setAskLeave] = useState(false);
 
   if (!property) {
     return <p className="text-sm text-muted">物件が見つかりません。</p>;
@@ -17,16 +22,27 @@ export default function CompanyPropertyDetailPage() {
 
   const locked = property.status === "submitted" || property.status === "broadcasted" || property.status === "ready";
 
+  const goBack = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (locked || !dirty) return;
+    event.preventDefault();
+    setAskLeave(true);
+  };
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-aqua-700">物件詳細</p>
-          <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight">
-            {property.buildingName}
-          </h1>
+      <div>
+        <BackLink to="/company/properties" onClick={goBack}>
+          物件一覧へ戻る
+        </BackLink>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-aqua-700">物件詳細</p>
+            <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight">
+              {property.buildingName}
+            </h1>
+          </div>
+          <Badge tone={statusTone(property.status)}>{statusLabel(property.status)}</Badge>
         </div>
-        <Badge tone={statusTone(property.status)}>{statusLabel(property.status)}</Badge>
       </div>
 
       {property.rejectReason ? (
@@ -42,8 +58,18 @@ export default function CompanyPropertyDetailPage() {
           <p>この状態では内容はロックされています。修正が必要な場合は運営へ連絡してください。</p>
         </Card>
       ) : (
-        <PropertyForm initial={property} mode="edit" />
+        <PropertyForm initial={property} mode="edit" onDirtyChange={setDirty} />
       )}
+
+      <ConfirmDialog
+        open={askLeave}
+        title="入力内容はまだ保存されていません"
+        description="物件一覧へ戻ると、いまの変更は破棄されます。"
+        confirmLabel="変更を破棄する"
+        cancelLabel="編集を続ける"
+        onConfirm={() => navigate("/company/properties")}
+        onCancel={() => setAskLeave(false)}
+      />
     </div>
   );
 }

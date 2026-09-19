@@ -1,27 +1,15 @@
 "use client";
 
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Radio } from "lucide-react";
+import { Radio } from "lucide-react";
 import { users } from "@/lib/seed";
 import { useStore } from "@/lib/store";
 import { Button, Card } from "@/components/ui";
 
 const steps = [
-  {
-    n: "01",
-    title: "物件を登録",
-    text: "管理会社から運営へ送信",
-  },
-  {
-    n: "02",
-    title: "内容を確認",
-    text: "番地・部屋番号などを目隠し",
-  },
-  {
-    n: "03",
-    title: "LINEへ配信",
-    text: "反応した会員をリスト化",
-  },
+  { n: "01", title: "物件を登録", text: "管理会社から運営へ送信" },
+  { n: "02", title: "内容を確認", text: "番地・部屋番号などを目隠し" },
+  { n: "03", title: "LINEへ配信", text: "反応した会員をリスト化" },
 ];
 
 export default function HomePage() {
@@ -30,82 +18,80 @@ export default function HomePage() {
 
   const enter = (userId: string, role: "admin" | "company") => {
     login(userId);
-    const href = role === "admin" ? "/admin" : "/company";
-    window.setTimeout(() => navigate(href), 0);
+    window.setTimeout(() => navigate(role === "admin" ? "/admin" : "/company"), 0);
   };
 
   const companyUsers = users.filter((user) => user.role === "company");
   const adminUsers = users.filter((user) => user.role === "admin");
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-aqua-500 text-white">
-              <Radio className="h-5 w-5" />
+    <div className="mesh-bg min-h-screen">
+      <div className="mx-auto flex min-h-screen max-w-[1080px] flex-col px-5 py-3 sm:px-6 lg:justify-center lg:py-4">
+        <header className="flex shrink-0 items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-ink text-white">
+              <Radio className="h-3.5 w-3.5" />
             </div>
-            <div>
-              <p className="font-display text-xl font-semibold tracking-tight">AQUALINE</p>
-              <p className="text-xs text-muted">未公開マンションのLINE配信</p>
-            </div>
+            <p className="font-display text-[15px] font-medium tracking-[-0.03em]">AQUALINE</p>
           </div>
-          <div className="sm:text-right">
-            <p className="text-xs font-semibold text-muted">AQUALINE デモ環境</p>
-            <p className="mt-0.5 text-xs text-muted">実際のLINE・実データには接続されていません</p>
-          </div>
+          <p className="text-[11px] tracking-[0.04em] text-muted">デモ環境・実データ未接続</p>
         </header>
 
-        <section className="mt-7 flex flex-col gap-6 lg:mt-8 lg:grid lg:grid-cols-[minmax(0,1.12fr)_minmax(20rem,0.88fr)] lg:items-start lg:gap-x-8 lg:gap-y-5">
-          <div className="order-2 lg:order-none">
-            <p className="inline-flex rounded-full bg-aqua-100 px-3 py-1 text-xs font-semibold text-aqua-700">
+        <section className="mt-3 grid items-start gap-4 lg:mt-3 lg:grid-cols-2 lg:items-center lg:gap-6">
+          <div className="min-w-0">
+            <p className="inline-flex rounded-full bg-aqua-50 px-2.5 py-0.5 text-[10px] font-medium tracking-[0.06em] text-aqua-700">
               ポータル掲載前の未公開期間を活用
             </p>
-            <h1 className="mt-3 font-display text-[2rem] font-semibold leading-[1.3] tracking-tight text-ink sm:text-[2.5rem] sm:leading-[1.25]">
+            <h1 className="mt-2 font-display text-[1.55rem] font-medium leading-[1.2] tracking-[-0.04em] text-ink sm:text-[1.85rem]">
               未公開物件を、
               <br />
-              <span className="whitespace-nowrap">公式LINEで先に届ける。</span>
+              <span className="text-aqua-700">公式LINE</span>で先に届ける。
             </h1>
-            <p className="mt-3 max-w-xl text-[15px] leading-7 text-muted">
-              管理会社から届いた未公開物件をAQUALINE運営が確認し、必要な情報を目隠ししたうえで公式LINEへ配信。反応した会員をリスト化し、個別フォローにつなげます。
+            <p className="mt-2 max-w-md text-[13px] leading-5 text-muted">
+              管理会社が登録し、運営が確認・目隠ししたうえで公式LINEへ配信。反応した会員をリスト化します。
             </p>
+            <div className="mt-3 hidden grid-cols-3 gap-2 lg:grid">
+              {steps.map((step) => (
+                <Card key={step.n} className="px-2.5 py-2">
+                  <p className="font-display text-[10px] font-medium tracking-[0.06em] text-aqua-700">{step.n}</p>
+                  <p className="mt-0.5 text-[12px] font-medium text-ink">{step.title}</p>
+                  <p className="mt-0.5 text-[10px] leading-4 text-muted">{step.text}</p>
+                </Card>
+              ))}
+            </div>
           </div>
 
-          <Card className="order-3 p-5 sm:p-6 lg:order-none lg:row-span-2 lg:self-stretch">
-            <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">デモを開始</h2>
-            <p className="mt-1 text-sm leading-6 text-muted">操作する立場を選んでください。ログインは不要です。</p>
+          <Card className="p-3 sm:p-3.5">
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 className="font-display text-[15px] font-medium tracking-[-0.03em] text-ink">デモを開始</h2>
+              <p className="text-[11px] text-muted">ログイン不要</p>
+            </div>
 
-            <div className="mt-5 space-y-5">
-              <div className="rounded-2xl bg-slate-50 p-3 sm:p-4">
-                <p className="text-sm font-semibold text-ink">管理会社として操作</p>
-                <p className="mt-1 text-xs leading-5 text-muted">
-                  物件を登録し、運営へ確認依頼を送ります
-                </p>
-                <div className="mt-3 space-y-3">
+            <div className="mt-2.5 space-y-2">
+              <div className="rounded-[16px] bg-canvas px-2.5 py-2">
+                <p className="text-[12px] font-medium text-ink">管理会社として操作</p>
+                <div className="mt-1.5 space-y-1.5">
                   {companyUsers.map((user) => (
-                    <PersonCard
+                    <PersonRow
                       key={user.id}
                       name={user.name}
                       company={user.companyName ?? ""}
-                      cta="この担当者で開始 →"
+                      cta="開始"
                       onClick={() => enter(user.id, "company")}
                     />
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-aqua-100 bg-aqua-50/70 p-3 sm:p-4">
-                <p className="text-sm font-semibold text-ink">AQUALINE運営として操作</p>
-                <p className="mt-1 text-xs leading-5 text-muted">
-                  届いた物件を確認し、LINE配信までを体験します
-                </p>
-                <div className="mt-3 space-y-3">
+              <div className="rounded-[16px] bg-aqua-50 px-2.5 py-2">
+                <p className="text-[12px] font-medium text-ink">AQUALINE運営として操作</p>
+                <div className="mt-1.5 space-y-1.5">
                   {adminUsers.map((user) => (
-                    <PersonCard
+                    <PersonRow
                       key={user.id}
                       name={user.name}
                       company="AQUALINE 運営"
-                      cta="運営画面を開く →"
+                      cta="開く"
                       onClick={() => enter(user.id, "admin")}
                     />
                   ))}
@@ -113,33 +99,25 @@ export default function HomePage() {
               </div>
             </div>
           </Card>
-
-          <div className="order-4 lg:order-none">
-            <div className="flex flex-col sm:flex-row sm:items-stretch">
-              {steps.map((step, index) => (
-                <div key={step.n} className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-stretch">
-                  <Card className="min-h-11 flex-1 px-4 py-3.5">
-                    <p className="font-display text-xs font-semibold tracking-wide text-aqua-700">{step.n}</p>
-                    <p className="mt-1 text-sm font-semibold text-ink">{step.title}</p>
-                    <p className="mt-1 text-xs leading-5 text-muted">{step.text}</p>
-                  </Card>
-                  {index < steps.length - 1 ? (
-                    <div className="flex items-center justify-center py-1 sm:px-1.5 sm:py-0" aria-hidden>
-                      <ArrowRight className="hidden h-3.5 w-3.5 text-aqua-200 sm:block" />
-                      <div className="h-3 w-px bg-aqua-200 sm:hidden" />
-                    </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
+
+        <div className="mt-3 grid gap-1.5 lg:hidden">
+          {steps.map((step) => (
+            <Card key={step.n} className="px-3 py-2">
+              <p className="text-[12px] font-medium text-ink">
+                <span className="mr-2 text-aqua-700">{step.n}</span>
+                {step.title}
+                <span className="ml-2 font-normal text-muted">{step.text}</span>
+              </p>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-function PersonCard({
+function PersonRow({
   name,
   company,
   cta,
@@ -151,10 +129,15 @@ function PersonCard({
   onClick: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-3.5">
-      <p className="text-[15px] font-semibold text-ink">{name}</p>
-      <p className="mt-0.5 text-xs text-muted">{company}</p>
-      <Button className="mt-3 min-h-11 w-full" onClick={onClick}>
+    <div className="flex items-center gap-2 rounded-[14px] border border-hairline bg-white px-2.5 py-1.5">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-[11px] font-medium text-aqua-700">
+        {name.slice(0, 1)}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-[12px] font-medium leading-4 text-ink">{name}</p>
+        <p className="truncate text-[10px] leading-4 text-muted">{company}</p>
+      </div>
+      <Button className="min-h-8 px-2.5 text-[11px]" onClick={onClick}>
         {cta}
       </Button>
     </div>

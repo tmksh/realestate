@@ -1,7 +1,7 @@
 "use client";
 
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, EyeOff, Plus, Trash2 } from "lucide-react";
 import { nowIso } from "@/lib/format";
 import { presetImages } from "@/lib/seed";
@@ -12,14 +12,21 @@ import { Button, Card, Field, Input, Select, Textarea } from "./ui";
 export function PropertyForm({
   initial,
   mode,
+  onDirtyChange,
 }: {
   initial: Property;
   mode: "create" | "edit";
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const navigate = useNavigate();
   const { saveProperty, submitProperty } = useStore();
   const [property, setProperty] = useState(initial);
+  const [baseline, setBaseline] = useState(initial);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    onDirtyChange?.(JSON.stringify(snapshot(property)) !== JSON.stringify(snapshot(baseline)));
+  }, [baseline, onDirtyChange, property]);
 
   const update = <K extends keyof Property>(key: K, value: Property[K]) => {
     setProperty((current) => ({ ...current, [key]: value, updatedAt: nowIso() }));
@@ -36,6 +43,7 @@ export function PropertyForm({
     };
     saveProperty(next);
     setProperty(next);
+    setBaseline(next);
     return next;
   };
 
@@ -64,7 +72,7 @@ export function PropertyForm({
         }
       }}
     >
-      <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5 sm:px-5">
+      <div className="rounded-2xl border border-aqua-100 bg-aqua-50/70 px-4 py-3.5 sm:px-5">
         <p className="text-[13px] font-semibold text-aqua-700">送信に必要な項目</p>
         <p className="mt-1 text-sm font-medium text-ink">
           マンション名 / 市区町村 / 町名 / 最寄駅 / 価格
@@ -326,8 +334,8 @@ export function PropertyForm({
                     selected ? property.images.filter((item) => item !== src) : [...property.images, src],
                   )
                 }
-                className={`relative overflow-hidden rounded-2xl border-2 ${
-                  selected ? "border-aqua-500 ring-4 ring-aqua-100" : "border-slate-200"
+                className={`relative overflow-hidden rounded-[20px] border ${
+                  selected ? "border-ink ring-4 ring-aqua-50" : "border-hairline"
                 }`}
               >
                 <div className="aspect-[16/10] bg-cover bg-center" style={{ backgroundImage: `url(${src})` }} />
@@ -343,7 +351,7 @@ export function PropertyForm({
         </div>
       </Card>
 
-      <div className="sticky bottom-20 z-10 -mx-4 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-2xl sm:border lg:bottom-4">
+      <div className="sticky bottom-20 z-10 -mx-4 border-t border-hairline bg-[rgba(250,248,244,0.94)] px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-[24px] sm:border lg:bottom-4">
         <p className="text-[13px] text-muted">
           {canSubmit
             ? saved
@@ -351,13 +359,13 @@ export function PropertyForm({
               : "送信後は運営の確認待ちになります"
             : `${missingRequired.join("・")}を入力すると送信できます`}
         </p>
-        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button type="submit" variant="secondary" className="order-2 min-h-11 sm:order-1 sm:w-auto">
+        <div className="mt-3 flex gap-2 sm:justify-end">
+          <Button type="submit" variant="secondary" className="min-h-11 flex-1 whitespace-nowrap sm:flex-none">
             下書き保存
           </Button>
           <Button
             type="button"
-            className="order-1 min-h-11 sm:order-2 sm:min-w-40"
+            className="min-h-11 flex-1 whitespace-nowrap sm:min-w-40 sm:flex-none"
             disabled={!canSubmit}
             onClick={() => {
               const next = persist("submitted");
@@ -373,6 +381,17 @@ export function PropertyForm({
   );
 }
 
+function snapshot(property: Property) {
+  return {
+    ...property,
+    updatedAt: "",
+    createdAt: "",
+    submittedAt: "",
+    reviewedAt: "",
+    broadcastedAt: "",
+  };
+}
+
 function CardHeading({
   title,
   description,
@@ -384,7 +403,7 @@ function CardHeading({
 }) {
   return (
     <div className={className}>
-      <h2 className="font-display text-lg font-semibold text-ink sm:text-xl">{title}</h2>
+      <h2 className="font-display text-lg font-medium tracking-[-0.03em] text-ink sm:text-xl">{title}</h2>
       <p className="mt-1 text-[13px] leading-6 text-muted sm:text-sm">{description}</p>
     </div>
   );

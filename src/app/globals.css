@@ -3,18 +3,22 @@
 :root {
   --font-outfit: "Outfit", sans-serif;
   --font-sans-jp: "Noto Sans JP", sans-serif;
-  --aqua-50: #f3fbff;
-  --aqua-100: #e4f5fc;
-  --aqua-200: #c5ebf8;
-  --aqua-300: #8fd8f2;
-  --aqua-400: #4fc3e8;
-  --aqua-500: #1aa7d4;
-  --aqua-600: #0d8bb6;
-  --aqua-700: #0c6f91;
-  --ink: #10232d;
-  --muted: #5d7380;
+  --aqua-50: #eef3f1;
+  --aqua-100: #dce8e5;
+  --aqua-200: #b7d0cb;
+  --aqua-300: #82b0a8;
+  --aqua-400: #4d8b83;
+  --aqua-500: #1f6b66;
+  --aqua-600: #185651;
+  --aqua-700: #12423e;
+  --ink: #161412;
+  --muted: #6d675f;
   --line: #06c755;
-  --bg: #f4f9fc;
+  --bg: #f3f0ea;
+  --surface: #ffffff;
+  --hairline: #e4e0d8;
+  --canvas: #faf8f4;
+  --ring: rgba(31, 107, 102, 0.16);
 }
 
 @theme inline {
@@ -30,6 +34,9 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-hairline: var(--hairline);
+  --color-canvas: var(--canvas);
   --font-sans: var(--font-sans-jp), var(--font-outfit), ui-sans-serif, system-ui;
   --font-display: var(--font-outfit), var(--font-sans-jp), ui-sans-serif, system-ui;
 }
@@ -57,14 +64,14 @@ textarea {
 }
 
 ::selection {
-  background: #bae6f5;
+  background: #d5e6e2;
 }
 
 .mesh-bg {
   background:
-    radial-gradient(1200px 600px at 10% -10%, #c5ebf8 0%, transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, #d9f3fb 0%, transparent 50%),
-    linear-gradient(180deg, #f7fcff 0%, #eef6fa 100%);
+    radial-gradient(900px 420px at 8% -8%, rgba(31, 107, 102, 0.07), transparent 55%),
+    radial-gradient(720px 380px at 100% 0%, rgba(228, 224, 216, 0.7), transparent 50%),
+    var(--bg);
 }
 
 .glass {
@@ -72,19 +79,25 @@ textarea {
   backdrop-filter: blur(18px);
 }
 
-.phone-frame {
-  background: linear-gradient(180deg, #1c2b33 0%, #0f171c 100%);
+.line-chat-bg {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.14), transparent 42%),
+    linear-gradient(180deg, #8aa6b8 0%, #7b98ab 100%);
 }
 
 .line-bubble {
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(16, 35, 45, 0.08);
+  box-shadow: 0 1px 1px rgba(16, 34, 43, 0.06);
+}
+
+.line-bubble-in {
+  border-radius: 16px 16px 16px 4px;
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -93,5 +106,10 @@ textarea {
 }
 
 .rise {
-  animation: rise 0.45s ease both;
+  animation: rise 0.4s ease both;
+}
+
+.property-photo {
+  object-fit: cover;
+  object-position: center 28%;
 }
