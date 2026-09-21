@@ -26,7 +26,7 @@ export function BrandMark({ collapsed = false }: { collapsed?: boolean }) {
         <Radio className="h-3.5 w-3.5" />
       </div>
       {collapsed ? null : (
-        <p className="font-display text-[15px] font-semibold tracking-[-0.04em] text-ink">AQUALINE</p>
+        <p className="font-display text-[15px] font-semibold tracking-[-0.04em] text-ink">マンション発信ツール</p>
       )}
     </div>
   );

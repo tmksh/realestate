@@ -9,7 +9,7 @@
   --ok: #2f7d4a;
   --wait: #9a6b12;
   --ng: #a33;
-  --nav: 112px;
+  --nav: 180px;
 }
 
 * {
@@ -50,6 +50,7 @@ a {
 
 .wrap {
   display: flex;
+  width: 100%;
   min-height: 100vh;
 }
 
@@ -60,7 +61,7 @@ nav {
   width: var(--nav);
   height: 100vh;
   overflow: auto;
-  padding: 18px 6px 32px;
+  padding: 18px 12px 32px;
   background: #fff;
   border-right: 1px solid var(--line);
   flex-shrink: 0;
@@ -85,7 +86,7 @@ nav a {
   text-decoration: none;
   color: var(--sub);
   font-size: 12px;
-  padding: 4px 4px;
+  padding: 5px 8px;
   border-radius: 6px;
   white-space: nowrap;
 }
@@ -98,8 +99,9 @@ nav a.active {
 
 main {
   flex: 1;
-  max-width: 900px;
-  padding: 40px 36px 80px;
+  min-width: 0;
+  width: 100%;
+  padding: 40px 48px 80px;
 }
 
 .tag {
@@ -203,7 +205,6 @@ p.lead {
 
 table {
   width: 100%;
-  min-width: 720px;
   border-collapse: collapse;
   background: #fff;
   font-size: 13.5px;
@@ -216,7 +217,6 @@ td {
   padding: 8px 10px;
   text-align: left;
   vertical-align: top;
-  white-space: nowrap;
 }
 
 th {

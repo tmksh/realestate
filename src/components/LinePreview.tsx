@@ -37,7 +37,7 @@ export function LinePreview({ property }: { property: Property }) {
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#06c755] text-[10px] font-bold text-white">
             AQ
           </div>
-          <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-[#111]">AQUALINE</p>
+          <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-[#111]">マンション発信ツール</p>
           <Home className="h-4 w-4 shrink-0 text-[#111]" strokeWidth={1.8} />
           <Menu className="h-4 w-4 shrink-0 text-[#111]" strokeWidth={1.8} />
         </div>
@@ -91,7 +91,7 @@ function Incoming({ children }: { children: ReactNode }) {
         AQ
       </div>
       <div className="min-w-0 max-w-[78%]">
-        <p className="mb-0.5 pl-1 text-[10px] text-[#3d4a52]">AQUALINE</p>
+        <p className="mb-0.5 pl-1 text-[10px] text-[#3d4a52]">マンション発信ツール</p>
         {children}
       </div>
       <p className="mb-1 shrink-0 text-[10px] leading-none text-[#3d4a52]">18:24</p>

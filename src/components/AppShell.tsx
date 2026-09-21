@@ -122,7 +122,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-2 border-b border-hairline bg-white/80 px-4 backdrop-blur-xl sm:gap-4 sm:px-8">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold tracking-[-0.02em] text-ink">
-                {user.companyName ?? "AQUALINE 運営"}
+                {user.companyName ?? "運営"}
               </p>
               <p className="truncate text-[12px] text-muted">{user.title}</p>
             </div>

@@ -79,13 +79,13 @@ export default function HomePage() {
               </div>
 
               <div className="rounded-[20px] border border-hairline bg-white px-3 py-3">
-                <p className="text-[12px] font-medium text-muted">AQUALINE運営として操作</p>
+                <p className="text-[12px] font-medium text-muted">運営として操作</p>
                 <div className="mt-2 space-y-2">
                   {adminUsers.map((user) => (
                     <PersonRow
                       key={user.id}
                       name={user.name}
-                      company="AQUALINE 運営"
+                      company="運営"
                       cta="開く"
                       onClick={() => enter(user.id, "admin")}
                     />

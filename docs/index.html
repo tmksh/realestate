@@ -3,12 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>仕様書 — AQUALINE</title>
-    <meta name="description" content="未公開マンションを公式LINEで先出し配信するAQUALINEのシステム仕様書です。" />
-    <link rel="stylesheet" href="./styles.css?v=8" />
-    <style>
-      nav { width: 112px !important; padding-left: 6px !important; padding-right: 6px !important; }
-    </style>
+    <title>仕様書 — マンション発信ツール</title>
+    <meta name="description" content="未公開マンションを公式LINEで先出し配信するマンション発信ツールのシステム仕様書です。" />
+    <link rel="stylesheet" href="./styles.css?v=10" />
   </head>
   <body>
     <a class="skip" href="#overview">本文へ移動</a>
@@ -17,11 +14,11 @@
       <button class="menu-btn" type="button" data-nav-toggle aria-label="目次を開く" aria-expanded="false">
         <span></span>
       </button>
-      <p class="topbar-kicker">AQUALINE / 仕様書</p>
+      <p class="topbar-kicker">マンション発信ツール / 仕様書</p>
     </header>
     <div class="wrap">
       <nav aria-label="仕様書の目次">
-        <div class="brand">AQUALINE / 仕様書</div>
+        <div class="brand">マンション発信ツール</div>
         <strong>仕様書</strong>
         <a href="#overview">システム概要</a>
         <a href="#flow">業務フロー</a>
@@ -39,7 +36,7 @@
 
       <main>
         <span class="tag">仕様書 / 2026-09-20</span>
-        <h1>AQUALINE システム仕様書</h1>
+        <h1>マンション発信ツール システム仕様書</h1>
         <p class="lead">未公開マンションを公式LINEで先出し配信するモックです。目的、役割、画面、流れ、実装済みとモックの切り分けをまとめます。APIキーやパスワードは書かない。</p>
 
         <div class="cards">
@@ -64,7 +61,7 @@
         <h2 id="overview">1. システム概要</h2>
         <p class="lead">SUUMOなどへ一般公開する前の短い期間を使い、既存のLINE会員へ先に物件を届けます。</p>
         <p>
-          AQUALINEは、ポータル掲載前の未公開マンションを管理会社が登録し、運営が確認・目隠ししたうえで公式LINEへ配信し、反応した会員をリスト化するツールです。この文書は、初めて見る人が全体像を把握するための仕様書です。
+          マンション発信ツールは、ポータル掲載前の未公開マンションを管理会社が登録し、運営が確認・目隠ししたうえで公式LINEへ配信し、反応した会員をリスト化します。この文書は、初めて見る人が全体像を把握するための仕様書です。
         </p>
         <div class="note">
           <strong>いま見ているのはモック環境です</strong>
@@ -265,7 +262,7 @@
         <article class="card screen">
           <h3>デモ開始 <code>/</code></h3>
           <dl class="dl">
-            <div><dt>表示</dt><dd>AQUALINEの説明、3ステップ、管理会社2名・運営1名の開始ボタン。「デモ環境・実データ未接続」。</dd></div>
+            <div><dt>表示</dt><dd>マンション発信ツールの説明、3ステップ、管理会社2名・運営1名の開始ボタン。「デモ環境・実データ未接続」。</dd></div>
             <div><dt>操作</dt><dd>担当者の「開始／開く」でその役割になり、管理会社は <code>/company</code>、運営は <code>/admin</code> へ進みます。</dd></div>
             <div><dt>権限</dt><dd>パスワードはありません。オーナーはこの画面からは入れません。</dd></div>
           </dl>
@@ -581,7 +578,7 @@
         </div>
 
         <footer>
-          更新 2026-09-20　AQUALINE　社内用。本体アプリの画面やデータを変更するものではありません。
+          更新 2026-09-20　マンション発信ツール　社内用。本体アプリの画面やデータを変更するものではありません。
         </footer>
       </main>
     </div>
