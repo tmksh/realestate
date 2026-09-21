@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>仕様書 — マンション発信ツール</title>
     <meta name="description" content="未公開マンションを公式LINEで先出し配信するマンション発信ツールのシステム仕様書です。" />
-    <link rel="stylesheet" href="./styles.css?v=10" />
+    <link rel="stylesheet" href="./styles.css?v=11" />
   </head>
   <body>
     <a class="skip" href="#overview">本文へ移動</a>
@@ -35,22 +35,22 @@
       </nav>
 
       <main>
-        <span class="tag">仕様書 / 2026-09-20</span>
+        <span class="tag">仕様書 / 2026-09-21</span>
         <h1>マンション発信ツール システム仕様書</h1>
-        <p class="lead">未公開マンションを公式LINEで先出し配信するモックです。目的、役割、画面、流れ、実装済みとモックの切り分けをまとめます。APIキーやパスワードは書かない。</p>
+        <p class="lead">未公開マンションを公式LINEで先出し配信するモックです。役割、画面、操作の流れ、実装済みとデモだけの切り分けをまとめます。APIキーやパスワードは書かない。</p>
 
         <div class="cards">
           <div class="card">
-            <div class="k">実行</div>
+            <div class="k">アプリ</div>
             <div class="v">Vite 8 / React 19 / React Router 7</div>
           </div>
           <div class="card">
             <div class="k">保存</div>
-            <div class="v"><code>aqualine-store-v2</code></div>
+            <div class="v">ブラウザの localStorage のみ</div>
           </div>
           <div class="card">
-            <div class="k">公開</div>
-            <div class="v">Netlify（<code>dist</code>）</div>
+            <div class="k">この仕様書</div>
+            <div class="v">GitHub Pages（<code>docs/</code>）</div>
           </div>
           <div class="card">
             <div class="k">状態</div>
@@ -180,7 +180,7 @@
               <td><code>/company/properties</code></td>
               <td>管理会社・オーナー</td>
               <td>物件を状態で探す</td>
-              <td>絞り込み、カード表示、登録へ進む（管理会社のみ）</td>
+              <td>すべて／下書き／確認待ち／差戻し／配信済み。配信準備のタブはない</td>
             </tr>
             <tr>
               <td>物件を登録</td>
@@ -465,9 +465,9 @@
         <div class="grid-2">
           <article class="card">
             <p class="kicker">実際に使っている</p>
-            <h3>Netlify ／ Unsplash</h3>
+            <h3>GitHub Pages ／ Unsplash</h3>
             <ul>
-              <li>Netlifyは静的ファイルの公開先です。APIはありません。</li>
+              <li>この仕様書は GitHub Pages で公開します。フォルダは <code>docs/</code> です。</li>
               <li>物件写真は Unsplash の画像URLです。自社ストレージではありません。</li>
             </ul>
           </article>
@@ -516,9 +516,14 @@
               <td>キーは <code>aqualine-store-v2</code></td>
             </tr>
             <tr>
-              <td>公開</td>
-              <td>Netlify（<code>dist</code>）</td>
-              <td>深いURLはすべて <code>index.html</code> に返します</td>
+              <td>仕様書の公開</td>
+              <td>GitHub Pages</td>
+              <td>リポジトリの <code>docs/</code> を配信します</td>
+            </tr>
+            <tr>
+              <td>アプリの起動</td>
+              <td>ローカルの Vite</td>
+              <td>深いURLを直接開くには、ホスト側で全パスを <code>index.html</code> に返す設定が必要です</td>
             </tr>
             <tr>
               <td>使っていない残ファイル</td>
@@ -541,7 +546,7 @@
               <li>メール招待</li>
               <li>複数人・複数端末での同時編集</li>
               <li>本格的な検索・ページング</li>
-              <li>READMEにあるリセットボタン（関数はあるが画面にない）</li>
+              <li>初期状態に戻すリセットボタンは画面にない</li>
             </ul>
           </article>
           <article class="card">
@@ -571,6 +576,7 @@
             <li>オーナーはトップから入れません。運営の「表示を確認」経由です。招待中・停止中は入れません。</li>
             <li>確認待ち一覧には、差戻し済みの物件も含まれます。</li>
             <li>カード／一覧の選択は、確認待ちと配信履歴で共有されます。</li>
+            <li>この仕様書は GitHub Pages（<code>docs/</code>）で公開します。アプリ本体はローカルの Vite です。</li>
             <li>実行基盤は Vite のSPAです。Next.jsのファイルが残っていても、起動には使いません。</li>
             <li>深いURLを直接開くには、静的ホスト側で全パスを <code>index.html</code> に返す設定が必要です。</li>
             <li>写真は Unsplash に依存します。オフラインやリンク切れでは画像が出ないことがあります。</li>
@@ -578,7 +584,7 @@
         </div>
 
         <footer>
-          更新 2026-09-20　マンション発信ツール　社内用。本体アプリの画面やデータを変更するものではありません。
+          更新 2026-09-21　マンション発信ツール　GitHub Pages 公開用。本体アプリの画面やデータを変更するものではありません。
         </footer>
       </main>
     </div>

@@ -2,6 +2,13 @@
 
 未公開マンション物件を、管理会社が登録し運営が確認してから公式LINEで配信するツールです。議事録「案件①」のモックです。
 
+## 仕様書
+
+GitHub Pages で公開しています。
+
+- 公開ページ: [https://tmksh.github.io/realestate/](https://tmksh.github.io/realestate/)
+- ソース: [`docs/index.html`](docs/index.html)
+
 ## 起動
 
 ```bash
@@ -18,7 +25,7 @@ npm run dev
 - 管理会社：物件登録 → 運営へ送信
 - 運営：目隠し設定 → 公式LINE配信 → 反応リスト
 
-操作内容はブラウザの localStorage に保存されます。サイドバーの「リセット」で初期データに戻せます。
+操作内容はブラウザの localStorage に保存されます。
 
 ## 実装範囲（案件①）
 

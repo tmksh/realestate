@@ -35,7 +35,7 @@ export function LinePreview({ property }: { property: Property }) {
         <div className="flex items-center gap-2 border-b border-[#eceff2] px-2 py-2">
           <ChevronLeft className="h-5 w-5 shrink-0 text-[#111]" strokeWidth={2.2} />
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#06c755] text-[10px] font-bold text-white">
-            AQ
+            発
           </div>
           <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-[#111]">マンション発信ツール</p>
           <Home className="h-4 w-4 shrink-0 text-[#111]" strokeWidth={1.8} />
