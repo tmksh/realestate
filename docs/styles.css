@@ -3,7 +3,7 @@
   --gold-light: #e0c97a;
   --text: #2b2620;
   --sub: #6b6357;
-  --bg: #fdfbf6;
+  --bg: #ffffff;
   --card: #fff;
   --line: #eee0bd;
   --ok: #2f7d4a;
@@ -18,12 +18,13 @@
 
 html {
   scroll-behavior: smooth;
+  background: #ffffff;
 }
 
 body {
   margin: 0;
   font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
-  background: var(--bg);
+  background: #ffffff;
   color: var(--text);
   line-height: 1.7;
   font-size: 15px;
@@ -52,6 +53,7 @@ a {
   display: flex;
   width: 100%;
   min-height: 100vh;
+  background: #ffffff;
 }
 
 nav {
@@ -205,6 +207,7 @@ p.lead {
 
 table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   background: #fff;
   font-size: 13.5px;
@@ -217,6 +220,7 @@ td {
   padding: 8px 10px;
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 th {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>仕様書 — マンション発信ツール</title>
     <meta name="description" content="未公開マンションを公式LINEで先出し配信するマンション発信ツールのシステム仕様書です。" />
-    <link rel="stylesheet" href="./styles.css?v=11" />
+    <link rel="stylesheet" href="./styles.css?v=14" />
   </head>
   <body>
     <a class="skip" href="#overview">本文へ移動</a>
@@ -29,6 +29,7 @@
         <a href="#status">ステータス</a>
         <a href="#data">データ仕様</a>
         <a href="#integrations">外部連携</a>
+        <a href="#line">LINE連携</a>
         <a href="#stack">技術構成</a>
         <a href="#mock">モック／未実装</a>
         <a href="#notes">制約・注意</a>
@@ -475,7 +476,7 @@
             <p class="kicker">モックのみ</p>
             <h3>公式LINE ／ 会員 ／ メール</h3>
             <ul>
-              <li>LINE Messaging APIはありません。配信ボタンは画面内の状態を変えるだけです。</li>
+              <li>LINE Messaging APIはありません。配信ボタンは画面内の状態を変えるだけです。本番の範囲と手順は <a href="#line">10. LINE連携</a> にあります。</li>
               <li>会員・反応の受信（Webhook）はありません。</li>
               <li>オーナーのメールは保存するだけで、招待メールは送りません。</li>
               <li>自前のREST API・データベースはありません。</li>
@@ -483,7 +484,335 @@
           </article>
         </div>
 
-        <h2 id="stack">10. 技術構成</h2>
+        <h2 id="line">10. LINE連携（本番でつなぐ場合）</h2>
+        <p class="lead">いまの画面はモックです。本番では LINE公式アカウントの Messaging API を使います。以下は、このツールとしてどこまでできるかと、つなぎ方です。出典は <a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">LINE Developers 公式</a> です。トークンやパスワードは書きません。</p>
+
+        <div class="note">
+          <strong>このツールで必要な連携は2つです</strong>
+          <span>① 友だちへ物件メッセージを送る。② 友だち追加・テキスト・スタンプ・ボタン操作を受け取る。LINEの全機能は使いません。メールや電話番号は取れません。</span>
+        </div>
+
+        <h3>10-1. どこまでのことができるか</h3>
+        <p>本番でつないだあと、このツールとして使う範囲です。LINE公式アカウントに備わっている機能の全部ではありません。</p>
+        <div class="grid-3">
+          <article class="card">
+            <p class="kicker">できる（このツールで使う）</p>
+            <h3>送る・受け取る</h3>
+            <ul>
+              <li>友だち全員へ同じ物件を送る</li>
+              <li>会員を指定して一部だけに送る</li>
+              <li>1人へ個別に送る（反応への返信など）</li>
+              <li>テキスト、画像、カード型で物件を見せる</li>
+              <li>メッセージ上のボタンで「気になる」を受け取る</li>
+              <li>友だち追加・ブロックを会員一覧に反映する</li>
+              <li>テキスト・スタンプを反応として残す</li>
+              <li>表示名と画像を会員名に使う</li>
+              <li>当月の送信通数の目安を取る</li>
+            </ul>
+          </article>
+          <article class="card">
+            <p class="kicker">LINE上はできるが使わない</p>
+            <h3>このツールの対象外</h3>
+            <ul>
+              <li>グループトークへの参加・送信</li>
+              <li>トーク下のリッチメニュー</li>
+              <li>ビーコン（店舗の接近検知）</li>
+              <li>年齢・地域などの属性で絞る配信</li>
+              <li>動画・音声・位置情報・クーポンの送信</li>
+              <li>LINEログインやLIFFアプリ</li>
+              <li>自社会員IDとLINEの画面上の紐づけ</li>
+            </ul>
+          </article>
+          <article class="card">
+            <p class="kicker">できない</p>
+            <h3>APIの外／別契約</h3>
+            <ul>
+              <li>友だちが読んでいないトークの中身を見る</li>
+              <li>Facebookのような「いいね」を公式機能として取る</li>
+              <li>メール・電話・本名・住所を Messaging API だけで取る</li>
+              <li>ブロック中の人、未友だち、他社アカウントの友だちに送る</li>
+              <li>PDFファイルそのものをLINEに置いて開く（URL案内は可）</li>
+              <li>過去のトーク履歴をさかのぼって全部取る</li>
+              <li>料金プランの通数上限を超えた無制限配信</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>やりたいこと</th>
+              <th>できるか</th>
+              <th>補足</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>未公開物件を友だちのトークへ先出しする</td>
+              <td class="ok">できる</td>
+              <td>全員へ同じ文面、または会員指定。1回の送信でメッセージは最大5個</td>
+            </tr>
+            <tr>
+              <td>誰が友だちで、誰がブロックしたかを知る</td>
+              <td class="ok">できる</td>
+              <td>追加・ブロックの時点から分かる。つなぐ前の友だち全員のID一覧は、認証済またはプレミアムアカウントだけ</td>
+            </tr>
+            <tr>
+              <td>表示名で会員を一覧する</td>
+              <td class="ok">できる</td>
+              <td>友だちであり、プロフィール提供に同意していることが条件</td>
+            </tr>
+            <tr>
+              <td>テキストやスタンプの反応を物件に紐づける</td>
+              <td class="ok">できる</td>
+              <td>届いたときから記録する。過去分は取れない</td>
+            </tr>
+            <tr>
+              <td>画面の「いいね」と同じ操作</td>
+              <td class="ok">ボタンで代用</td>
+              <td>LINEにいいねAPIはない。カードやFlexのボタンを押した合図を使う</td>
+            </tr>
+            <tr>
+              <td>箇条書き／カード形式で見せる</td>
+              <td class="ok">できる</td>
+              <td>本番ではテキスト＋画像、または Flex Message。モックの見た目そのものではない</td>
+            </tr>
+            <tr>
+              <td>PDFをトークで開く</td>
+              <td class="wait">一部だけ</td>
+              <td>ファイルそのものの配信はしない。リンク付きの案内にする</td>
+            </tr>
+            <tr>
+              <td>反応した人へ個別に返事する</td>
+              <td class="ok">できる</td>
+              <td>1人への送信。自動返事も可能だが、公式アカウント側の応答メッセージと二重にならないよう注意</td>
+            </tr>
+            <tr>
+              <td>地域や年齢で送り先を絞る</td>
+              <td class="wait">使わない</td>
+              <td>LINE側の絞り込み配信は別機能。統計情報の利用同意が必要</td>
+            </tr>
+            <tr>
+              <td>メールや電話で追客する</td>
+              <td class="ng">できない</td>
+              <td>Messaging API の範囲外。ログインや Profile+ の契約と同意が必要</td>
+            </tr>
+            <tr>
+              <td>読んでいない人のトークを運営が見る</td>
+              <td class="ng">できない</td>
+              <td>届いたメッセージとボタン操作だけがサーバーに来る</td>
+            </tr>
+            <tr>
+              <td>無制限に毎日送る</td>
+              <td class="ng">できない</td>
+              <td>料金プランごとに月の通数上限がある。届いた人数が通数になる</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Official Account Manager の画面から送ったメッセージは、APIの通数集計に含まれません。通数は届いた人数で数えます。ブロック中など届かない人は数えません。</p>
+
+        <h3>10-2. LINE側から取れる情報</h3>
+        <p>取得できる項目は、使うAPIで違います。メインプロフィールのみです。サブプロフィールは取れません。ユーザーIDはプロバイダーごとに別になります。</p>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>情報</th>
+              <th>Messaging API<br>（公式アカウント）</th>
+              <th>LINEログイン / LIFF<br>（同意が必要）</th>
+              <th>このツールでの使い方</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ユーザーID</td>
+              <td>取れる（<code>userId</code>）</td>
+              <td>取れる（<code>userId</code> / <code>sub</code>）</td>
+              <td>会員の識別。友だち追加時の Webhook から保存する</td>
+            </tr>
+            <tr>
+              <td>表示名</td>
+              <td>取れる（<code>displayName</code>）</td>
+              <td>取れる（スコープ <code>profile</code>）</td>
+              <td>会員一覧・反応リストの表示名</td>
+            </tr>
+            <tr>
+              <td>プロフィール画像</td>
+              <td>取れる（<code>pictureUrl</code>）</td>
+              <td>取れる</td>
+              <td>任意。一覧のアイコン</td>
+            </tr>
+            <tr>
+              <td>ステータスメッセージ</td>
+              <td>取れる</td>
+              <td>取れる場合あり</td>
+              <td>本ツールでは使わない</td>
+            </tr>
+            <tr>
+              <td>言語</td>
+              <td>取れる（<code>language</code>）</td>
+              <td>取れない</td>
+              <td>任意</td>
+            </tr>
+            <tr>
+              <td>友だち追加／ブロック</td>
+              <td>Webhook の <code>follow</code> / <code>unfollow</code></td>
+              <td>—</td>
+              <td>会員の登録・停止</td>
+            </tr>
+            <tr>
+              <td>テキスト</td>
+              <td>Webhook の message（text）</td>
+              <td>—</td>
+              <td>反応の「テキスト」</td>
+            </tr>
+            <tr>
+              <td>スタンプ</td>
+              <td>Webhook の message（sticker）</td>
+              <td>—</td>
+              <td>反応の「スタンプ」。パッケージIDとスタンプIDが届く</td>
+            </tr>
+            <tr>
+              <td>ボタン操作</td>
+              <td>Webhook の <code>postback</code></td>
+              <td>—</td>
+              <td>画面上の「いいね」相当。LINEに「いいね」イベントはない</td>
+            </tr>
+            <tr>
+              <td>メールアドレス</td>
+              <td>取れない</td>
+              <td>申請してスコープ <code>email</code>、ユーザー同意が必要</td>
+              <td>本ツールの会員管理では使わない想定</td>
+            </tr>
+            <tr>
+              <td>氏名・性別・誕生日・住所・電話</td>
+              <td>取れない</td>
+              <td>法人向け LINE Profile+ の契約が必要</td>
+              <td>使わない想定</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Messaging API でプロフィールを取るには、友だちであることと、ユーザーがプロフィール提供に同意していることが条件です。エンドポイントは <code>GET https://api.line.me/v2/bot/profile/&#123;userId&#125;</code> です。</p>
+        <p>友だち全員のユーザーID一覧（<code>GET /v2/bot/followers/ids</code>）は、認証済アカウントまたはプレミアムアカウントだけです。</p>
+
+        <h3>10-3. 配信の種類</h3>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>種類</th>
+              <th>対象</th>
+              <th>このツール</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ブロードキャスト</td>
+              <td>友だち全員に同じ文面</td>
+              <td>「公式LINEで配信」の本番相当</td>
+            </tr>
+            <tr>
+              <td>マルチキャスト</td>
+              <td>ユーザーIDを指定して複数人へ</td>
+              <td>特定会員だけに送る場合</td>
+            </tr>
+            <tr>
+              <td>プッシュ</td>
+              <td>1人へ個別送信</td>
+              <td>反応への返信など</td>
+            </tr>
+            <tr>
+              <td>応答（リプライ）</td>
+              <td>Webhook 受信から一定時間内の返信</td>
+              <td>自動応答が必要な場合</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>メッセージの形はテキスト、画像、テンプレート、Flex Message などです。本ツールの「箇条書き／カード／PDF」は、本番ではテキスト＋画像、または Flex Message に置き換えます。PDFはファイルそのものではなく、URL付きの案内にするのが一般的です。</p>
+
+        <h3>10-4. 連携の具体的な手順</h3>
+        <div class="card">
+          <ol>
+            <li><strong>ビジネスIDを作る。</strong> <a href="https://account.line.biz/" target="_blank" rel="noopener">LINE Official Account Manager</a> で、LINEアカウントまたはメールアドレスからビジネスIDを登録する。</li>
+            <li><strong>公式アカウントを作る。</strong> 作成フォームにアカウント名などを入れて保存する。既存の公式アカウントがある場合はそれを使う。</li>
+            <li><strong>Messaging API を有効にする。</strong> Official Account Manager の設定から Messaging API をオンにする。ここで Messaging API チャネルが作られる。<strong>プロバイダーは後から変更できない</strong>ので、同じ会社のログインやLIFFと同じプロバイダーを選ぶ。</li>
+            <li><strong>LINE Developers コンソールを開く。</strong> 同じログインで <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">developers.line.biz/console</a> に入り、作られたチャネルを確認する。コンソールから Messaging API チャネルを新規作成する手順は 2024年9月以降廃止されている。</li>
+            <li><strong>チャネルシークレットを控える。</strong> ［チャネル基本設定］のチャネルシークレットをサーバー側の環境変数に入れる。画面や仕様書には書かない。</li>
+            <li><strong>チャネルアクセストークンを発行する。</strong> ［Messaging API設定］で長期トークンを発行し、サーバー側の環境変数に入れる。ボットが配信APIを呼ぶときに使う。</li>
+            <li><strong>Webhook 用のHTTPSサーバーを用意する。</strong> 例: <code>https://（自社ドメイン）/api/line/webhook</code>。自己署名証明書は不可。ブラウザが信頼する証明書が必要。</li>
+            <li><strong>Webhook URL を登録する。</strong> コンソールの［Messaging API設定］→ Webhook URL を編集 → 更新 →［検証］が成功することを確認 →［Webhookの利用］をオン。</li>
+            <li><strong>署名を必ず検証する。</strong> 受信時にヘッダー <code>x-line-signature</code> を、チャネルシークレットによる HMAC-SHA256 で照合する。一致しないリクエストは捨てる。</li>
+            <li><strong>空の検証リクエストに 200 を返す。</strong> LINEからの確認は <code>&#123;"destination":"…","events":[]&#125;</code> の POST になる。ボディが空でも 200 を返す。</li>
+            <li><strong>応答設定を決める。</strong> ボットが返事する場合は、Official Account Manager の「応答メッセージ」をオフにする（二重応答を防ぐ）。</li>
+            <li><strong>友だち追加して確認する。</strong> コンソールの QR から公式アカウントを友だち追加する。サーバーログに <code>follow</code> が届くこと、ブロックすると <code>unfollow</code> が届くことを確認する。</li>
+            <li><strong>配信を試す。</strong> サーバーから <code>POST https://api.line.me/v2/bot/message/broadcast</code> に Bearer トークンとメッセージJSONを送る。友だちのトークに届くことを確認する。</li>
+            <li><strong>反応を保存する。</strong> 届いた Webhook の <code>source.userId</code> と、テキスト／スタンプ／ポストバックを、本ツールの反応リストと同じ形でサーバーに残す。</li>
+          </ol>
+        </div>
+
+        <h3>10-5. このツールの画面との対応</h3>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>画面の操作</th>
+              <th>本番で呼ぶもの</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>「公式LINEで配信」</td>
+              <td>ブロードキャスト（または会員ID指定のマルチキャスト）</td>
+            </tr>
+            <tr>
+              <td>LINE会員一覧</td>
+              <td><code>follow</code> で追加し、プロフィールAPIで表示名を補完。ブロックは <code>unfollow</code></td>
+            </tr>
+            <tr>
+              <td>反応の「テキスト」</td>
+              <td>message イベント（type: text）</td>
+            </tr>
+            <tr>
+              <td>反応の「スタンプ」</td>
+              <td>message イベント（type: sticker）</td>
+            </tr>
+            <tr>
+              <td>反応の「いいね」</td>
+              <td>LINEにいいねAPIはない。テンプレート／Flex のボタンをポストバックにし、data に物件IDを入れる</td>
+            </tr>
+            <tr>
+              <td>配信人数</td>
+              <td>友だち数。モックの 248名（12+236）は使わない</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>10-6. サーバー側の処理（Webhook受信後）</h3>
+        <div class="card">
+          <ol>
+            <li>生のリクエストボディを保存したうえで署名を検証する（パース後のJSONで署名すると失敗する）。</li>
+            <li>イベント配列を1件ずつ見る。<code>source.userId</code> が無いイベントは捨てる。</li>
+            <li><code>follow</code> … 会員を追加。続けてプロフィールAPIで表示名と画像を取る。</li>
+            <li><code>unfollow</code> … 会員を停止。配信対象から外す。</li>
+            <li><code>message</code>（text）… 反応（テキスト）として物件と紐づける。直近配信の物件IDをサーバー側で持つ。</li>
+            <li><code>message</code>（sticker）… 反応（スタンプ）。必要なら特定スタンプIDを「気になる」とみなす。</li>
+            <li><code>postback</code> … data が <code>like:&lt;物件ID&gt;</code> なら反応（いいね）。</li>
+            <li>処理できたら HTTP 200 を返す。長い処理はキューに回し、先に 200 を返す。</li>
+          </ol>
+        </div>
+
+        <div class="warn">
+          <strong>いまのモックでは未接続です</strong>
+          <span>「公式LINEで配信」を押しても実送信しません。チャネルシークレットとアクセストークンは環境変数にだけ置き、GitHub や仕様書には載せないでください。</span>
+        </div>
+        <p>公式ドキュメント：<a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">Messaging APIの概要</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/getting-started/" target="_blank" rel="noopener">Messaging APIを始めよう</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/building-bot/" target="_blank" rel="noopener">ボットを作成する</a> ／ <a href="https://developers.line.biz/ja/docs/basics/user-profile/" target="_blank" rel="noopener">ユーザーのプロフィール情報を取得する</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/sending-messages/" target="_blank" rel="noopener">メッセージを送信する</a></p>
+
+        <h2 id="stack">11. 技術構成</h2>
         <p class="lead">画面の動きは Vite のシングルページアプリです。リポジトリに Next.js の名残はありますが、起動には使いません。</p>
         <div class="table-wrap">
         <table>
@@ -534,7 +863,7 @@
         </table>
         </div>
 
-        <h2 id="mock">11. モック／未実装機能</h2>
+        <h2 id="mock">12. モック／未実装機能</h2>
         <div class="grid-2">
           <article class="card">
             <h3>未実装</h3>
@@ -564,7 +893,7 @@
           <span>「公式LINEで配信」を押しても実際のLINEには届きません。データは操作したブラウザの localStorage にだけ残ります。</span>
         </div>
 
-        <h2 id="notes">12. 制約・注意事項</h2>
+        <h2 id="notes">13. 制約・注意事項</h2>
         <div class="card">
           <ol>
             <li>本番システムではなく、操作確認用のモックです。</li>
