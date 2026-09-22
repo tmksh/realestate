@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Badge, Button, Card, Field, Input, PageHeader, Select } from "@/components/ui";
 import { formatDate, ownerStatusLabel, ownerStatusTone } from "@/lib/format";
 import { newId, nowIso } from "@/lib/format";
@@ -16,7 +16,7 @@ const emptyDraft = {
 };
 
 export default function OwnersPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { state, saveOwner, setOwnerStatus, loginOwner } = useStore();
   const [draft, setDraft] = useState(emptyDraft);
 
@@ -157,7 +157,7 @@ export default function OwnersPage() {
                   className="min-h-9 px-3 text-[12px]"
                   onClick={() => {
                     loginOwner(owner.id);
-                    navigate("/company");
+                    router.push("/company");
                   }}
                 >
                   表示を確認

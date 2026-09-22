@@ -43,7 +43,7 @@
         <div class="cards">
           <div class="card">
             <div class="k">アプリ</div>
-            <div class="v">Vite 8 / React 19 / React Router 7</div>
+            <div class="v">Next.js 16 / React 19</div>
           </div>
           <div class="card">
             <div class="k">保存</div>
@@ -813,7 +813,7 @@
         <p>公式ドキュメント：<a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">Messaging APIの概要</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/getting-started/" target="_blank" rel="noopener">Messaging APIを始めよう</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/building-bot/" target="_blank" rel="noopener">ボットを作成する</a> ／ <a href="https://developers.line.biz/ja/docs/basics/user-profile/" target="_blank" rel="noopener">ユーザーのプロフィール情報を取得する</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/sending-messages/" target="_blank" rel="noopener">メッセージを送信する</a></p>
 
         <h2 id="stack">11. 技術構成</h2>
-        <p class="lead">画面の動きは Vite のシングルページアプリです。リポジトリに Next.js の名残はありますが、起動には使いません。</p>
+        <p class="lead">画面の動きは Next.js の App Router です。データはこれまでどおりブラウザの localStorage に残します。</p>
         <div class="table-wrap">
         <table>
           <thead>
@@ -826,7 +826,7 @@
           <tbody>
             <tr>
               <td>実行</td>
-              <td>Vite 8、React 19、React Router 7</td>
+              <td>Next.js 16、React 19</td>
               <td><code>npm run dev</code> で 127.0.0.1:3000</td>
             </tr>
             <tr>
@@ -851,13 +851,8 @@
             </tr>
             <tr>
               <td>アプリの起動</td>
-              <td>ローカルの Vite</td>
-              <td>深いURLを直接開くには、ホスト側で全パスを <code>index.html</code> に返す設定が必要です</td>
-            </tr>
-            <tr>
-              <td>使っていない残ファイル</td>
-              <td>Next.js 16、<code>next.config.ts</code>、一部 layout</td>
-              <td>仕様上の実行基盤は Vite です</td>
+              <td>ローカルの Next.js</td>
+              <td>App Router が各 URL を処理します</td>
             </tr>
           </tbody>
         </table>
@@ -905,9 +900,8 @@
             <li>オーナーはトップから入れません。運営の「表示を確認」経由です。招待中・停止中は入れません。割り当てた下書き・差戻しは編集できます。</li>
             <li>確認待ち一覧には、差戻し済みの物件も含まれます。</li>
             <li>カード／一覧の選択は、確認待ちと配信履歴で共有されます。</li>
-            <li>この仕様書は GitHub Pages（<code>docs/</code>）で公開します。アプリ本体はローカルの Vite です。</li>
-            <li>実行基盤は Vite のSPAです。Next.jsのファイルが残っていても、起動には使いません。</li>
-            <li>深いURLを直接開くには、静的ホスト側で全パスを <code>index.html</code> に返す設定が必要です。</li>
+            <li>この仕様書は GitHub Pages（<code>docs/</code>）で公開します。アプリ本体はローカルの Next.js です。</li>
+            <li>実行基盤は Next.js 16 の App Router です。</li>
             <li>写真は Unsplash に依存します。オフラインやリンク切れでは画像が出ないことがあります。</li>
           </ol>
         </div>

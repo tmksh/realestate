@@ -1,6 +1,7 @@
 "use client";
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Building2,
@@ -40,8 +41,8 @@ function isNavActive(pathname: string, href: string) {
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = useLocation().pathname;
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
   const { state, logout } = useStore();
   const user = state.currentUser;
   const [collapsed, setCollapsed] = useState(false);
@@ -93,7 +94,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               return (
                 <Link
                   key={item.href}
-                  to={item.href}
+                  href={item.href}
                   title={item.label}
                   className={`flex items-center rounded-[16px] text-[13px] font-medium transition ${
                     collapsed ? "justify-center px-0 py-2.5" : "justify-between gap-1 px-2.5 py-2"
@@ -139,7 +140,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 className="min-h-9 shrink-0 whitespace-nowrap px-2.5 text-muted sm:px-4"
                 onClick={() => {
                   logout();
-                  navigate("/");
+                  router.push("/");
                 }}
               >
                 <LogOut className="h-4 w-4" />
@@ -161,7 +162,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               return (
                 <Link
                   key={item.href}
-                  to={item.href}
+                  href={item.href}
                   className={`flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-[14px] px-0.5 py-1.5 text-[10px] font-medium leading-none ${
                     active ? "bg-canvas text-ink" : "text-muted"
                   }`}

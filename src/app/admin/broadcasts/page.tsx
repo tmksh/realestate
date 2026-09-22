@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { PropertyPhoto } from "@/components/PropertyCard";
 import { Badge, Card, EmptyState, MetaCount, PageHeader, ViewToggle, tableHeadClass, tableRowClass } from "@/components/ui";
 import { formatDateTime, formatLabel, statusLabel, statusTone } from "@/lib/format";
@@ -39,7 +39,7 @@ export default function BroadcastsPage() {
                 return (
                   <Link
                     key={broadcast.id}
-                    to={`/admin/broadcasts/${broadcast.id}`}
+                    href={`/admin/broadcasts/${broadcast.id}`}
                     className="group block h-full rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2"
                   >
                     <Card className="flex h-full flex-col overflow-hidden transition duration-200 group-hover:shadow-[var(--shadow-lift)]">
@@ -92,7 +92,7 @@ export default function BroadcastsPage() {
                 return (
                   <Link
                     key={broadcast.id}
-                    to={`/admin/broadcasts/${broadcast.id}`}
+                    href={`/admin/broadcasts/${broadcast.id}`}
                     className={`${tableRowClass} hover:bg-canvas/60 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_1fr_80px_110px]`}
                   >
                     <div className="flex min-w-0 items-center gap-3">

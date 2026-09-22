@@ -1,6 +1,6 @@
 "use client";
 
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useStore } from "@/lib/store";
 import type { Role } from "@/lib/types";
@@ -19,20 +19,20 @@ export function AuthGuard({
   role: Role;
   children: React.ReactNode;
 }) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { ready, state } = useStore();
   const user = state.currentUser;
 
   useEffect(() => {
     if (!ready) return;
     if (!user) {
-      navigate("/", { replace: true });
+      router.replace("/");
       return;
     }
     if (!canAccess(user.role, role)) {
-      navigate(user.role === "admin" ? "/admin" : "/company", { replace: true });
+      router.replace(user.role === "admin" ? "/admin" : "/company");
     }
-  }, [navigate, ready, role, user]);
+  }, [router, ready, role, user]);
 
   if (!ready || !user || !canAccess(user.role, role)) {
     return (

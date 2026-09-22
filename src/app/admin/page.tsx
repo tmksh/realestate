@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { PropertyPhoto } from "@/components/PropertyCard";
 import { ReactionBarChart, ReactionBreakdownChart } from "@/components/Charts";
 import { BroadcastIcon, HeartIcon, InboxIcon, KeyIcon, UsersIcon } from "@/components/stat-icons";
@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
             <ReactionBreakdownChart reactions={state.reactions} />
           </Card>
           <Card className="p-5 sm:p-6">
-            <SectionTitle action={<Link to="/admin/inbox" className={sectionLinkClass}>受信箱へ</Link>}>
+            <SectionTitle action={<Link href="/admin/inbox" className={sectionLinkClass}>受信箱へ</Link>}>
               確認待ち
             </SectionTitle>
             {pending.length === 0 ? (
@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
               <ul className="space-y-3">
                 {pending.slice(0, 4).map((property) => (
                   <li key={property.id}>
-                    <Link to={`/admin/properties/${property.id}`} className="flex items-center justify-between gap-3">
+                    <Link href={`/admin/properties/${property.id}`} className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate text-[14px] font-medium text-ink">{property.buildingName}</p>
                         <p className="truncate text-[12px] text-muted">{property.companyName}</p>
@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 sm:px-6">
           <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">最近の配信</h2>
-          <Link to="/admin/broadcasts" className={sectionLinkClass}>
+          <Link href="/admin/broadcasts" className={sectionLinkClass}>
             配信履歴へ
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default function AdminDashboardPage() {
             return (
               <Link
                 key={broadcast.id}
-                to={`/admin/broadcasts/${broadcast.id}`}
+                href={`/admin/broadcasts/${broadcast.id}`}
                 className="grid items-center gap-3 border-b border-hairline px-5 py-3.5 last:border-b-0 hover:bg-canvas/60 md:grid-cols-[1.4fr_1fr_1fr_0.6fr_0.7fr] md:px-6"
               >
                 <div className="flex min-w-0 items-center gap-3">

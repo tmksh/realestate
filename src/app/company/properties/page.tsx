@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -34,7 +34,7 @@ export default function CompanyPropertiesPage() {
         }
         action={
           canRegister ? (
-            <Link to="/company/properties/new">
+            <Link href="/company/properties/new">
               <Button>
                 <Plus className="h-4 w-4" />
                 物件を登録
@@ -52,7 +52,7 @@ export default function CompanyPropertiesPage() {
           description="未公開マンションの情報を登録し、運営へ送信してください。"
           action={
             canRegister ? (
-              <Link to="/company/properties/new">
+              <Link href="/company/properties/new">
                 <Button>物件を登録</Button>
               </Link>
             ) : null

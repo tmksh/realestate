@@ -1,6 +1,6 @@
 "use client";
 
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Check, EyeOff, Plus, Trash2 } from "lucide-react";
 import { nowIso } from "@/lib/format";
@@ -18,7 +18,7 @@ export function PropertyForm({
   mode: "create" | "edit";
   onDirtyChange?: (dirty: boolean) => void;
 }) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { saveProperty, submitProperty } = useStore();
   const [property, setProperty] = useState(initial);
   const [baseline, setBaseline] = useState(initial);
@@ -68,7 +68,7 @@ export function PropertyForm({
         const next = persist();
         setSaved(true);
         if (mode === "create") {
-          navigate(`/company/properties/${next.id}`);
+          router.push(`/company/properties/${next.id}`);
         }
       }}
     >
@@ -370,7 +370,7 @@ export function PropertyForm({
             onClick={() => {
               const next = persist("submitted");
               submitProperty(next.id);
-              navigate("/company/properties");
+              router.push("/company/properties");
             }}
           >
             運営へ送信

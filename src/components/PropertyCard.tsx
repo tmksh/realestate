@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ImageOff } from "lucide-react";
 import { formatPrice, isMasked, statusLabel, visibleAddress } from "@/lib/format";
 import type { Property, PropertyStatus } from "@/lib/types";
@@ -50,7 +50,7 @@ export function PropertyCard({
 
   return (
     <Link
-      to={href}
+      href={href}
       className="group block h-full rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2"
     >
       <Card className="h-full overflow-hidden transition duration-200 group-hover:shadow-[var(--shadow-lift)]">

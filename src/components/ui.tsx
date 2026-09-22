@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ArrowLeft, LayoutGrid, List, Radio } from "lucide-react";
 import type { ViewMode } from "@/lib/view-mode";
 
@@ -290,7 +290,7 @@ export function BackLink({
 }) {
   return (
     <Link
-      to={to}
+      href={to}
       onClick={onClick}
       className="mb-4 inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline bg-white px-3.5 text-[13px] font-medium text-ink shadow-[var(--shadow-card)] transition hover:bg-canvas"
     >

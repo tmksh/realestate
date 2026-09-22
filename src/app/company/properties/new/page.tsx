@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { redirect, useRouter } from "next/navigation";
 import { PropertyForm } from "@/components/PropertyForm";
 import { BackLink, ConfirmDialog, PageHeader } from "@/components/ui";
 import { emptyProperty, useRequiredUser } from "@/lib/store";
 
 export default function NewPropertyPage() {
   const user = useRequiredUser();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [dirty, setDirty] = useState(false);
   const [askLeave, setAskLeave] = useState(false);
 
   if (user.role === "owner") {
-    return <Navigate to="/company/properties" replace />;
+    redirect("/company/properties");
   }
 
   return (
@@ -42,7 +42,7 @@ export default function NewPropertyPage() {
         description="物件一覧へ戻ると、いまの変更は破棄されます。"
         confirmLabel="変更を破棄する"
         cancelLabel="編集を続ける"
-        onConfirm={() => navigate("/company/properties")}
+        onConfirm={() => router.push("/company/properties")}
         onCancel={() => setAskLeave(false)}
       />
     </div>

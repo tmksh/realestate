@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { PropertyCard, PropertyPhoto } from "@/components/PropertyCard";
 import { Badge, Card, EmptyState, MetaCount, PageHeader, ViewToggle, tableHeadClass, tableRowClass } from "@/components/ui";
 import { formatPrice, statusLabel, statusTone } from "@/lib/format";
@@ -56,7 +56,7 @@ export default function AdminInboxPage() {
               {pending.map((property) => (
                 <Link
                   key={property.id}
-                  to={`/admin/properties/${property.id}`}
+                  href={`/admin/properties/${property.id}`}
                   className={`${tableRowClass} hover:bg-canvas/60 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_120px_110px]`}
                 >
                   <div className="flex min-w-0 items-center gap-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { users } from "@/lib/seed";
 import { useStore } from "@/lib/store";
 import { Avatar, BrandMark, Button, Card } from "@/components/ui";
@@ -12,12 +12,12 @@ const steps = [
 ];
 
 export default function HomePage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { login } = useStore();
 
   const enter = (userId: string, role: "admin" | "company") => {
     login(userId);
-    window.setTimeout(() => navigate(role === "admin" ? "/admin" : "/company"), 0);
+    window.setTimeout(() => router.push(role === "admin" ? "/admin" : "/company"), 0);
   };
 
   const companyUsers = users.filter((user) => user.role === "company");

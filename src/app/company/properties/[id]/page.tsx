@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import { PropertyForm } from "@/components/PropertyForm";
 import { BackLink, Badge, Card, ConfirmDialog } from "@/components/ui";
 import { formatDateTime, statusLabel, statusTone } from "@/lib/format";
@@ -9,7 +9,7 @@ import { useStore, visibleProperties } from "@/lib/store";
 
 export default function CompanyPropertyDetailPage() {
   const params = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { state } = useStore();
   const allowed = visibleProperties(state);
   const property = allowed.find((item) => item.id === params.id);
@@ -67,7 +67,7 @@ export default function CompanyPropertyDetailPage() {
         description="物件一覧へ戻ると、いまの変更は破棄されます。"
         confirmLabel="変更を破棄する"
         cancelLabel="編集を続ける"
-        onConfirm={() => navigate("/company/properties")}
+        onConfirm={() => router.push("/company/properties")}
         onCancel={() => setAskLeave(false)}
       />
     </div>

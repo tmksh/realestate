@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { ReactionBarChart, ReactionBreakdownChart } from "@/components/Charts";
 import { PropertyPhoto } from "@/components/PropertyCard";
@@ -32,7 +32,7 @@ export default function CompanyDashboardPage() {
         }
         action={
           canRegister ? (
-            <Link to="/company/properties/new">
+            <Link href="/company/properties/new">
               <Button>
                 <Plus className="h-4 w-4" />
                 物件を登録
@@ -65,7 +65,7 @@ export default function CompanyDashboardPage() {
           <Card className="p-5 sm:p-6">
             <SectionTitle
               action={
-                <Link to="/company/properties" className="text-[13px] font-medium text-ink underline-offset-4 hover:underline">
+                <Link href="/company/properties" className="text-[13px] font-medium text-ink underline-offset-4 hover:underline">
                   物件一覧へ
                 </Link>
               }
@@ -78,7 +78,7 @@ export default function CompanyDashboardPage() {
               <ul className="space-y-3">
                 {waiting.slice(0, 4).map((property) => (
                   <li key={property.id}>
-                    <Link to={`/company/properties/${property.id}`} className="flex items-center justify-between gap-3">
+                    <Link href={`/company/properties/${property.id}`} className="flex items-center justify-between gap-3">
                       <p className="truncate text-[14px] font-medium text-ink">{property.buildingName}</p>
                       <Badge tone={statusTone(property.status)}>{statusLabel(property.status)}</Badge>
                     </Link>
@@ -93,7 +93,7 @@ export default function CompanyDashboardPage() {
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 sm:px-6">
           <h2 className="font-display text-[16px] font-bold tracking-[-0.03em] text-ink">最近の物件</h2>
-          <Link to="/company/properties" className="text-[13px] font-medium text-ink underline-offset-4 hover:underline">
+          <Link href="/company/properties" className="text-[13px] font-medium text-ink underline-offset-4 hover:underline">
             すべて見る
           </Link>
         </div>
@@ -109,7 +109,7 @@ export default function CompanyDashboardPage() {
           mine.slice(0, 6).map((property) => (
             <Link
               key={property.id}
-              to={`/company/properties/${property.id}`}
+              href={`/company/properties/${property.id}`}
               className="grid items-center gap-3 border-b border-hairline px-5 py-3.5 last:border-b-0 hover:bg-canvas/60 md:grid-cols-[1.5fr_1.2fr_0.8fr_0.7fr] md:px-6"
             >
               <div className="flex min-w-0 items-center gap-3">

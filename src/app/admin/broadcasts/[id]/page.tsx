@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 import { Calendar, Users } from "lucide-react";
 import { LinePreview } from "@/components/LinePreview";
 import { ReactionList } from "@/components/ReactionList";
