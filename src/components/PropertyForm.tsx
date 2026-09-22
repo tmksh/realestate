@@ -62,7 +62,7 @@ export function PropertyForm({
 
   return (
     <form
-      className="space-y-8 pb-28 lg:pb-8"
+      className="space-y-8 pb-28 md:pb-8"
       onSubmit={(event) => {
         event.preventDefault();
         const next = persist();
@@ -351,7 +351,7 @@ export function PropertyForm({
         </div>
       </Card>
 
-      <div className="sticky bottom-20 z-10 -mx-4 border-t border-hairline bg-white/94 px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-[24px] sm:border lg:bottom-4">
+      <div className="sticky bottom-20 z-10 -mx-4 border-t border-hairline bg-white/94 px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-[24px] sm:border md:bottom-4">
         <p className="text-[13px] text-muted">
           {canSubmit
             ? saved

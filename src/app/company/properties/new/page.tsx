@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { PropertyForm } from "@/components/PropertyForm";
 import { BackLink, ConfirmDialog, PageHeader } from "@/components/ui";
 import { emptyProperty, useRequiredUser } from "@/lib/store";
@@ -12,8 +12,14 @@ export default function NewPropertyPage() {
   const [dirty, setDirty] = useState(false);
   const [askLeave, setAskLeave] = useState(false);
 
+  useEffect(() => {
+    if (user.role === "owner") {
+      router.replace("/company/properties");
+    }
+  }, [router, user.role]);
+
   if (user.role === "owner") {
-    redirect("/company/properties");
+    return null;
   }
 
   return (

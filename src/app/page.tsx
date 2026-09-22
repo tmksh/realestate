@@ -33,7 +33,7 @@ export default function HomePage() {
 
         <section className="mt-10 grid items-start gap-8 lg:mt-14 lg:grid-cols-2 lg:items-center lg:gap-12">
           <div className="min-w-0">
-            <p className="inline-flex rounded-full bg-canvas px-3 py-1 text-[11px] font-medium tracking-[0.06em] text-muted">
+            <p className="inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-medium tracking-[0.06em] text-muted">
               ポータル掲載前の未公開期間を活用
             </p>
             <h1 className="mt-4 font-display text-[2rem] font-bold leading-[1.15] tracking-[-0.045em] text-ink sm:text-[2.55rem]">
@@ -63,7 +63,7 @@ export default function HomePage() {
             </div>
 
             <div className="mt-4 space-y-3">
-              <div className="rounded-[20px] bg-canvas px-3 py-3">
+              <div className="rounded-[20px] bg-white px-3 py-3">
                 <p className="text-[12px] font-medium text-muted">管理会社として操作</p>
                 <div className="mt-2 space-y-2">
                   {companyUsers.map((user) => (
