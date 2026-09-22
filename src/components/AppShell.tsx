@@ -70,8 +70,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
         <aside
-          className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-hairline bg-canvas py-5 transition-[width] duration-200 lg:flex ${
-            collapsed ? "w-[72px] px-2" : "w-[220px] px-3"
+          className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-hairline bg-canvas py-5 transition-[width] duration-200 md:flex ${
+            collapsed ? "w-[72px] px-2" : "w-[248px] px-3"
           }`}
         >
           <button
@@ -148,11 +148,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Button>
             </div>
           </header>
-          <main className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 pb-24 sm:px-8 sm:py-8 lg:pb-10">
+          <main className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-6 pb-24 sm:px-8 sm:py-8 md:pb-10">
             {children}
           </main>
           <nav
-            className={`fixed inset-x-0 bottom-0 z-30 grid gap-1 border-t border-hairline bg-white/94 px-1.5 py-1.5 backdrop-blur lg:hidden ${
+            className={`fixed inset-x-0 bottom-0 z-30 grid gap-1 border-t border-hairline bg-white/94 px-1.5 py-1.5 backdrop-blur md:hidden ${
               nav.length > 4 ? "grid-cols-6" : "grid-cols-2"
             }`}
           >
