@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>仕様書 — マンション発信ツール</title>
     <meta name="description" content="未公開マンションを公式LINEで先出し配信するマンション発信ツールのシステム仕様書です。" />
-    <link rel="stylesheet" href="./styles.css?v=14" />
+    <link rel="stylesheet" href="./styles.css?v=15" />
   </head>
   <body>
     <a class="skip" href="#overview">本文へ移動</a>
@@ -30,13 +30,14 @@
         <a href="#data">データ仕様</a>
         <a href="#integrations">外部連携</a>
         <a href="#line">LINE連携</a>
+        <a href="#line-cost">LINE公式アカウントの費用</a>
         <a href="#stack">技術構成</a>
         <a href="#mock">モック／未実装</a>
         <a href="#notes">制約・注意</a>
       </nav>
 
       <main>
-        <span class="tag">仕様書 / 2026-09-22</span>
+        <span class="tag">仕様書 / 2026-09-24</span>
         <h1>マンション発信ツール システム仕様書</h1>
         <p class="lead">未公開マンションを公式LINEで先出し配信するモックです。役割、画面、操作の流れ、実装済みとデモだけの切り分けをまとめます。APIキーやパスワードは書かない。</p>
 
@@ -812,6 +813,62 @@
         </div>
         <p>公式ドキュメント：<a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">Messaging APIの概要</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/getting-started/" target="_blank" rel="noopener">Messaging APIを始めよう</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/building-bot/" target="_blank" rel="noopener">ボットを作成する</a> ／ <a href="https://developers.line.biz/ja/docs/basics/user-profile/" target="_blank" rel="noopener">ユーザーのプロフィール情報を取得する</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/sending-messages/" target="_blank" rel="noopener">メッセージを送信する</a></p>
 
+        <h3 id="line-cost">10-7. LINE公式アカウントの費用（別費用）</h3>
+        <p>この費用は本ツールの開発費・サーバー費とは分けて扱う<strong>別費用</strong>です。日本のLINE公式アカウントの料金です。金額は税別です。最新額はLINEヤフーの公開ページを正とします。</p>
+        <p>出典：<a href="https://developers.line.biz/ja/docs/messaging-api/pricing/" target="_blank" rel="noopener">Messaging APIの料金（LINE Developers）</a>、<a href="https://www.lycbiz.com/jp/service/line-official-account/plan/" target="_blank" rel="noopener">LINE公式アカウント料金プラン</a>（いずれも2026-09-24確認）。</p>
+
+        <p><strong>月の無料メッセージ通数と、超えたときの費用</strong></p>
+        <p>開設時はコミュニケーションプランです。ライト／スタンダードへ変えると、その月から無料通数が増えます。初期費用はありません。</p>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>プラン</th>
+              <th>月額固定費（税別）</th>
+              <th>無料メッセージ通数（月）</th>
+              <th>無料通数を超えたとき</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>コミュニケーション</td>
+              <td>0円</td>
+              <td>200通</td>
+              <td>追加配信はできない。送りたい場合は上位プランへ変更する</td>
+            </tr>
+            <tr>
+              <td>ライト</td>
+              <td>5,000円</td>
+              <td>5,000通</td>
+              <td>追加配信はできない。送りたい場合はスタンダードへ変更する</td>
+            </tr>
+            <tr>
+              <td>スタンダード</td>
+              <td>15,000円</td>
+              <td>30,000通</td>
+              <td>追加メッセージを送れる。通数に応じた従量料金（税別、最大おおよそ3円／通）</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>通数は「届いた人数」です。1回の配信で友だち248人に届けば248通です。吹き出しを複数置いても、通数は人数分です。ブロック中など届かない人は数えません。応答メッセージ（Reply API）は通数に入りません。ブロードキャスト／マルチキャスト／プッシュは入ります。Official Account Manager からの配信も、料金プランの通数に入ります。</p>
+        <p>コミュニケーション／ライトで上限を超えると、メッセージは送られず、自動では課金されません。スタンダードで追加メッセージを使うには、Official Account Manager で追加メッセージ数の上限目安を設定します。上限を超えて送ろうとすると、原則として配信は止まります。</p>
+        <p>スタンダードの追加メッセージ単価は、追加した通数帯によって下がります（税別）。公式の例では、追加200,000通のとき <code>（50,000×3円）＋（50,000×2.8円）＋（100,000×2.6円）＝550,000円</code> です。2026年10月1日から追加メッセージ料金が改定され、追加20万通／月までは1通3円、それを超えた分は1通2.5円（税別）になります。改定の詳細は<a href="https://www.lycbiz.com/jp/news/line-official-account/20260216/" target="_blank" rel="noopener">LINEヤフーの告知</a>を正とします。</p>
+        <div class="note">
+          <strong>別費用として扱う範囲</strong>
+          <span>月額固定費と、スタンダードで発生した追加メッセージ料金です。チャットProやプレミアムIDなど任意オプションは、配信通数の費用とは別契約です。このモックでは実課金は発生しません。</span>
+        </div>
+
+        <p><strong>売上の原価と利益の分け方</strong></p>
+        <p>上記の別費用は、売上から<strong>原価として差し引き</strong>ます。差し引いたあとに残った利益を、泉さんと折半します。</p>
+        <p>計算の考え方は次のとおりです。</p>
+        <ol>
+          <li>売上を集計する</li>
+          <li>その月のLINE公式アカウント費用（月額固定費＋追加メッセージ料金）を原価として差し引く</li>
+          <li>残った利益を、泉さんと半分ずつにする</li>
+        </ol>
+        <p>例：売上が100、その月のLINE公式アカウント費用が20なら、利益は80。泉さん40、相手方40です。実額は契約と請求に従います。この仕様書は配分の考え方だけを書きます。</p>
+
         <h2 id="stack">11. 技術構成</h2>
         <p class="lead">画面の動きは Next.js の App Router です。データはこれまでどおりブラウザの localStorage に残します。</p>
         <div class="table-wrap">
@@ -900,6 +957,7 @@
             <li>オーナーはトップから入れません。運営の「表示を確認」経由です。招待中・停止中は入れません。割り当てた下書き・差戻しは編集できます。</li>
             <li>確認待ち一覧には、差戻し済みの物件も含まれます。</li>
             <li>カード／一覧の選択は、確認待ちと配信履歴で共有されます。</li>
+            <li>LINE公式アカウントの月額固定費と追加メッセージ料金は別費用です。売上の原価として差し引き、残った利益を泉さんと折半します。通数と単価は「10-7. LINE公式アカウントの費用」を正とします。</li>
             <li>この仕様書は GitHub Pages（<code>docs/</code>）で公開します。アプリ本体はローカルの Next.js です。</li>
             <li>実行基盤は Next.js 16 の App Router です。</li>
             <li>写真は Unsplash に依存します。オフラインやリンク切れでは画像が出ないことがあります。</li>
@@ -907,7 +965,7 @@
         </div>
 
         <footer>
-          更新 2026-09-22　マンション発信ツール　GitHub Pages 公開用。本体アプリの画面やデータを変更するものではありません。
+          更新 2026-09-24　マンション発信ツール　GitHub Pages 公開用。本体アプリの画面やデータを変更するものではありません。
         </footer>
       </main>
     </div>
