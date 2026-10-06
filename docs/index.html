@@ -32,14 +32,15 @@
         <a href="#line">LINE連携</a>
         <a href="#line-cost">LINE公式アカウントの費用</a>
         <a href="#stack">技術構成</a>
-        <a href="#mock">モック／未実装</a>
+        <a href="#mock">未実装</a>
         <a href="#notes">制約・注意</a>
+        <a href="./guide.html">使用ガイド</a>
       </nav>
 
       <main>
-        <span class="tag">仕様書 / 2026-09-24</span>
+        <span class="tag">仕様書 / 2026-10-06</span>
         <h1>マンション発信ツール システム仕様書</h1>
-        <p class="lead">未公開マンションを公式LINEで先出し配信するモックです。役割、画面、操作の流れ、実装済みとデモだけの切り分けをまとめます。APIキーやパスワードは書かない。</p>
+        <p class="lead">未公開マンションを公式LINEで先出し配信するツールです。役割、画面、操作の流れ、接続済みと未実装の切り分けをまとめます。APIキーやパスワードは書かない。押す順番は <a href="./guide.html">使用ガイド</a> に分けています。</p>
 
         <div class="cards">
           <div class="card">
@@ -48,7 +49,7 @@
           </div>
           <div class="card">
             <div class="k">保存</div>
-            <div class="v">ブラウザの localStorage のみ</div>
+            <div class="v">Supabase（ログインと物件）</div>
           </div>
           <div class="card">
             <div class="k">この仕様書</div>
@@ -56,7 +57,7 @@
           </div>
           <div class="card">
             <div class="k">状態</div>
-            <div class="v wait">モック / 実データ未接続</div>
+            <div class="v">ログインと公式LINEを接続</div>
           </div>
         </div>
 
@@ -66,8 +67,8 @@
           マンション発信ツールは、ポータル掲載前の未公開マンションを管理会社が登録し、運営が確認・目隠ししたうえで公式LINEへ配信し、反応した会員をリスト化します。この文書は、初めて見る人が全体像を把握するための仕様書です。
         </p>
         <div class="note">
-          <strong>いま見ているのはモック環境です</strong>
-          <span>ログインは担当者をクリックするだけです。公式LINEへの実送信、会員の実データ、サーバー側の保存はありません。</span>
+          <strong>ログインと公式LINEは接続済みです</strong>
+          <span>メールアドレスとパスワードで入り、物件・会員・反応は Supabase に残ります。「公式LINEで配信」は友だち全員のトークへテキストを送ります。カードやPDFの見本、画像アップロード、招待メールはまだありません。</span>
         </div>
         <div class="grid-3">
           <article class="card">
@@ -100,7 +101,7 @@
           <div class="flow-row">
             <div class="step"><b>4. 確認・目隠し</b><span>番地などを配信文から隠す</span></div>
             <div class="arrow" aria-hidden="true">→</div>
-            <div class="step"><b>5. LINE配信</b><span>実送信せず、反応を自動で足す</span></div>
+            <div class="step"><b>5. LINE配信</b><span>友だち全員へテキストを送る</span></div>
             <div class="arrow" aria-hidden="true">→</div>
             <div class="step"><b>6. 反応確認</b><span>いいね／スタンプ／テキストを一覧化</span></div>
           </div>
@@ -111,7 +112,7 @@
         </div>
 
         <h2 id="roles">3. 権限・ユーザー種別</h2>
-        <p class="lead">トップから入れるのは管理会社と運営だけです。オーナーは運営画面の「表示を確認」から入ります。</p>
+        <p class="lead">メールアドレスとパスワードで入るのは、プロフィールが管理会社または運営の人と、利用中でログイン用ユーザーが紐づいたオーナーです。運営は、オーナー管理の「表示を確認」で割り当て画面をプレビューできます。</p>
         <div class="table-wrap">
         <table>
           <thead>
@@ -126,24 +127,24 @@
           <tbody>
             <tr>
               <td>管理会社</td>
-              <td>トップで田中／鈴木を選ぶ</td>
+              <td><code>/login</code>。役割が管理会社のプロフィール</td>
               <td>自社物件だけ</td>
               <td>登録、下書き保存、運営へ送信、自社の反応確認</td>
               <td>他社物件、配信操作、会員・オーナー管理</td>
             </tr>
             <tr>
               <td>運営</td>
-              <td>トップで泉担当を選ぶ</td>
-              <td>全物件、配信、反応、会員、オーナー</td>
-              <td>確認、目隠し、配信、差戻し、オーナー発行</td>
-              <td>管理会社としての物件新規登録画面は使わない</td>
+              <td><code>/login</code>。役割が運営のプロフィール</td>
+              <td>全物件、配信、反応、会員、オーナー。管理会社の画面も開ける</td>
+              <td>確認、目隠し、配信、差戻し、オーナー発行、物件登録</td>
+              <td>LINE会員としてのログイン。配信済みの再配信</td>
             </tr>
             <tr>
               <td>オーナー</td>
-              <td>オーナー管理の「表示を確認」</td>
+              <td>利用中かつログイン用ユーザーがあるとき <code>/login</code>。運営の「表示を確認」はプレビュー</td>
               <td>割り当て物件だけ</td>
               <td>割り当て物件の閲覧。下書き・差戻しは編集できる。確認待ち以降はロック</td>
-              <td>物件の新規登録、配信、会員管理。招待中・停止中は入れない</td>
+              <td>物件の新規登録、配信、会員管理。招待中・停止中はログインできない</td>
             </tr>
           </tbody>
         </table>
@@ -164,11 +165,11 @@
           </thead>
           <tbody>
             <tr>
-              <td>デモ開始</td>
-              <td><code>/</code></td>
-              <td>全員</td>
-              <td>役割を選んでデモを始める</td>
-              <td>管理会社／運営の選択。ログイン不要</td>
+              <td>ログイン</td>
+              <td><code>/</code> と <code>/login</code></td>
+              <td>未ログインの人</td>
+              <td>メールアドレスとパスワードで入る</td>
+              <td>入ったあとは役割に応じて <code>/admin</code> または <code>/company</code></td>
             </tr>
             <tr>
               <td>ダッシュボード</td>
@@ -245,7 +246,7 @@
               <td><code>/admin/members</code></td>
               <td>運営</td>
               <td>配信対象の会員を見る</td>
-              <td>代表12名の一覧。件数は248名と表示</td>
+              <td>友だち追加で増えた会員。件数は登録数</td>
             </tr>
             <tr>
               <td>オーナーアカウント管理</td>
@@ -262,11 +263,12 @@
         <p class="lead">主要画面の表示、操作、状態による違いです。</p>
 
         <article class="card screen">
-          <h3>デモ開始 <code>/</code></h3>
+          <h3>ログイン <code>/</code> と <code>/login</code></h3>
           <dl class="dl">
-            <div><dt>表示</dt><dd>マンション発信ツールの説明、3ステップ、管理会社2名・運営1名の開始ボタン。「デモ環境・実データ未接続」。</dd></div>
-            <div><dt>操作</dt><dd>担当者の「開始／開く」でその役割になり、管理会社は <code>/company</code>、運営は <code>/admin</code> へ進みます。</dd></div>
-            <div><dt>権限</dt><dd>パスワードはありません。オーナーはこの画面からは入れません。</dd></div>
+            <div><dt>表示</dt><dd>トップはツールの説明と、ログイン画面へのボタンです。ログイン画面はメールアドレスとパスワードです。</dd></div>
+            <div><dt>操作</dt><dd>正しい組み合わせで、運営は <code>/admin</code>、管理会社は <code>/company</code> へ進みます。利用中のオーナーでログイン用ユーザーがある場合も <code>/company</code> です。</dd></div>
+            <div><dt>失敗</dt><dd>空欄は入力を求めます。組み合わせが違うときは、その旨を出します。パスワードの再設定メールは、この画面からは送りません。</dd></div>
+            <div><dt>権限</dt><dd>LINEの友だちは、この画面では入れません。招待中・停止中のオーナーも入れません。</dd></div>
           </dl>
         </article>
 
@@ -282,8 +284,8 @@
         <article class="card screen">
           <h3>物件登録・詳細 <code>/company/properties/...</code></h3>
           <dl class="dl">
-            <div><dt>表示</dt><dd>基本情報、スペック、アピール、写真（用意された画像から選択）。差戻し時は理由を表示。</dd></div>
-            <div><dt>必須</dt><dd>マンション名／市区町村／町名／最寄駅／価格。これ以外は任意です。</dd></div>
+            <div><dt>表示</dt><dd>基本情報、スペック、アピール、写真（画像URLを追加）。差戻し時は理由を表示。</dd></div>
+            <div><dt>必須</dt><dd>マンション名／市区町村／町名／最寄駅／価格。運営が登録するときは管理会社の選択も必須です。これ以外は任意です。</dd></div>
             <div><dt>ボタン</dt><dd>下書き保存は状態を変えずに残します。運営へ送信は確認待ちにし、以降は編集できません。未保存のとき「物件一覧へ戻る」を押すと確認が出ます。</dd></div>
             <div><dt>ロック</dt><dd>確認待ち・配信準備・配信済みは閲覧のみ。直すには運営の差戻しが必要です。</dd></div>
           </dl>
@@ -292,7 +294,7 @@
         <article class="card screen">
           <h3>運営ダッシュボード <code>/admin</code></h3>
           <dl class="dl">
-            <div><dt>表示</dt><dd>確認待ち、配信済み、反応、LINE会員（12+236）、オーナー管理者数（利用中のみ）。反応グラフと最近の配信表。</dd></div>
+            <div><dt>表示</dt><dd>確認待ち、配信済み、反応、LINE会員（登録数）、オーナー管理者数（利用中のみ）。反応グラフと最近の配信表。</dd></div>
             <div><dt>操作</dt><dd>各KPIとリストから、確認待ち・配信詳細へ移動できます。</dd></div>
           </dl>
         </article>
@@ -301,7 +303,7 @@
           <h3>確認待ち <code>/admin/inbox</code></h3>
           <dl class="dl">
             <div><dt>表示</dt><dd>確認待ち・配信準備・差戻しの物件。カードまたは一覧。</dd></div>
-            <div><dt>操作</dt><dd>「カード／一覧」で見た目を切り替えます。行やカードを開くと物件確認へ進みます。</dd></div>
+            <div><dt>操作</dt><dd>件があるとき「カード／一覧」で見た目を切り替えます。0件のときは切替は出ません。行やカードを開くと物件確認へ進みます。</dd></div>
           </dl>
         </article>
 
@@ -310,7 +312,7 @@
           <dl class="dl">
             <div><dt>表示</dt><dd>元データ、目隠しトグル、配信形式、添えるメッセージ、LINE風プレビュー。</dd></div>
             <div><dt>確認内容を保存</dt><dd>目隠しと形式を保存します。確認待ちなら配信準備になります。</dd></div>
-            <div><dt>公式LINEで配信</dt><dd>保存したうえで配信履歴を作り、数件の反応を自動追加し、配信詳細へ移動します。実LINEには送りません。配信済みは押せません。</dd></div>
+            <div><dt>公式LINEで配信</dt><dd>確認待ちか配信準備の物件だけ送れます。目隠しと形式を保存したあと、友だち全員へテキストを送り、配信履歴を作って配信詳細へ移動します。反応は自動では入りません。下書き・差戻しは送れず、配信済みは押せません。</dd></div>
             <div><dt>差し戻す</dt><dd>理由必須。LINEには出しません。管理会社側で理由が見えます。</dd></div>
           </dl>
         </article>
@@ -320,8 +322,8 @@
           <dl class="dl">
             <div><dt>配信履歴</dt><dd>カード／一覧。詳細ではプレビューと反応の種類絞り込み。</dd></div>
             <div><dt>反応リスト</dt><dd>表示名／物件／種類／内容／日時。物件と種類で絞り込み。CSVはクリップボードへコピー。</dd></div>
-            <div><dt>LINE会員</dt><dd>代表12名。流入と登録日。配信対象は常に248名と表示。</dd></div>
-            <div><dt>オーナー</dt><dd>氏名・メール・所属・担当物件で発行（招待中）。利用開始／停止。「表示を確認」でオーナー画面へ。割り当て物件は管理会社と同じ画面。下書き・差戻しは編集でき、確認待ち以降は閲覧のみ。</dd></div>
+            <div><dt>LINE会員</dt><dd>Webhook で増えた友だち。表示名、流入、登録日。件数は登録数です。離脱しても行は残り、流入は「離脱」になります。</dd></div>
+            <div><dt>オーナー</dt><dd>氏名・メール・所属・担当物件で発行します。状態は招待中で、招待メールとパスワードは作りません。利用開始／停止ができます。利用中の「表示を確認」は、運営が見るプレビューです。再読み込みすると運営のログインに戻ります。割り当て物件は管理会社と同じ画面で、下書き・差戻しは編集でき、確認待ち以降は閲覧のみです。</dd></div>
           </dl>
         </article>
 
@@ -329,7 +331,7 @@
         <div class="grid-2">
           <article class="card">
             <h3>物件登録／下書き保存</h3>
-            <p>管理会社が未公開物件を入力します。必須が揃っていなくても下書きとして残せます。写真は用意済みURLから選びます。</p>
+            <p>管理会社、または運営が未公開物件を入力します。必須が揃っていなくても下書きとして残せます。写真は画像のURLを足します。ファイルのアップロードはまだありません。</p>
           </article>
           <article class="card">
             <h3>運営への送信</h3>
@@ -341,7 +343,7 @@
           </article>
           <article class="card">
             <h3>配信形式とプレビュー</h3>
-            <p>箇条書き／カード／PDFから選びます。右（または下）にLINE風の見本が出ます。実トーク画面ではありません。PDFはファイル名の表示だけです。</p>
+            <p>箇条書き／カード／PDFから選びます。右（または下）にLINE風の見本が出ます。実トーク画面ではありません。PDFはファイル名の表示だけです。友だちへ送る本文は、選んだ形式にかかわらずテキストです。選んだ形式は配信履歴に残ります。</p>
           </article>
           <article class="card">
             <h3>差戻し</h3>
@@ -349,11 +351,11 @@
           </article>
           <article class="card">
             <h3>配信履歴と反応</h3>
-            <p>配信済み物件、人数、反応件数を残します。反応はいいね／スタンプ／テキストです。配信直後はデモ用に数件入ります。</p>
+            <p>配信済み物件、人数、反応件数を残します。反応はいいね／スタンプ／テキストです。デモの反応は自動では入りません。届いたWebhookだけを残します。</p>
           </article>
           <article class="card">
             <h3>LINE会員</h3>
-            <p>公式LINE登録者の見本12名を出します。KPIと画面上の配信対象は248名です（12＋236の仮加算）。</p>
+            <p>公式LINEの友だち追加で増えた人を出します。件数は登録数です。仮の12名や248名は使いません。</p>
           </article>
           <article class="card">
             <h3>オーナーと表示切替</h3>
@@ -425,68 +427,134 @@
         </div>
 
         <h2 id="data">8. データ仕様</h2>
-        <p class="lead">サーバーは使わず、操作したブラウザの localStorage にだけ残ります。</p>
+        <p class="lead">物件、配信、反応、会員、オーナー、ログインは Supabase に残ります。ブラウザに残すのは、メニューの開閉とカード／一覧の選択だけです。</p>
         <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>キー</th>
+              <th>保存先</th>
               <th>内容</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><code>aqualine-store-v2</code></td>
-              <td>物件、配信、反応、オーナー、いまのユーザー。会員一覧は起動のたびに初期12名へ戻します。</td>
+              <td><code>companies</code> / <code>profiles</code></td>
+              <td>管理会社と、ログインユーザーの役割（管理会社または運営）。</td>
+            </tr>
+            <tr>
+              <td><code>properties</code></td>
+              <td>物件、状態、目隠し、配信形式、差戻し理由。</td>
+            </tr>
+            <tr>
+              <td><code>broadcasts</code></td>
+              <td>配信日時、形式、配信人数、送った本文。</td>
+            </tr>
+            <tr>
+              <td><code>line_members</code></td>
+              <td>LINEのユーザーID、表示名、流入、登録日、離脱日時。</td>
+            </tr>
+            <tr>
+              <td><code>reactions</code></td>
+              <td>配信と会員ごとの反応。同じ配信に同じ会員の2件目は残さない。</td>
+            </tr>
+            <tr>
+              <td><code>owners</code> / <code>owner_properties</code></td>
+              <td>オーナーと、見える物件。招待メールは送らない。</td>
             </tr>
             <tr>
               <td><code>aqualine-sidebar</code></td>
-              <td>左メニューの開閉。</td>
+              <td>左メニューの開閉。このブラウザだけ。</td>
             </tr>
             <tr>
               <td><code>aqualine.catalogView</code></td>
-              <td>確認待ちと配信履歴のカード／一覧。両画面で共有。</td>
+              <td>確認待ちと配信履歴のカード／一覧。両画面で共有。このブラウザだけ。</td>
             </tr>
           </tbody>
         </table>
         </div>
         <h3>保持される範囲</h3>
-        <p>同じPC・同じブラウザだけです。シークレットモード、別端末、データの削除で初期状態に戻ります。JSONが壊れているとキーを消して初期化します。</p>
-        <h3>初期データ（seed）</h3>
-        <ul>
-          <li>管理会社：田中（サンライズ）、鈴木（港区アセット）</li>
-          <li>運営：泉担当</li>
-          <li>物件4件：白金台（確認待ち）、桜新町（配信済み）、浜松町（下書き）、品川（確認待ち）</li>
-          <li>配信1件（桜新町）、反応9件、会員12名</li>
-          <li>オーナー：斎藤（利用中・桜新町と浜松町）、近藤（招待中）、森（停止中）</li>
-        </ul>
-        <p>以前の操作がブラウザに残っていると、画面の件数は初期と違うことがあります。</p>
+        <p>ログインすれば、別の端末からも同じ物件と会員が見えます。起動時に、以前のブラウザ保存 <code>aqualine-store-v2</code> は消します。初期の見本データ（田中、白金台、会員12名など）は入れません。</p>
+        <h3>LINEからの書き込み</h3>
+        <p>Webhook はログインなしで届きます。アプリにデータベースの管理キーは置きません。署名を確認したあと、サーバーだけが知る合言葉が一致したときだけ、会員と反応を書く関数を呼びます。合言葉そのものは仕様書に書きません。</p>
 
         <h2 id="integrations">9. 外部サービス・連携</h2>
-        <p class="lead">見た目のために使っているものと、つながっているように見せているだけのものを分けます。</p>
+        <p class="lead">接続しているものと、画面だけにあるものを分けます。</p>
         <div class="grid-2">
           <article class="card">
-            <p class="kicker">実際に使っている</p>
-            <h3>GitHub Pages ／ Unsplash</h3>
+            <p class="kicker">接続している</p>
+            <h3>Supabase ／ 公式LINE</h3>
             <ul>
+              <li>ログイン、物件、配信、会員、反応、オーナーは Supabase です。</li>
+              <li>配信は LINE Messaging API のブロードキャストです。詳細は <a href="#line">10. LINE連携</a> です。</li>
+              <li>友だち追加、離脱、テキスト、スタンプ、ボタン操作は Webhook で受けます。</li>
               <li>この仕様書は GitHub Pages で公開します。フォルダは <code>docs/</code> です。</li>
-              <li>物件写真は Unsplash の画像URLです。自社ストレージではありません。</li>
             </ul>
           </article>
           <article class="card">
-            <p class="kicker">モックのみ</p>
-            <h3>公式LINE ／ 会員 ／ メール</h3>
+            <p class="kicker">まだつないでいない</p>
+            <h3>メール ／ ファイル ／ 見本のボタン</h3>
             <ul>
-              <li>LINE Messaging APIはありません。配信ボタンは画面内の状態を変えるだけです。本番の範囲と手順は <a href="#line">10. LINE連携</a> にあります。</li>
-              <li>会員・反応の受信（Webhook）はありません。</li>
               <li>オーナーのメールは保存するだけで、招待メールは送りません。</li>
-              <li>自前のREST API・データベースはありません。</li>
+              <li>写真はURLの追加です。アップロード用のストレージはありません。</li>
+              <li>PDFは見本のファイル名だけです。実ファイルは送りません。</li>
+              <li>プレビューの「いいね」「気になる」は見本です。実配信の本文にはボタンを付けません。</li>
             </ul>
           </article>
         </div>
 
-        <h2 id="line">10. LINE連携（本番でつなぐ場合）</h2>
-        <p class="lead">いまの画面はモックです。本番では LINE公式アカウントの Messaging API を使います。以下は、このツールとしてどこまでできるかと、つなぎ方です。出典は <a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">LINE Developers 公式</a> です。トークンやパスワードは書きません。</p>
+        <h2 id="line">10. LINE連携</h2>
+        <p class="lead">公式LINEは Messaging API でつながっています。以下は、このツールがいま使っている範囲と、まだ使っていない範囲です。出典は <a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">LINE Developers 公式</a> です。トークンやパスワードは書きません。</p>
+
+        <h3>10-0. いま接続している範囲</h3>
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>画面</th>
+              <th>いまの動き</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>公式LINEで配信</td>
+              <td>友だち全員へ、目隠し済みのテキストを1通送ります。確認待ちと配信準備だけ。失敗したときは状態を戻します。送信できたあとに記録だけ失敗した場合は、もう一度押さない案内を出します。</td>
+            </tr>
+            <tr>
+              <td>配信人数</td>
+              <td>日本時間の前日の配信対象数です。取れないときは会員数です。当日追加した友だちは、前日の人数に入らないことがあります。</td>
+            </tr>
+            <tr>
+              <td>配信形式</td>
+              <td>見本と履歴のラベルに使います。送る本文は常にテキストです。カードやFlex、PDFファイルは送りません。</td>
+            </tr>
+            <tr>
+              <td>Webhook</td>
+              <td><code>https://mansion-hasshin.netlify.app/api/line/webhook</code>。署名が違うリクエストは拒否します。中身が空の確認も成功として返します。</td>
+            </tr>
+            <tr>
+              <td>友だち追加</td>
+              <td>会員を追加または更新し、流入を「公式LINE」にします。表示名はプロフィールから取ります。つなぐ前に追加済みの人は、ブロックして追加し直すまでイベントが来ません。</td>
+            </tr>
+            <tr>
+              <td>離脱</td>
+              <td>行は残し、流入を「離脱」にして離脱日時を入れます。ブロックと友だち解除は同じです。</td>
+            </tr>
+            <tr>
+              <td>テキスト / スタンプ</td>
+              <td>いちばん新しい配信に付けます。配信が1件もないときは捨てます。文面が「いいね」でも種類はテキストです。</td>
+            </tr>
+            <tr>
+              <td>いいね</td>
+              <td>ボタン操作の data が <code>like:</code> と物件IDのときだけです。その物件の最新配信に付けます。見本のボタンは実メッセージに含まれないため、通常の配信だけでは届きません。</td>
+            </tr>
+            <tr>
+              <td>同じ人の再反応</td>
+              <td>1つの配信につき1人1件です。最初の反応を残します。</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p>サーバーに置く名前は次です。値は書きません。<code>LINE_CHANNEL_ACCESS_TOKEN</code>（長期のチャネルアクセストークン）、<code>LINE_CHANNEL_SECRET</code>、<code>LINE_INGEST_SECRET</code>、<code>NEXT_PUBLIC_SUPABASE_URL</code>、<code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code>。運営がアプリを開いたとき、合言葉をデータベースへ合わせます。</p>
 
         <div class="note">
           <strong>このツールで必要な連携は2つです</strong>
@@ -494,7 +562,7 @@
         </div>
 
         <h3>10-1. どこまでのことができるか</h3>
-        <p>本番でつないだあと、このツールとして使う範囲です。LINE公式アカウントに備わっている機能の全部ではありません。</p>
+        <p>このツールの対象範囲です。いま呼んでいるのは、全員へのテキスト配信、友だち追加と離脱、テキストとスタンプ、表示名、ポストバックの受け口です。会員指定の送信、個別返信、画像やカードの実送信は対象に含みますが、まだ呼んでいません。</p>
         <div class="grid-3">
           <article class="card">
             <p class="kicker">できる（このツールで使う）</p>
@@ -577,7 +645,7 @@
             <tr>
               <td>箇条書き／カード形式で見せる</td>
               <td class="ok">できる</td>
-              <td>本番ではテキスト＋画像、または Flex Message。モックの見た目そのものではない</td>
+              <td>見本では切り替わる。実配信はテキスト。画像や Flex はまだ送らない</td>
             </tr>
             <tr>
               <td>PDFをトークで開く</td>
@@ -713,7 +781,7 @@
             <tr>
               <td>ブロードキャスト</td>
               <td>友だち全員に同じ文面</td>
-              <td>「公式LINEで配信」の本番相当</td>
+              <td>いまの「公式LINEで配信」。テキスト1通</td>
             </tr>
             <tr>
               <td>マルチキャスト</td>
@@ -733,7 +801,7 @@
           </tbody>
         </table>
         </div>
-        <p>メッセージの形はテキスト、画像、テンプレート、Flex Message などです。本ツールの「箇条書き／カード／PDF」は、本番ではテキスト＋画像、または Flex Message に置き換えます。PDFはファイルそのものではなく、URL付きの案内にするのが一般的です。</p>
+        <p>メッセージの形はテキスト、画像、テンプレート、Flex Message などです。いまの配信はテキストだけです。見本の箇条書き／カード／PDFは、トーク上の別形式にはなっていません。マルチキャスト、1人へのプッシュ、応答メッセージはまだ呼びません。</p>
 
         <h3>10-4. 連携の具体的な手順</h3>
         <div class="card">
@@ -743,9 +811,8 @@
             <li><strong>Messaging API を有効にする。</strong> Official Account Manager の設定から Messaging API をオンにする。ここで Messaging API チャネルが作られる。<strong>プロバイダーは後から変更できない</strong>ので、同じ会社のログインやLIFFと同じプロバイダーを選ぶ。</li>
             <li><strong>LINE Developers コンソールを開く。</strong> 同じログインで <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">developers.line.biz/console</a> に入り、作られたチャネルを確認する。コンソールから Messaging API チャネルを新規作成する手順は 2024年9月以降廃止されている。</li>
             <li><strong>チャネルシークレットを控える。</strong> ［チャネル基本設定］のチャネルシークレットをサーバー側の環境変数に入れる。画面や仕様書には書かない。</li>
-            <li><strong>チャネルアクセストークンを発行する。</strong> ［Messaging API設定］で発行し、サーバー側の環境変数に入れる。公式の推奨はチャネルアクセストークン v2.1 です。ボットが配信APIを呼ぶときに使う。</li>
-            <li><strong>Webhook 用のHTTPSサーバーを用意する。</strong> 例: <code>https://（自社ドメイン）/api/line/webhook</code>。自己署名証明書は不可。ブラウザが信頼する証明書が必要。</li>
-            <li><strong>Webhook URL を登録する。</strong> コンソールの［Messaging API設定］→ Webhook URL を編集 → 更新 →［検証］が成功することを確認 →［Webhookの利用］をオン。</li>
+            <li><strong>チャネルアクセストークン（長期）を発行する。</strong> ［Messaging API設定］で発行し、サーバー側の環境変数に入れる。このツールが配信とプロフィール取得に使うのは長期トークンです。</li>
+            <li><strong>Webhook URL。</strong> <code>https://mansion-hasshin.netlify.app/api/line/webhook</code>。コンソールの［Messaging API設定］に登録済みで、検証は成功しています。［Webhookの利用］はオンです。</li>
             <li><strong>署名を必ず検証する。</strong> 受信時にヘッダー <code>x-line-signature</code> を、チャネルシークレットによる HMAC-SHA256 で照合する。一致しないリクエストは捨てる。</li>
             <li><strong>空の検証リクエストに 200 を返す。</strong> LINEからの確認は <code>&#123;"destination":"…","events":[]&#125;</code> の POST になる。ボディが空でも 200 を返す。</li>
             <li><strong>応答設定を決める。</strong> ボットが返事する場合は、Official Account Manager の「応答メッセージ」と「あいさつメッセージ」をオフにする（二重応答を防ぐ）。</li>
@@ -767,7 +834,7 @@
           <tbody>
             <tr>
               <td>「公式LINEで配信」</td>
-              <td>ブロードキャスト（または会員ID指定のマルチキャスト）</td>
+              <td>ブロードキャスト。本文はテキスト。会員を指定した送信はまだない</td>
             </tr>
             <tr>
               <td>LINE会員一覧</td>
@@ -787,7 +854,7 @@
             </tr>
             <tr>
               <td>配信人数</td>
-              <td>友だち数。モックの 248名（12+236）は使わない</td>
+              <td>前日（日本時間）の配信対象数。取れなければ会員数</td>
             </tr>
           </tbody>
         </table>
@@ -808,8 +875,8 @@
         </div>
 
         <div class="warn">
-          <strong>いまのモックでは未接続です</strong>
-          <span>「公式LINEで配信」を押しても実送信しません。チャネルシークレットとアクセストークンは環境変数にだけ置き、GitHub や仕様書には載せないでください。</span>
+          <strong>配信ボタンは実送信です</strong>
+          <span>「公式LINEで配信」は友だちのトークに届き、通数として数えられます。チャネルシークレット、アクセストークン、合言葉は環境変数にだけ置き、GitHub や仕様書には載せないでください。</span>
         </div>
         <p>公式ドキュメント：<a href="https://developers.line.biz/ja/docs/messaging-api/overview/" target="_blank" rel="noopener">Messaging APIの概要</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/getting-started/" target="_blank" rel="noopener">Messaging APIを始めよう</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/building-bot/" target="_blank" rel="noopener">ボットを作成する</a> ／ <a href="https://developers.line.biz/ja/docs/basics/user-profile/" target="_blank" rel="noopener">ユーザーのプロフィール情報を取得する</a> ／ <a href="https://developers.line.biz/ja/docs/messaging-api/sending-messages/" target="_blank" rel="noopener">メッセージを送信する</a></p>
 
@@ -856,7 +923,7 @@
         <p>スタンダードの追加メッセージ単価は、追加した通数帯によって下がります（税別）。公式の例では、追加200,000通のとき <code>（50,000×3円）＋（50,000×2.8円）＋（100,000×2.6円）＝550,000円</code> です。2026年10月1日から追加メッセージ料金が改定され、追加20万通／月までは1通3円、それを超えた分は1通2.5円（税別）になります。改定の詳細は<a href="https://www.lycbiz.com/jp/news/line-official-account/20260216/" target="_blank" rel="noopener">LINEヤフーの告知</a>を正とします。</p>
         <div class="note">
           <strong>別費用として扱う範囲</strong>
-          <span>月額固定費と、スタンダードで発生した追加メッセージ料金です。チャットProやプレミアムIDなど任意オプションは、配信通数の費用とは別契約です。このモックでは実課金は発生しません。</span>
+          <span>月額固定費と、スタンダードで発生した追加メッセージ料金です。チャットProやプレミアムIDなど任意オプションは、配信通数の費用とは別契約です。このツールからの実配信も通数に入ります。</span>
         </div>
 
         <p><strong>売上の原価と利益の分け方</strong></p>
@@ -870,7 +937,7 @@
         <p>例：売上が100、その月のLINE公式アカウント費用が20なら、利益は80。泉さん40、相手方40です。実額は契約と請求に従います。この仕様書は配分の考え方だけを書きます。</p>
 
         <h2 id="stack">11. 技術構成</h2>
-        <p class="lead">画面の動きは Next.js の App Router です。データはこれまでどおりブラウザの localStorage に残します。</p>
+        <p class="lead">画面の動きは Next.js の App Router です。ログインとデータは Supabase、配信と Webhook は LINE Messaging API です。</p>
         <div class="table-wrap">
         <table>
           <thead>
@@ -898,8 +965,8 @@
             </tr>
             <tr>
               <td>状態</td>
-              <td>React Context + localStorage</td>
-              <td>キーは <code>aqualine-store-v2</code></td>
+              <td>Supabase と React Context</td>
+              <td>メニューとカード／一覧だけブラウザに残す</td>
             </tr>
             <tr>
               <td>仕様書の公開</td>
@@ -907,65 +974,71 @@
               <td>リポジトリの <code>docs/</code> を配信します</td>
             </tr>
             <tr>
-              <td>アプリの起動</td>
-              <td>ローカルの Next.js</td>
-              <td>App Router が各 URL を処理します</td>
+              <td>アプリの公開</td>
+              <td>Netlify</td>
+              <td><code>https://mansion-hasshin.netlify.app</code>。ログインは <code>/login</code>。同じ画面は <code>npm run dev</code> の 127.0.0.1:3000 でも開けます。セッションの更新は <code>src/proxy.ts</code></td>
+            </tr>
+            <tr>
+              <td>ログインとデータ</td>
+              <td>Supabase</td>
+              <td>メールアドレスとパスワード。物件はテーブルに保存</td>
+            </tr>
+            <tr>
+              <td>LINE</td>
+              <td>Messaging API</td>
+              <td>配信は <code>/api/line/broadcast</code>。受信は <code>/api/line/webhook</code></td>
             </tr>
           </tbody>
         </table>
         </div>
 
-        <h2 id="mock">12. モック／未実装機能</h2>
+        <h2 id="mock">12. 未実装</h2>
         <div class="grid-2">
           <article class="card">
-            <h3>未実装</h3>
+            <h3>まだない</h3>
             <ul>
-              <li>パスワードログイン、サーバー側の権限、監査ログ</li>
-              <li>LINEの実配信とWebhookでの反応受信</li>
-              <li>会員の実データ（12名表示、248名は仮）</li>
-              <li>PDF実ファイル、画像のアップロード</li>
-              <li>メール招待</li>
-              <li>複数人・複数端末での同時編集</li>
+              <li>監査ログ</li>
+              <li>会員を指定した配信、1人への返信、応答メッセージ</li>
+              <li>カードやFlex、画像、PDFファイルの実送信</li>
+              <li>見本の「いいね」ボタンを、実メッセージに付けること</li>
+              <li>画像のアップロード</li>
+              <li>オーナーへの招待メールと、発行画面からのパスワード作成</li>
               <li>本格的な検索・ページング</li>
-              <li>初期状態に戻すリセットボタンは画面にない</li>
+              <li>初期状態に戻すボタン</li>
             </ul>
           </article>
           <article class="card">
-            <h3>デモとしての演出</h3>
+            <h3>見本のまま残しているもの</h3>
             <ul>
-              <li>配信後、いいね2件と🏠スタンプ1件が時間差で入ります</li>
-              <li>配信人数は会員12名＋236の248名です</li>
               <li>LINEプレビューはトークの見本であり、実画面ではありません</li>
-              <li>トップに「ログイン不要」「実データ未接続」と出します</li>
+              <li>PDFはファイル名の吹き出しだけです</li>
+              <li>プレビューの「いいね」「気になる」は押せても、トークには送られません</li>
+              <li>配信人数は前日の対象数なので、届いた人数と違うことがあります</li>
             </ul>
           </article>
-        </div>
-        <div class="warn">
-          <strong>本番接続はしていません</strong>
-          <span>「公式LINEで配信」を押しても実際のLINEには届きません。データは操作したブラウザの localStorage にだけ残ります。</span>
         </div>
 
         <h2 id="notes">13. 制約・注意事項</h2>
         <div class="card">
           <ol>
-            <li>本番システムではなく、操作確認用のモックです。</li>
-            <li>「公式LINEで配信」を押しても、実際のLINEには届きません。</li>
-            <li>データは操作したブラウザにしか残りません。消す・別の端末では初期状態です。</li>
-            <li>会員一覧は再読み込みのたびに初期12名へ戻ります。248名は仮の加算です。</li>
+            <li>「公式LINEで配信」は友だちのトークへ届きます。確認用の再配信は、配信済みボタンが無効です。</li>
+            <li>物件・会員・反応は Supabase に残ります。別の端末でも、同じログインなら同じデータです。</li>
+            <li>会員は友だち追加のたびに増えます。再読み込みで初期の12名には戻りません。</li>
             <li>目隠しは配信文とプレビューに出る項目（番地、部屋番号、マンション名、価格）に効きます。運営の確認画面では元データが見えます。</li>
             <li>管理会社は送信後に編集できません。修正は運営の差戻しが必要です。</li>
-            <li>オーナーはトップから入れません。運営の「表示を確認」経由です。招待中・停止中は入れません。割り当てた下書き・差戻しは編集できます。</li>
+            <li>オーナー発行は招待中から始まり、メールもパスワードも作りません。利用中でログイン用ユーザーがある人だけ <code>/login</code> から入れます。「表示を確認」は運営のプレビューで、再読み込みすると運営に戻ります。割り当てた下書き・差戻しは編集できます。</li>
             <li>確認待ち一覧には、差戻し済みの物件も含まれます。</li>
             <li>カード／一覧の選択は、確認待ちと配信履歴で共有されます。</li>
             <li>LINE公式アカウントの月額固定費と追加メッセージ料金は別費用です。売上の原価として差し引き、残った利益を泉さんと折半します。通数と単価は「10-7. LINE公式アカウントの費用」を正とします。</li>
-            <li>この仕様書は GitHub Pages（<code>docs/</code>）で公開します。アプリ本体はローカルの Next.js です。</li>
+            <li>この仕様書は GitHub Pages（<code>docs/</code>）で公開します。アプリ本体は <code>https://mansion-hasshin.netlify.app</code> です。</li>
             <li>実行基盤は Next.js 16 の App Router です。</li>
-            <li>写真は Unsplash に依存します。オフラインやリンク切れでは画像が出ないことがあります。</li>
+            <li>写真は入力した画像URLです。リンク切れのときは画像が出ません。アップロードはまだありません。</li>
+            <li>Webhook は <code>https://mansion-hasshin.netlify.app/api/line/webhook</code> です。署名が違うリクエストは拒否します。</li>
           </ol>
         </div>
 
         <footer>
-          更新 2026-09-24　マンション発信ツール　GitHub Pages 公開用。本体アプリの画面やデータを変更するものではありません。
+          更新 2026-10-06　マンション発信ツール　GitHub Pages 公開用。本体アプリの画面やデータを変更するものではありません。
         </footer>
       </main>
     </div>
