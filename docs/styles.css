@@ -538,3 +538,23 @@ footer,
   }
 
 }
+
+figure.shot {
+  margin: 18px 0 6px;
+}
+
+figure.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+figure.shot figcaption {
+  margin-top: 8px;
+  color: var(--sub);
+  font-size: 13px;
+  line-height: 1.6;
+}
