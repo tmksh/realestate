@@ -18,13 +18,13 @@ export default function CompanyDashboardPage() {
   const sent = mine.filter((item) => item.status === "broadcasted");
   const sentIds = new Set(sent.map((item) => item.id));
   const reactions = state.reactions.filter((item) => sentIds.has(item.propertyId));
-  const canRegister = user?.role === "company";
+  const canRegister = user?.role === "company" || user?.role === "admin";
 
   return (
     <div className="w-full space-y-6">
       <PageHeader
-        kicker={user?.role === "owner" ? "オーナー" : "管理会社"}
-        title={user?.companyName ?? "管理会社"}
+        kicker={user?.role === "owner" ? "オーナー" : user?.role === "admin" ? "運営" : "管理会社"}
+        title={user?.role === "admin" ? "運営" : user?.companyName ?? "管理会社"}
         description={
           user?.role === "owner"
             ? "割り当てられた物件だけが表示されます。"
@@ -32,12 +32,13 @@ export default function CompanyDashboardPage() {
         }
         action={
           canRegister ? (
-            <Link href="/company/properties/new">
-              <Button>
-                <Plus className="h-4 w-4" />
-                物件を登録
-              </Button>
-            </Link>
+            <Button
+              href="/company/properties/new"
+              className="min-h-11 px-5 text-[15px] font-semibold"
+            >
+              <Plus className="h-4 w-4" />
+              物件を登録
+            </Button>
           ) : null
         }
       />

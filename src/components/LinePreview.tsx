@@ -58,7 +58,6 @@ export function LinePreview({ property }: { property: Property }) {
               </Incoming>
               <Incoming>
                 <TextBubble text={body} />
-                <ActionButtons />
               </Incoming>
             </>
           ) : (
@@ -70,7 +69,6 @@ export function LinePreview({ property }: { property: Property }) {
               ) : null}
               <Incoming>
                 <TextBubble text={body} />
-                <ActionButtons />
               </Incoming>
             </>
           )}
@@ -78,7 +76,7 @@ export function LinePreview({ property }: { property: Property }) {
       </div>
 
       <p className="mt-2 text-[11px] leading-5 text-muted">
-        実際のトーク画面ではなく、送る内容から作った見本です。最終確認はテスト送信したスマホで行ってください。機種によって文字や余白が少し異なる場合があります。
+        実際のトーク画面ではなく、送る内容から作った見本です。届くのはこのテキストです。
       </p>
     </div>
   );
@@ -145,20 +143,6 @@ function FlexCard({ property, body }: { property: Property; body: string }) {
         <p className="text-[15px] font-bold leading-snug text-[#111]">{visibleBuilding(property)}</p>
         <PreviewMessage text={body} />
       </div>
-      <ActionButtons />
-    </div>
-  );
-}
-
-function ActionButtons() {
-  return (
-    <div className="mt-1 overflow-hidden rounded-[12px] bg-white">
-      <button type="button" className="block w-full border-t border-[#eee] py-2.5 text-center text-[14px] font-medium text-[#06c755]">
-        いいね
-      </button>
-      <button type="button" className="block w-full border-t border-[#eee] py-2.5 text-center text-[14px] font-medium text-[#06c755]">
-        🏠 気になる
-      </button>
     </div>
   );
 }

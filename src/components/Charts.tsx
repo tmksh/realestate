@@ -35,7 +35,8 @@ export function ReactionBarChart({ reactions }: { reactions: Reaction[] }) {
   const innerH = height - padT - padB;
   const gap = 18;
   const barW = (innerW - gap * (counts.length - 1)) / counts.length;
-  const ticks = [0, Math.ceil(max / 2), max];
+  const mid = Math.ceil(max / 2);
+  const ticks = mid === 0 || mid === max ? [0, max] : [0, mid, max];
 
   return (
     <div>
@@ -131,7 +132,7 @@ export function ReactionTrendChart({ reactions }: { reactions: Reaction[] }) {
 }
 
 export function ReactionBreakdownChart({ reactions }: { reactions: Reaction[] }) {
-  const counts = (["like", "stamp", "text"] as const).map((type) => ({
+  const counts = (["stamp", "text"] as const).map((type) => ({
     type,
     value: reactions.filter((item) => item.type === type).length,
   }));

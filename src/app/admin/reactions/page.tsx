@@ -23,7 +23,6 @@ export default function ReactionsPage() {
   );
   const typeCounts = {
     all: byProperty.length,
-    like: byProperty.filter((item) => item.type === "like").length,
     stamp: byProperty.filter((item) => item.type === "stamp").length,
     text: byProperty.filter((item) => item.type === "text").length,
   };
@@ -32,7 +31,7 @@ export default function ReactionsPage() {
     <div className="w-full">
       <PageHeader
         title="反応リスト"
-        description="配信に反応した会員です。物件と反応の種類で同時に絞り込めます。"
+        description="配信に反応した会員です。返信は、公式LINEの画面を開かずに、その会員だけへ送れます。"
         action={
           <div className="shrink-0">
             <Button
@@ -47,7 +46,7 @@ export default function ReactionsPage() {
                       member?.displayName ?? "",
                       property?.buildingName ?? "",
                       reactionLabel(reaction.type),
-                      reaction.message ?? reaction.stamp ?? "いいね",
+                      reaction.message ?? reaction.stamp ?? "",
                       reaction.createdAt,
                     ];
                   }),
@@ -87,7 +86,6 @@ export default function ReactionsPage() {
               onChange={setType}
               options={[
                 { id: "all", label: "すべて", count: typeCounts.all },
-                { id: "like", label: reactionLabel("like"), count: typeCounts.like },
                 { id: "stamp", label: reactionLabel("stamp"), count: typeCounts.stamp },
                 { id: "text", label: reactionLabel("text"), count: typeCounts.text },
               ]}
@@ -104,7 +102,12 @@ export default function ReactionsPage() {
             description="物件と反応の種類を変えて、もう一度絞り込んでください。"
           />
         ) : (
-          <ReactionList reactions={reactions} members={state.members} properties={state.properties} />
+          <ReactionList
+            reactions={reactions}
+            history={state.reactions}
+            members={state.members}
+            properties={state.properties}
+          />
         )}
       </div>
     </div>

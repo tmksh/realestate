@@ -7,7 +7,7 @@ import type { Role } from "@/lib/types";
 
 function canAccess(userRole: Role, required: Role) {
   if (required === "company") {
-    return userRole === "company" || userRole === "owner";
+    return userRole === "company" || userRole === "owner" || userRole === "admin";
   }
   return userRole === required;
 }
@@ -26,7 +26,7 @@ export function AuthGuard({
   useEffect(() => {
     if (!ready) return;
     if (!user) {
-      router.replace("/");
+      router.replace("/login");
       return;
     }
     if (!canAccess(user.role, role)) {

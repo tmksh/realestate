@@ -65,7 +65,7 @@ export default function BroadcastDetailPage() {
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-[16px] font-bold text-ink">反応した会員</h2>
-              <p className="mt-1 text-[13px] text-muted">種類で絞り込むと表示件数も変わります。</p>
+              <p className="mt-1 text-[13px] text-muted">返信は、その会員だけにこの画面から送れます。</p>
             </div>
             <p className="font-display text-[15px] font-semibold tabular-nums text-ink">{reactions.length}件</p>
           </div>
@@ -74,7 +74,6 @@ export default function BroadcastDetailPage() {
             onChange={setType}
             options={[
               { id: "all", label: "すべて", count: allReactions.length },
-              { id: "like", label: reactionLabel("like"), count: allReactions.filter((item) => item.type === "like").length },
               { id: "stamp", label: reactionLabel("stamp"), count: allReactions.filter((item) => item.type === "stamp").length },
               { id: "text", label: reactionLabel("text"), count: allReactions.filter((item) => item.type === "text").length },
             ]}
@@ -88,6 +87,7 @@ export default function BroadcastDetailPage() {
             ) : (
               <ReactionList
                 reactions={reactions}
+                history={state.reactions}
                 members={state.members}
                 properties={state.properties}
                 mutePropertyName

@@ -53,7 +53,7 @@ export function PropertyCard({
       href={href}
       className="group block h-full rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2"
     >
-      <Card className="h-full overflow-hidden transition duration-200 group-hover:shadow-[var(--shadow-lift)]">
+      <Card className="h-full overflow-hidden transition duration-200 group-hover:lift-shadow">
         <div className="relative h-[268px] md:h-[300px]">
           <PropertyPhoto src={property.images[0]} alt={property.name} className="absolute inset-0 h-full" />
           <div className="absolute left-3 top-3">

@@ -38,7 +38,7 @@ export default function AdminPropertyReviewPage() {
 
 function ReviewEditor({ propertyId }: { propertyId: string }) {
   const router = useRouter();
-  const { state, updateReview, sendBroadcast, rejectProperty, addReaction } = useStore();
+  const { state, updateReview, sendBroadcast, rejectProperty } = useStore();
   const property = state.properties.find((item) => item.id === propertyId);
   const [maskedFields, setMaskedFields] = useState<MaskableField[]>(property?.maskedFields ?? []);
   const [broadcastFormat, setBroadcastFormat] = useState<BroadcastFormat>(
@@ -63,8 +63,8 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
     );
   };
 
-  const persistReview = () => {
-    updateReview(property.id, { maskedFields, broadcastFormat, customMessage });
+  const persistReview = async () => {
+    await updateReview(property.id, { maskedFields, broadcastFormat, customMessage });
   };
 
   const alreadySent = property.status === "broadcasted";
@@ -204,7 +204,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
             <Textarea
               value={customMessage}
               onChange={(event) => setCustomMessage(event.target.value)}
-              placeholder="気になる方はいいねを送ってください"
+              placeholder="気になる方はスタンプを送ってください"
               className="min-h-[220px] px-4 py-3 leading-7"
             />
           </Field>
@@ -218,7 +218,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
           ) : null}
           <p className="text-sm leading-6 text-ink">プレビューを確認してから配信してください。</p>
           <p className="text-[13px] leading-5 text-faint">
-            デモ環境のため、実際の公式LINEには送信されません。
+            友だち全員のトークに、この文面をテキストで送ります。
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button variant="secondary" onClick={persistReview} disabled={alreadySent} className="flex-1 whitespace-nowrap">
@@ -229,27 +229,13 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
               className="flex-1 whitespace-nowrap"
               disabled={alreadySent || sending}
               onClick={() => {
-                persistReview();
                 setSending(true);
-                const broadcastId = sendBroadcast(property.id);
-                const simulated = [
-                  { reactionType: "like" as const },
-                  { reactionType: "stamp" as const, stamp: "🏠" },
-                  { reactionType: "like" as const },
-                ];
-                simulated.forEach((item, index) => {
-                  window.setTimeout(() => {
-                    addReaction({
-                      propertyId: property.id,
-                      broadcastId,
-                      ...item,
-                    });
-                  }, 400 * (index + 1));
-                });
-                window.setTimeout(() => {
+                void (async () => {
+                  await persistReview();
+                  const broadcastId = await sendBroadcast(property.id);
                   setSending(false);
                   router.push(`/admin/broadcasts/${broadcastId}`);
-                }, 900);
+                })().catch(() => setSending(false));
               }}
             >
               <Send className="h-4 w-4" />
@@ -274,8 +260,7 @@ function ReviewEditor({ propertyId }: { propertyId: string }) {
               variant="danger"
               disabled={!rejectReason}
               onClick={() => {
-                rejectProperty(property.id, rejectReason);
-                router.push("/admin/inbox");
+                void rejectProperty(property.id, rejectReason).then(() => router.push("/admin/inbox"));
               }}
             >
               管理会社へ差し戻す

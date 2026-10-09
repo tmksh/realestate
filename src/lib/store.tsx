@@ -6,11 +6,11 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
 } from "react";
-import { buildLineMessage, newId, nowIso } from "./format";
-import { initialState, users } from "./seed";
+import { createClient as createBrowserSupabase } from "@/utils/supabase/client";
+import { emptyWorkspace, loadWorkspace, propertyToRow } from "./db";
+import { nowIso } from "./format";
 import type {
   AppState,
   BroadcastFormat,
@@ -22,11 +22,10 @@ import type {
   User,
 } from "./types";
 
-const STORAGE_KEY = "aqualine-store-v2";
-
 type Action =
   | { type: "hydrate"; payload: AppState }
-  | { type: "login"; userId: string }
+  | { type: "setCurrentUser"; user: User }
+  | { type: "addCompany"; company: { id: string; name: string } }
   | { type: "logout" }
   | { type: "reset" }
   | { type: "upsertProperty"; property: Property }
@@ -39,7 +38,14 @@ type Action =
       broadcastFormat: BroadcastFormat;
       customMessage: string;
     }
-  | { type: "sendBroadcast"; id: string; broadcastId: string }
+  | {
+      type: "sendBroadcast";
+      id: string;
+      broadcastId: string;
+      sentAt: string;
+      recipientCount: number;
+      messageText: string;
+    }
   | {
       type: "addReaction";
       propertyId: string;
@@ -57,11 +63,10 @@ function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "hydrate":
       return action.payload;
-    case "login":
-      return {
-        ...state,
-        currentUser: users.find((user) => user.id === action.userId) ?? null,
-      };
+    case "setCurrentUser":
+      return { ...state, currentUser: action.user };
+    case "addCompany":
+      return { ...state, companies: [...state.companies, action.company] };
     case "loginOwner": {
       const owner = state.owners.find((item) => item.id === action.ownerId);
       return {
@@ -72,7 +77,7 @@ function reducer(state: AppState, action: Action): AppState {
     case "logout":
       return { ...state, currentUser: null };
     case "reset":
-      return { ...initialState, currentUser: state.currentUser };
+      return { ...emptyWorkspace(), currentUser: state.currentUser };
     case "upsertProperty":
       return {
         ...state,
@@ -134,10 +139,10 @@ function reducer(state: AppState, action: Action): AppState {
       const broadcast = {
         id: action.broadcastId,
         propertyId: property.id,
-        sentAt: nowIso(),
+        sentAt: action.sentAt,
         format: property.broadcastFormat,
-        recipientCount: state.members.length + 236,
-        messageText: buildLineMessage(property),
+        recipientCount: action.recipientCount,
+        messageText: action.messageText,
       };
       return {
         ...state,
@@ -145,9 +150,9 @@ function reducer(state: AppState, action: Action): AppState {
           item.id === action.id
             ? {
                 ...item,
-                status: "broadcasted",
-                broadcastedAt: nowIso(),
-                updatedAt: nowIso(),
+                status: "broadcasted" as const,
+                broadcastedAt: action.sentAt,
+                updatedAt: action.sentAt,
               }
             : item,
         ),
@@ -175,7 +180,7 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         reactions: [
           {
-            id: newId("r"),
+            id: crypto.randomUUID(),
             broadcastId: action.broadcastId,
             propertyId: action.propertyId,
             memberId,
@@ -240,13 +245,14 @@ export function activeOwnerCount(owners: OwnerAccount[]) {
 
 type StoreContextValue = {
   ready: boolean;
+  syncError: string | null;
   state: AppState;
-  login: (userId: string) => void;
+  adoptUser: (user: User) => void;
   logout: () => void;
-  resetDemo: () => void;
-  saveProperty: (property: Property) => void;
-  submitProperty: (id: string) => void;
-  rejectProperty: (id: string, reason: string) => void;
+  createCompany: (name: string) => Promise<{ id: string; name: string }>;
+  saveProperty: (property: Property) => Promise<void>;
+  submitProperty: (id: string) => Promise<void>;
+  rejectProperty: (id: string, reason: string) => Promise<void>;
   updateReview: (
     id: string,
     payload: {
@@ -254,113 +260,221 @@ type StoreContextValue = {
       broadcastFormat: BroadcastFormat;
       customMessage: string;
     },
-  ) => void;
-  sendBroadcast: (id: string) => string;
-  addReaction: (payload: {
-    propertyId: string;
-    broadcastId: string;
-    memberId?: string;
-    reactionType?: ReactionType;
-    stamp?: string;
-    message?: string;
-  }) => void;
-  saveOwner: (owner: OwnerAccount) => void;
-  setOwnerStatus: (id: string, status: OwnerStatus) => void;
+  ) => Promise<void>;
+  sendBroadcast: (id: string) => Promise<string>;
+  saveOwner: (owner: OwnerAccount) => Promise<void>;
+  setOwnerStatus: (id: string, status: OwnerStatus) => Promise<void>;
   loginOwner: (ownerId: string) => void;
 };
 
 const StoreContext = createContext<StoreContextValue | null>(null);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, emptyWorkspace());
   const [ready, setReady] = useState(false);
-  const hydrated = useRef(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as AppState;
-        const owners = parsed.owners ?? initialState.owners;
-        const ownerAccount = owners.find((item) => item.id === parsed.currentUser?.ownerAccountId);
-        const currentUser = ownerAccount ? ownerToUser(ownerAccount) : parsed.currentUser ?? null;
-        dispatch({
-          type: "hydrate",
-          payload: {
-            ...initialState,
-            ...parsed,
-            currentUser,
-            members: initialState.members,
-            owners,
-          },
-        });
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-    hydrated.current = true;
-    const timer = window.setTimeout(() => setReady(true), 0);
-    return () => window.clearTimeout(timer);
+    let cancelled = false;
+    localStorage.removeItem("aqualine-store-v2");
+    loadWorkspace(createBrowserSupabase())
+      .then((payload) => {
+        if (!cancelled) dispatch({ type: "hydrate", payload });
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setSyncError(error instanceof Error ? error.message : "データの読み込みに失敗しました");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setReady(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [ready, state]);
+    if (!ready || !state.currentUser) return;
+    let cancelled = false;
+    const refresh = () => {
+      loadWorkspace(createBrowserSupabase())
+        .then((payload) => {
+          if (!cancelled && payload.currentUser) dispatch({ type: "hydrate", payload });
+        })
+        .catch(() => {});
+    };
+    const timer = window.setInterval(refresh, 15000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [ready, state.currentUser?.id]);
 
-  const value = useMemo<StoreContextValue>(
-    () => ({
+  useEffect(() => {
+    if (!ready || state.currentUser?.role !== "admin") return;
+    void fetch("/api/line/prepare", { method: "POST" });
+  }, [ready, state.currentUser?.role]);
+
+  const value = useMemo<StoreContextValue>(() => {
+    const check = (error: { message: string } | null) => {
+      if (!error) return;
+      setSyncError(error.message);
+      throw new Error(error.message);
+    };
+
+    return {
       ready,
+      syncError,
       state,
-      login: (userId) => {
-        const next = {
-          ...state,
-          currentUser: users.find((user) => user.id === userId) ?? null,
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        dispatch({ type: "login", userId });
+      adoptUser: (user) => dispatch({ type: "setCurrentUser", user }),
+      logout: () => {
+        dispatch({ type: "logout" });
+        void createBrowserSupabase().auth.signOut();
       },
-      logout: () => dispatch({ type: "logout" }),
-      resetDemo: () => dispatch({ type: "reset" }),
-      saveProperty: (property) => dispatch({ type: "upsertProperty", property }),
-      submitProperty: (id) => dispatch({ type: "submitProperty", id }),
-      rejectProperty: (id, reason) => dispatch({ type: "rejectProperty", id, reason }),
-      updateReview: (id, payload) => dispatch({ type: "updateReview", id, ...payload }),
-      sendBroadcast: (id) => {
-        const broadcastId = newId("b");
-        dispatch({ type: "sendBroadcast", id, broadcastId });
-        return broadcastId;
+      createCompany: async (name) => {
+        const company = { id: crypto.randomUUID(), name: name.trim() };
+        const { error } = await createBrowserSupabase().from("companies").insert(company);
+        check(error);
+        dispatch({ type: "addCompany", company });
+        setSyncError(null);
+        return company;
       },
-      addReaction: ({
-        propertyId,
-        broadcastId,
-        memberId,
-        reactionType = "like",
-        stamp,
-        message,
-      }) => {
-        dispatch({
-          type: "addReaction",
-          propertyId,
-          broadcastId,
-          memberId,
-          reactionType,
-          stamp,
-          message,
+      saveProperty: async (property) => {
+        const supabase = createBrowserSupabase();
+        const exists = state.properties.some((item) => item.id === property.id);
+        const { error } = exists
+          ? await supabase.from("properties").update(propertyToRow(property)).eq("id", property.id)
+          : await supabase.from("properties").insert(propertyToRow(property));
+        check(error);
+        dispatch({ type: "upsertProperty", property });
+        setSyncError(null);
+      },
+      submitProperty: async (id) => {
+        const submittedAt = nowIso();
+        const { error } = await createBrowserSupabase()
+          .from("properties")
+          .update({
+            status: "submitted",
+            submitted_at: submittedAt,
+            updated_at: submittedAt,
+            reject_reason: null,
+          })
+          .eq("id", id);
+        check(error);
+        dispatch({ type: "submitProperty", id });
+        setSyncError(null);
+      },
+      rejectProperty: async (id, reason) => {
+        const updatedAt = nowIso();
+        const { error } = await createBrowserSupabase()
+          .from("properties")
+          .update({ status: "rejected", reject_reason: reason, updated_at: updatedAt })
+          .eq("id", id);
+        check(error);
+        dispatch({ type: "rejectProperty", id, reason });
+        setSyncError(null);
+      },
+      updateReview: async (id, payload) => {
+        const reviewedAt = nowIso();
+        const current = state.properties.find((item) => item.id === id);
+        const { error } = await createBrowserSupabase()
+          .from("properties")
+          .update({
+            masked_fields: payload.maskedFields,
+            broadcast_format: payload.broadcastFormat,
+            custom_message: payload.customMessage,
+            status: current?.status === "submitted" ? "ready" : current?.status,
+            reviewed_at: reviewedAt,
+            updated_at: reviewedAt,
+          })
+          .eq("id", id);
+        check(error);
+        dispatch({ type: "updateReview", id, ...payload });
+        setSyncError(null);
+      },
+      sendBroadcast: async (id) => {
+        const property = state.properties.find((item) => item.id === id);
+        if (!property) {
+          setSyncError("物件が見つかりません");
+          throw new Error("物件が見つかりません");
+        }
+        const response = await fetch("/api/line/broadcast", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ propertyId: id }),
         });
+        const body = (await response.json().catch(() => null)) as {
+          error?: string;
+          broadcastId?: string;
+          sentAt?: string;
+          recipientCount?: number;
+          messageText?: string;
+        } | null;
+        if (!response.ok || !body?.broadcastId || !body.sentAt || body.messageText == null) {
+          const message = body?.error || "LINEへの配信に失敗しました";
+          setSyncError(message);
+          throw new Error(message);
+        }
+        dispatch({
+          type: "sendBroadcast",
+          id,
+          broadcastId: body.broadcastId,
+          sentAt: body.sentAt,
+          recipientCount: body.recipientCount ?? 0,
+          messageText: body.messageText,
+        });
+        setSyncError(null);
+        return body.broadcastId;
       },
-      saveOwner: (owner) => dispatch({ type: "upsertOwner", owner }),
-      setOwnerStatus: (id, status) => dispatch({ type: "setOwnerStatus", id, status }),
-      loginOwner: (ownerId) => {
-        const owner = state.owners.find((item) => item.id === ownerId);
-        if (!owner) return;
-        const next = { ...state, currentUser: ownerToUser(owner) };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        dispatch({ type: "loginOwner", ownerId });
+      saveOwner: async (owner) => {
+        const supabase = createBrowserSupabase();
+        const exists = state.owners.some((item) => item.id === owner.id);
+        const { error } = exists
+          ? await supabase
+              .from("owners")
+              .update({
+                name: owner.name,
+                email: owner.email,
+                affiliation: owner.affiliation,
+                status: owner.status,
+              })
+              .eq("id", owner.id)
+          : await supabase.from("owners").insert({
+              id: owner.id,
+              name: owner.name,
+              email: owner.email,
+              affiliation: owner.affiliation,
+              status: owner.status,
+              created_at: owner.createdAt,
+            });
+        check(error);
+        if (!exists) {
+          const { error: linkError } = await supabase.from("owner_properties").insert(
+            owner.propertyIds.map((propertyId) => ({
+              owner_id: owner.id,
+              property_id: propertyId,
+            })),
+          );
+          check(linkError);
+        }
+        dispatch({ type: "upsertOwner", owner });
+        setSyncError(null);
       },
-    }),
-    [ready, state],
-  );
+      setOwnerStatus: async (id, status) => {
+        const { error } = await createBrowserSupabase().from("owners").update({ status }).eq("id", id);
+        check(error);
+        dispatch({ type: "setOwnerStatus", id, status });
+        setSyncError(null);
+      },
+      loginOwner: (ownerId) => dispatch({ type: "loginOwner", ownerId }),
+    };
+  }, [ready, state, syncError]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
@@ -383,9 +497,9 @@ export function useRequiredUser(): User {
 
 export function emptyProperty(user: User): Property {
   return {
-    id: newId("p"),
-    companyId: user.companyId ?? "unknown",
-    companyName: user.companyName ?? "管理会社",
+    id: crypto.randomUUID(),
+    companyId: user.companyId ?? "",
+    companyName: user.companyName ?? "",
     status: "draft",
     name: "",
     buildingName: "",

@@ -142,7 +142,7 @@ export function buildLineMessage(property: Property) {
   if (property.customMessage) {
     lines.push("", property.customMessage);
   } else {
-    lines.push("", "気になる方は「いいね」または🏠スタンプを送ってください。");
+    lines.push("", "気になる方は🏠スタンプを送ってください。");
   }
 
   lines.push("", "※SUUMO等への一般公開前の限定情報です。");

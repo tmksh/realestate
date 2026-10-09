@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { PropertyPhoto } from "@/components/PropertyCard";
 import { ReactionBarChart, ReactionBreakdownChart } from "@/components/Charts";
 import { BroadcastIcon, HeartIcon, InboxIcon, KeyIcon, UsersIcon } from "@/components/stat-icons";
-import { Badge, Card, PageHeader, SectionTitle, StatCard } from "@/components/ui";
+import { Badge, Button, Card, PageHeader, SectionTitle, StatCard } from "@/components/ui";
 import { formatDateTime, statusLabel, statusTone } from "@/lib/format";
 import { activeOwnerCount, useStore } from "@/lib/store";
 
@@ -24,13 +25,22 @@ export default function AdminDashboardPage() {
         kicker="運営"
         title="ダッシュボード"
         description="確認待ちの物件から、配信と反応の動きまでをまとめて見られます。"
+        action={
+          <Button
+            href="/company/properties/new"
+            className="min-h-11 px-5 text-[15px] font-semibold"
+          >
+            <Plus className="h-4 w-4" />
+            物件を登録
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 items-stretch gap-3 lg:grid-cols-5">
         <StatCard label="確認待ち" value={pending.length} hint="送信済み・配信準備" icon={<InboxIcon />} />
-        <StatCard label="配信済み" value={sent.length} icon={<BroadcastIcon />} />
-        <StatCard label="反応" value={state.reactions.length} hint="いいね / スタンプ / テキスト" icon={<HeartIcon />} />
-        <StatCard label="LINE会員" value={state.members.length + 236} hint="代表12名を表示" icon={<UsersIcon />} />
+        <StatCard label="配信済み" value={sent.length} hint="公式LINEへ送った物件" icon={<BroadcastIcon />} />
+        <StatCard label="反応" value={state.reactions.length} hint="スタンプ / テキスト" icon={<HeartIcon />} />
+        <StatCard label="LINE会員" value={state.members.length} hint="登録されている会員" icon={<UsersIcon />} />
         <StatCard
           label="オーナー管理者数"
           value={activeOwnerCount(state.owners)}

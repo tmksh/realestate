@@ -23,7 +23,9 @@ links.forEach((link) => {
 });
 
 const observe = () => {
-  const y = window.scrollY + (window.matchMedia("(max-width: 860px)").matches ? 80 : 96);
+  const topbar = document.querySelector(".topbar");
+  const topbarOpen = topbar && getComputedStyle(topbar).display !== "none";
+  const y = window.scrollY + (topbarOpen ? 80 : 96);
   let current = sections[0];
   for (const section of sections) {
     if (section.offsetTop <= y) current = section;

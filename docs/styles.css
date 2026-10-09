@@ -539,6 +539,122 @@ footer,
 
 }
 
+body.wide .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+body.wide .topbar-kicker {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+body.wide .menu-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+body.wide .menu-btn span,
+body.wide .menu-btn span::before,
+body.wide .menu-btn span::after {
+  display: block;
+  width: 14px;
+  height: 1.5px;
+  background: var(--text);
+}
+
+body.wide .menu-btn span {
+  position: relative;
+}
+
+body.wide .menu-btn span::before,
+body.wide .menu-btn span::after {
+  position: absolute;
+  left: 0;
+  content: "";
+}
+
+body.wide .menu-btn span::before {
+  top: -5px;
+}
+
+body.wide .menu-btn span::after {
+  top: 5px;
+}
+
+body.wide .backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  background: rgba(43, 38, 32, 0.28);
+}
+
+body.wide.nav-open .backdrop {
+  display: block;
+}
+
+body.wide nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: min(80vw, 280px);
+  height: 100vh;
+  transform: translateX(-105%);
+  transition: transform 0.2s ease;
+  box-shadow: 8px 0 24px rgba(43, 38, 32, 0.08);
+}
+
+body.wide.nav-open nav {
+  transform: none;
+}
+
+body.wide .wrap {
+  display: block;
+}
+
+body.wide main {
+  width: 100%;
+  max-width: none;
+  padding: 28px 0 72px;
+}
+
+body.wide main > :not(figure) {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+body.wide figure.shot {
+  margin: 18px 0 6px;
+}
+
+body.wide figure.shot img {
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+
+body.wide figure.shot figcaption {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
 figure.shot {
   margin: 18px 0 6px;
 }

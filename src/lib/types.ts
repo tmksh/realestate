@@ -113,8 +113,14 @@ export type Reaction = {
   createdAt: string;
 };
 
+export type Company = {
+  id: string;
+  name: string;
+};
+
 export type AppState = {
   currentUser: User | null;
+  companies: Company[];
   properties: Property[];
   broadcasts: Broadcast[];
   reactions: Reaction[];

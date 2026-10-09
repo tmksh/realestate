@@ -12,12 +12,11 @@ export default function MembersPage() {
       <PageHeader
         kicker="配信対象"
         title="LINE会員"
-        description="公式LINEに登録した会員の一覧です。デモでは代表12名を表示し、配信時は248名を対象として扱います。"
+        description="公式LINEの友だちです。Webhook を公開URLに登録すると、友だち追加がここに反映されます。"
       />
 
       <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-1">
-        <MetaCount label="表示中" value={`${state.members.length}名`} />
-        <MetaCount label="配信対象" value="248名" />
+        <MetaCount label="登録数" value={`${state.members.length}名`} />
       </div>
 
       <Card className="mt-5 overflow-hidden">

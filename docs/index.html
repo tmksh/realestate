@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>仕様書 — マンション発信ツール</title>
     <meta name="description" content="未公開マンションを公式LINEで先に届けるツールの仕様です。画面写真つきで、流れが短く分かるようにまとめています。" />
-    <link rel="stylesheet" href="./styles.css?v=16" />
+    <link rel="stylesheet" href="./styles.css?v=17" />
   </head>
-  <body>
+  <body class="wide">
     <a class="skip" href="#overview">本文へ移動</a>
     <div class="backdrop" data-nav-close></div>
     <header class="topbar">
@@ -113,7 +113,6 @@
         </figure>
         <ul>
           <li>隠せるのは、番地、部屋番号、マンション名、価格です。</li>
-          <li>見本の「いいね」「気になる」は押せても、トークには付きません。</li>
           <li>「公式LINEで配信」を押すと、友だち全員にテキストが1通届きます。</li>
           <li>同じ物件は、もう一度送れません。</li>
         </ul>
@@ -140,8 +139,6 @@
         <ul>
           <li>メッセージとスタンプは、いちばん新しい配信に付きます。同じ人の2通目以降も残ります。</li>
           <li>画面を開いたままなら、15秒ほどで新しい反応が入ります。</li>
-          <li>文字で送った「いいね」は、いいね件数には入りません。種類はテキストです。</li>
-          <li>行を押すと、公式LINEのトーク画面が開きます。管理画面にログインしている必要があります。</li>
         </ul>
 
         <h2 id="status">8. 物件の状態</h2>
@@ -183,7 +180,6 @@
           <article class="card">
             <h3>公式LINE側の確認が残っている</h3>
             <ul>
-              <li>メッセージを長押しした「いいね」は、Webhookでは届きません</li>
               <li>送信元リンクのエラーは、リンクを変えていないため一旦保留です</li>
             </ul>
           </article>
@@ -191,7 +187,6 @@
             <h3>今回は作らない</h3>
             <ul>
               <li>カード、画像、PDFファイルの実送信</li>
-              <li>見本の「いいね」ボタンを、実メッセージに付けること</li>
               <li>画面からAPIキーを入れる欄。鍵は環境変数のまま。泉様の公式LINEへ切り替えるときも、同じ環境変数を入れ替える</li>
               <li>オーナーへの招待メールと、画面からのパスワード作成</li>
             </ul>

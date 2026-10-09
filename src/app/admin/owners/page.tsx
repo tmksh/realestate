@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge, Button, Card, Field, Input, PageHeader, Select } from "@/components/ui";
 import { formatDate, ownerStatusLabel, ownerStatusTone } from "@/lib/format";
-import { newId, nowIso } from "@/lib/format";
+import { nowIso } from "@/lib/format";
 import { activeOwnerCount, useStore } from "@/lib/store";
 import type { OwnerAccount } from "@/lib/types";
 
@@ -23,7 +23,7 @@ export default function OwnersPage() {
   const createOwner = () => {
     if (!draft.name || !draft.email || !draft.affiliation || draft.propertyIds.length === 0) return;
     const owner: OwnerAccount = {
-      id: newId("o"),
+      id: crypto.randomUUID(),
       name: draft.name,
       email: draft.email,
       affiliation: draft.affiliation,
@@ -31,8 +31,7 @@ export default function OwnersPage() {
       propertyIds: draft.propertyIds,
       createdAt: nowIso(),
     };
-    saveOwner(owner);
-    setDraft(emptyDraft);
+    void saveOwner(owner).then(() => setDraft(emptyDraft));
   };
 
   const toggleProperty = (id: string) => {

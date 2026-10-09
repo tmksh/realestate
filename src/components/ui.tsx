@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 import Link from "next/link";
-import { ArrowLeft, LayoutGrid, List, Radio } from "lucide-react";
+import { ArrowLeft, LayoutGrid, List } from "lucide-react";
 import type { ViewMode } from "@/lib/view-mode";
 
 type Tone = "neutral" | "warn" | "danger" | "info" | "success";
@@ -22,8 +22,13 @@ export const tableRowClass =
 export function BrandMark({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"}`}>
-      <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-ink text-white">
-        <Radio className="h-3.5 w-3.5" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-line text-white">
+        <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M12 4.1c-4.7 0-8.5 3.3-8.5 7.4 0 3.7 3.3 6.8 7.7 7.3.3.1.8.3.9.6.1.3 0 .7-.1.9l-.2.9c-.1.3.1.7.6.4 1-.5 5.4-3.2 7.4-5.5 1.3-1.5 2.2-3.1 2.2-4.6 0-4.1-3.8-7.4-8.5-7.4z"
+          />
+        </svg>
       </div>
       {collapsed ? null : (
         <p className="font-display text-[15px] font-semibold tracking-[-0.04em] text-ink">マンション発信ツール</p>
@@ -71,9 +76,11 @@ export function Button({
   children,
   variant = "primary",
   className = "",
+  href,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "danger" | "line";
+  href?: string;
 }) {
   const variants = {
     primary: "bg-ink text-white hover:bg-ink-soft disabled:bg-[#d6d3d1] disabled:text-white",
@@ -83,12 +90,18 @@ export function Button({
     danger: "bg-[#b42318] text-white hover:bg-[#912018] disabled:bg-canvas disabled:text-faint",
     line: "bg-line text-white hover:bg-line-edge disabled:opacity-55",
   };
+  const classes = `inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${variants[variant]} ${className}`;
+
+  if (href) {
+    return (
+      <Link href={href} className={classes}>
+        {children}
+      </Link>
+    );
+  }
 
   return (
-    <button
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${variants[variant]} ${className}`}
-      {...props}
-    >
+    <button className={classes} {...props}>
       {children}
     </button>
   );
@@ -134,7 +147,7 @@ export function Select({
   ...props
 }: InputHTMLAttributes<HTMLSelectElement> & { children: ReactNode }) {
   return (
-    <select className={`${inputClass} ${className}`} {...props}>
+    <select className={`${inputClass} pr-11 ${className}`} {...props}>
       {children}
     </select>
   );
@@ -148,7 +161,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-[24px] border border-hairline bg-white shadow-[var(--shadow-card)] ${className}`}>
+    <div className={`rounded-[24px] border border-hairline bg-white card-shadow ${className}`}>
       {children}
     </div>
   );
@@ -261,7 +274,7 @@ export function ConfirmDialog({
       aria-modal="true"
       aria-labelledby="confirm-title"
     >
-      <div className="w-full max-w-md rounded-[24px] border border-hairline bg-white p-6 shadow-[var(--shadow-lift)]">
+      <div className="w-full max-w-md rounded-[24px] border border-hairline bg-white p-6 lift-shadow">
         <p id="confirm-title" className="font-display text-[18px] font-semibold tracking-[-0.03em] text-ink">
           {title}
         </p>
@@ -292,7 +305,7 @@ export function BackLink({
     <Link
       href={to}
       onClick={onClick}
-      className="mb-4 inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline bg-white px-3.5 text-[13px] font-medium text-ink shadow-[var(--shadow-card)] transition hover:bg-canvas"
+      className="mb-4 inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline bg-white px-3.5 text-[13px] font-medium text-ink card-shadow transition hover:bg-canvas"
     >
       <ArrowLeft className="h-3.5 w-3.5" />
       {children}
@@ -319,7 +332,7 @@ export function SegmentedControl<T extends string>({
             type="button"
             onClick={() => onChange(option.id)}
             className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition ${
-              active ? "bg-white text-ink shadow-[var(--shadow-card)]" : "text-muted hover:text-ink"
+              active ? "bg-white text-ink card-shadow" : "text-muted hover:text-ink"
             }`}
           >
             {option.label}
@@ -355,7 +368,7 @@ export function ViewToggle({
             type="button"
             onClick={() => onChange(option.id)}
             className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition ${
-              active ? "bg-white text-ink shadow-[var(--shadow-card)]" : "text-muted hover:text-ink"
+              active ? "bg-white text-ink card-shadow" : "text-muted hover:text-ink"
             }`}
             aria-pressed={active}
           >

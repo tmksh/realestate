@@ -2,9 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Check, EyeOff, Plus, Trash2 } from "lucide-react";
+import { EyeOff, Plus, Trash2 } from "lucide-react";
 import { nowIso } from "@/lib/format";
-import { presetImages } from "@/lib/seed";
 import { useStore } from "@/lib/store";
 import type { Property } from "@/lib/types";
 import { Button, Card, Field, Input, Select, Textarea } from "./ui";
@@ -19,10 +18,14 @@ export function PropertyForm({
   onDirtyChange?: (dirty: boolean) => void;
 }) {
   const router = useRouter();
-  const { saveProperty, submitProperty } = useStore();
+  const { state, saveProperty, submitProperty, createCompany } = useStore();
   const [property, setProperty] = useState(initial);
   const [baseline, setBaseline] = useState(initial);
   const [saved, setSaved] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const isAdmin = state.currentUser?.role === "admin";
 
   useEffect(() => {
     onDirtyChange?.(JSON.stringify(snapshot(property)) !== JSON.stringify(snapshot(baseline)));
@@ -33,17 +36,20 @@ export function PropertyForm({
     setSaved(false);
   };
 
-  const persist = (nextStatus?: Property["status"]) => {
+  const persist = async (nextStatus?: Property["status"]) => {
+    const company = state.companies.find((item) => item.id === property.companyId);
     const next = {
       ...property,
+      companyName: company?.name || property.companyName,
       name: property.name || `${property.buildingName} ${property.layout}`.trim(),
       highlights: property.highlights.map((item) => item.trim()).filter(Boolean),
       status: nextStatus ?? property.status,
       updatedAt: nowIso(),
     };
-    saveProperty(next);
+    await saveProperty(next);
     setProperty(next);
     setBaseline(next);
+    setFormError(null);
     return next;
   };
 
@@ -53,6 +59,7 @@ export function PropertyForm({
       [property.city, "市区町村"],
       [property.town, "町名"],
       [property.station, "最寄駅"],
+      [property.companyId, "管理会社"],
       [property.price > 0, "価格"],
     ] as const
   )
@@ -65,11 +72,16 @@ export function PropertyForm({
       className="space-y-8 pb-28 md:pb-8"
       onSubmit={(event) => {
         event.preventDefault();
-        const next = persist();
-        setSaved(true);
-        if (mode === "create") {
-          router.push(`/company/properties/${next.id}`);
-        }
+        void persist()
+          .then((next) => {
+            setSaved(true);
+            if (mode === "create") {
+              router.push(`/company/properties/${next.id}`);
+            }
+          })
+          .catch((error: unknown) => {
+            setFormError(error instanceof Error ? error.message : "保存に失敗しました");
+          });
       }}
     >
       <div className="rounded-[24px] border border-hairline bg-canvas px-4 py-3.5 sm:px-5">
@@ -86,6 +98,50 @@ export function PropertyForm({
           title="基本情報"
           description="物件の所在地と建物情報を入力してください。"
         />
+        {isAdmin ? (
+          <div className="space-y-3 md:col-span-2">
+            <Field label="管理会社" required>
+              <Select
+                value={property.companyId}
+                onChange={(event) => {
+                  const company = state.companies.find((item) => item.id === event.target.value);
+                  update("companyId", event.target.value);
+                  update("companyName", company?.name ?? "");
+                }}
+              >
+                <option value="">選択してください</option>
+                {state.companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <div className="flex gap-2">
+              <Input
+                value={companyName}
+                onChange={(event) => setCompanyName(event.target.value)}
+                placeholder="新しい管理会社名"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                className="shrink-0 whitespace-nowrap"
+                disabled={!companyName.trim()}
+                onClick={() => {
+                  void createCompany(companyName.trim()).then((company) => {
+                    update("companyId", company.id);
+                    update("companyName", company.name);
+                    setCompanyName("");
+                  });
+                }}
+              >
+                会社を追加
+              </Button>
+            </div>
+          </div>
+        ) : null}
+        {formError ? <p className="text-sm text-rose-700 md:col-span-2">{formError}</p> : null}
         <div className="md:col-span-2">
           <Field label="マンション名" required>
             <Input
@@ -116,14 +172,16 @@ export function PropertyForm({
             required
           />
         </Field>
-        <Field label="町名" required>
-          <Input
-            value={property.town}
-            onChange={(event) => update("town", event.target.value)}
-            placeholder="白金台"
-            required
-          />
-        </Field>
+        <div className="md:col-span-2">
+          <Field label="町名" required>
+            <Input
+              value={property.town}
+              onChange={(event) => update("town", event.target.value)}
+              placeholder="白金台"
+              required
+            />
+          </Field>
+        </div>
         <div className="grid gap-5 rounded-[20px] bg-canvas p-4 md:col-span-2 md:grid-cols-2">
           <Field label="番地" hint="運営側で配信時に目隠しできます">
             <Input
@@ -144,7 +202,7 @@ export function PropertyForm({
             入力できます。配信前に運営が必要に応じて非表示にします。
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:col-span-2">
           <Field label="所在階">
             <Input
               type="number"
@@ -319,35 +377,40 @@ export function PropertyForm({
       <Card className="space-y-5 p-6 sm:p-8">
         <CardHeading
           title="写真"
-          description="デモ用の写真セットから、この物件に使用する画像を選択してください。"
+          description="画像のURLを追加してください。ファイルのアップロードはまだ接続していません。"
         />
+        <div className="flex gap-2">
+          <Input
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
+            placeholder="https://..."
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={!imageUrl.trim()}
+            onClick={() => {
+              update("images", [...property.images, imageUrl.trim()]);
+              setImageUrl("");
+            }}
+          >
+            追加
+          </Button>
+        </div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-          {presetImages.map((src) => {
-            const selected = property.images.includes(src);
-            return (
-              <button
-                key={src}
-                type="button"
-                onClick={() =>
-                  update(
-                    "images",
-                    selected ? property.images.filter((item) => item !== src) : [...property.images, src],
-                  )
-                }
-                className={`relative overflow-hidden rounded-[20px] border ${
-                  selected ? "border-ink ring-4 ring-canvas" : "border-hairline"
-                }`}
-              >
-                <div className="aspect-[16/10] bg-cover bg-center" style={{ backgroundImage: `url(${src})` }} />
-                {selected ? (
-                  <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-ink px-2 py-1 text-[11px] font-medium text-white">
-                    <Check className="h-3 w-3" />
-                    選択中
-                  </span>
-                ) : null}
-              </button>
-            );
-          })}
+          {property.images.map((src) => (
+            <button
+              key={src}
+              type="button"
+              onClick={() => update("images", property.images.filter((item) => item !== src))}
+              className="relative overflow-hidden rounded-[20px] border border-hairline"
+            >
+              <div className="aspect-[16/10] bg-cover bg-center" style={{ backgroundImage: `url(${src})` }} />
+              <span className="absolute right-2 top-2 rounded-full bg-ink px-2 py-1 text-[11px] font-medium text-white">
+                削除
+              </span>
+            </button>
+          ))}
         </div>
       </Card>
 
@@ -360,7 +423,12 @@ export function PropertyForm({
             : `${missingRequired.join("・")}を入力すると送信できます`}
         </p>
         <div className="mt-3 flex gap-2 sm:justify-end">
-          <Button type="submit" variant="secondary" className="min-h-11 flex-1 whitespace-nowrap sm:flex-none">
+          <Button
+            type="submit"
+            formNoValidate
+            variant="secondary"
+            className="min-h-11 flex-1 whitespace-nowrap sm:flex-none"
+          >
             下書き保存
           </Button>
           <Button
@@ -368,9 +436,14 @@ export function PropertyForm({
             className="min-h-11 flex-1 whitespace-nowrap sm:min-w-40 sm:flex-none"
             disabled={!canSubmit}
             onClick={() => {
-              const next = persist("submitted");
-              submitProperty(next.id);
-              router.push("/company/properties");
+              void persist("submitted")
+                .then(async (next) => {
+                  await submitProperty(next.id);
+                  router.push("/company/properties");
+                })
+                .catch((error: unknown) => {
+                  setFormError(error instanceof Error ? error.message : "送信に失敗しました");
+                });
             }}
           >
             運営へ送信

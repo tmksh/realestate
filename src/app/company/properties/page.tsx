@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -21,7 +20,7 @@ export default function CompanyPropertiesPage() {
   const [filter, setFilter] = useState<(typeof filters)[number]["id"]>("all");
   const mine = useMemo(() => visibleProperties(state), [state]);
   const list = filter === "all" ? mine : mine.filter((item) => item.status === filter);
-  const canRegister = state.currentUser?.role === "company";
+  const canRegister = state.currentUser?.role === "company" || state.currentUser?.role === "admin";
 
   return (
     <div className="w-full space-y-6">
@@ -34,12 +33,13 @@ export default function CompanyPropertiesPage() {
         }
         action={
           canRegister ? (
-            <Link href="/company/properties/new">
-              <Button>
-                <Plus className="h-4 w-4" />
-                物件を登録
-              </Button>
-            </Link>
+            <Button
+              href="/company/properties/new"
+              className="min-h-11 px-5 text-[15px] font-semibold"
+            >
+              <Plus className="h-4 w-4" />
+              物件を登録
+            </Button>
           ) : null
         }
       />
@@ -52,9 +52,12 @@ export default function CompanyPropertiesPage() {
           description="未公開マンションの情報を登録し、運営へ送信してください。"
           action={
             canRegister ? (
-              <Link href="/company/properties/new">
-                <Button>物件を登録</Button>
-              </Link>
+              <Button
+                href="/company/properties/new"
+                className="min-h-11 px-5 text-[15px] font-semibold"
+              >
+                物件を登録
+              </Button>
             ) : null
           }
         />

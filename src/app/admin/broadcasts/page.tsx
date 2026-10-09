@@ -42,7 +42,7 @@ export default function BroadcastsPage() {
                     href={`/admin/broadcasts/${broadcast.id}`}
                     className="group block h-full rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2"
                   >
-                    <Card className="flex h-full flex-col overflow-hidden transition duration-200 group-hover:shadow-[var(--shadow-lift)]">
+                    <Card className="flex h-full flex-col overflow-hidden transition duration-200 group-hover:lift-shadow">
                       <div className="relative h-[268px] shrink-0 md:h-[300px]">
                         <PropertyPhoto
                           src={property?.images[0]}

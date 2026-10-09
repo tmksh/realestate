@@ -43,7 +43,7 @@ function isNavActive(pathname: string, href: string) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, logout } = useStore();
+  const { state, logout, syncError } = useStore();
   const user = state.currentUser;
   const [collapsed, setCollapsed] = useState(false);
 
@@ -59,7 +59,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
   };
 
-  if (!user || pathname === "/") {
+  if (!user || pathname === "/" || pathname === "/login") {
     return <>{children}</>;
   }
 
@@ -100,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     collapsed ? "justify-center px-0 py-2.5" : "justify-between gap-1 px-2.5 py-2"
                   } ${
                     active
-                      ? "bg-white text-ink shadow-[var(--shadow-card)]"
+                      ? "bg-white text-ink card-shadow"
                       : "text-muted hover:bg-white/70 hover:text-ink"
                   }`}
                 >
@@ -120,6 +120,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          {syncError ? (
+            <p className="bg-rose-50 px-4 py-2 text-sm text-rose-800 sm:px-8">{syncError}</p>
+          ) : null}
           <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-2 border-b border-hairline bg-white/80 px-4 backdrop-blur-xl sm:gap-4 sm:px-8">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold tracking-[-0.02em] text-ink">
