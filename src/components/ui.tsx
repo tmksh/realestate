@@ -22,14 +22,11 @@ export const tableRowClass =
 export function BrandMark({ collapsed = false }: { collapsed?: boolean }) {
   return (
     <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"}`}>
-      <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-line text-white">
-        <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M12 4.1c-4.7 0-8.5 3.3-8.5 7.4 0 3.7 3.3 6.8 7.7 7.3.3.1.8.3.9.6.1.3 0 .7-.1.9l-.2.9c-.1.3.1.7.6.4 1-.5 5.4-3.2 7.4-5.5 1.3-1.5 2.2-3.1 2.2-4.6 0-4.1-3.8-7.4-8.5-7.4z"
-          />
-        </svg>
-      </div>
+      <img
+        src="/brand/shinjidai.png"
+        alt="SHINJIDAI"
+        className="h-14 w-14 shrink-0 rounded-[6px] bg-white object-contain"
+      />
       {collapsed ? null : (
         <p className="font-display text-[15px] font-semibold tracking-[-0.04em] text-ink">マンション発信ツール</p>
       )}
